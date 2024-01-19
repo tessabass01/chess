@@ -66,7 +66,7 @@ public class ChessPiece {
 
     private void moveHelper(ChessPosition startPosition, Collection<ChessMove> moves, int x, int y) {
         ChessPosition currentPosition = startPosition;
-        while (startPosition.getRow() <= 7 && startPosition.getRow() >=2 && startPosition.getColumn() <= 7 && startPosition.getColumn() >= 2) {
+        while (startPosition.getRow() <= 7 && startPosition.getRow() >= 2 && startPosition.getColumn() <= 7 && startPosition.getColumn() >= 2) {
             ChessPosition endPosition = new ChessPosition(startPosition.getRow() - y, startPosition.getColumn() + x);
             moves.add(new ChessMove(currentPosition, endPosition, null));
             startPosition = endPosition;
