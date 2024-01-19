@@ -56,22 +56,20 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         var moves = new ArrayList<ChessMove>();
         if (this.getPieceType() == PieceType.BISHOP) {
-            while (myPosition.getRow() != 9 || myPosition.getRow() != 0 || myPosition.getColumn() != 9 || myPosition.getColumn() != 0) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1), this.getPieceType()));
-            }
-            while (myPosition.getRow() != 9 || myPosition.getRow() != 0 || myPosition.getColumn() != 9 || myPosition.getColumn() != 0) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1), this.getPieceType()));
-            }
-            while (myPosition.getRow() != 9 || myPosition.getRow() != 0 || myPosition.getColumn() != 9 || myPosition.getColumn() != 0) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1), this.getPieceType()));
-            }
-            while (myPosition.getRow() != 9 || myPosition.getRow() != 0 || myPosition.getColumn() != 9 || myPosition.getColumn() != 0) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1), this.getPieceType()));
-            }
-
-//        return new ArrayList<>();
+            moveHelper(myPosition, moves, 1, 1);
+            moveHelper(myPosition, moves, -1, 1);
+            moveHelper(myPosition, moves, 1, -1);
+            moveHelper(myPosition, moves, -1, -1);
         }
         return moves;
+    }
+
+    private void moveHelper(ChessPosition startPosition, Collection<ChessMove> moves, int x, int y) {
+        while (startPosition.getRow() != 9 || startPosition.getRow() != 0 || startPosition.getColumn() != 9 || startPosition.getColumn() != 0) {
+            ChessPosition topRightPosition = new ChessPosition(startPosition.getRow() - y, startPosition.getColumn() + x);
+            moves.add(new ChessMove(startPosition, topRightPosition, null));
+            startPosition = topRightPosition;
+        }
     }
 
 
