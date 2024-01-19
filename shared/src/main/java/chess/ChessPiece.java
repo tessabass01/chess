@@ -56,19 +56,20 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         var moves = new ArrayList<ChessMove>();
         if (this.getPieceType() == PieceType.BISHOP) {
+            moveHelper(myPosition, moves, 1, -1);
             moveHelper(myPosition, moves, 1, 1);
             moveHelper(myPosition, moves, -1, 1);
-            moveHelper(myPosition, moves, 1, -1);
             moveHelper(myPosition, moves, -1, -1);
         }
         return moves;
     }
 
     private void moveHelper(ChessPosition startPosition, Collection<ChessMove> moves, int x, int y) {
-        while (startPosition.getRow() != 9 || startPosition.getRow() != 0 || startPosition.getColumn() != 9 || startPosition.getColumn() != 0) {
-            ChessPosition topRightPosition = new ChessPosition(startPosition.getRow() - y, startPosition.getColumn() + x);
-            moves.add(new ChessMove(startPosition, topRightPosition, null));
-            startPosition = topRightPosition;
+        ChessPosition currentPosition = startPosition;
+        while (startPosition.getRow() <= 7 && startPosition.getRow() >=2 && startPosition.getColumn() <= 7 && startPosition.getColumn() >= 2) {
+            ChessPosition endPosition = new ChessPosition(startPosition.getRow() - y, startPosition.getColumn() + x);
+            moves.add(new ChessMove(currentPosition, endPosition, null));
+            startPosition = endPosition;
         }
     }
 
