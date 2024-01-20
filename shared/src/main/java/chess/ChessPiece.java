@@ -57,10 +57,7 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         var moves = new ArrayList<ChessMove>();
         if (this.getPieceType() == PieceType.BISHOP) {
-            moveHelper(myPosition, moves, board, 1, -1);
-            moveHelper(myPosition, moves, board, 1, 1);
-            moveHelper(myPosition, moves, board, -1, 1);
-            moveHelper(myPosition, moves, board, -1, -1);
+            moveDiagonal(myPosition, moves, board);
         }
         return moves;
     }
@@ -81,8 +78,11 @@ public class ChessPiece {
         }
     }
 
-    private void moveDiagonal() {
-
+    private void moveDiagonal(ChessPosition myPosition, Collection<ChessMove> moves, ChessBoard board) {
+        moveHelper(myPosition, moves, board, 1, -1);
+        moveHelper(myPosition, moves, board, 1, 1);
+        moveHelper(myPosition, moves, board, -1, 1);
+        moveHelper(myPosition, moves, board, -1, -1);
     }
 
 
