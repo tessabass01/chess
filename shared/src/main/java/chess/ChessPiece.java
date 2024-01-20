@@ -60,25 +60,12 @@ public class ChessPiece {
             moveDiagonal(myPosition, moves, board);
         } else if (this.getPieceType() == PieceType.ROOK) {
             moveLinear(myPosition, moves, board);
+        } else if (this.getPieceType() == PieceType.QUEEN) {
+            moveDiagonal(myPosition, moves, board);
+            moveLinear(myPosition, moves, board);
         }
         return moves;
     }
-
-//    private void moveHelper(ChessPosition startPosition, Collection<ChessMove> moves, ChessBoard board, int x, int y) {
-//        ChessPosition currentPosition = startPosition;
-//        while ((startPosition.getRow()) <= 7 && (startPosition.getRow()) >= 2 && (startPosition.getColumn()) <= 7 && (startPosition.getColumn()) >= 2) {
-//            ChessPosition endPosition = new ChessPosition(startPosition.getRow() - y, startPosition.getColumn() + x);
-//            if (board.getPiece(endPosition) == null) {
-//                moves.add(new ChessMove(currentPosition, endPosition, null));
-//                startPosition = endPosition;
-//            } else if (board.getPiece(endPosition).getTeamColor() != this.getTeamColor()) {
-//                moves.add(new ChessMove(currentPosition, endPosition, null));
-//                break;
-//            } else {
-//                break;
-//            }
-//        }
-//    }
 
     private void moveHelper(ChessPosition startPosition, Collection<ChessMove> moves, ChessBoard board, int x, int y) {
         ChessPosition currentPosition = startPosition;
