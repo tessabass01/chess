@@ -11,7 +11,6 @@ import java.util.HashSet;
 public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
-//        int[][] Board = new int[8][8];
     }
 
     /**
@@ -32,6 +31,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
+
         return squares[position.getRow()][position.getColumn()];
     }
 

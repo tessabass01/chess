@@ -36,6 +36,7 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
+
         return this.pieceColor;
     }
 
@@ -56,21 +57,32 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         var moves = new ArrayList<ChessMove>();
         if (this.getPieceType() == PieceType.BISHOP) {
-            moveHelper(myPosition, moves, 1, -1);
-            moveHelper(myPosition, moves, 1, 1);
-            moveHelper(myPosition, moves, -1, 1);
-            moveHelper(myPosition, moves, -1, -1);
+            moveHelper(myPosition, moves, board, 1, -1);
+            moveHelper(myPosition, moves, board, 1, 1);
+            moveHelper(myPosition, moves, board, -1, 1);
+            moveHelper(myPosition, moves, board, -1, -1);
         }
         return moves;
     }
 
-    private void moveHelper(ChessPosition startPosition, Collection<ChessMove> moves, int x, int y) {
+    private void moveHelper(ChessPosition startPosition, Collection<ChessMove> moves, ChessBoard board, int x, int y) {
         ChessPosition currentPosition = startPosition;
         while (startPosition.getRow() <= 7 && startPosition.getRow() >= 2 && startPosition.getColumn() <= 7 && startPosition.getColumn() >= 2) {
             ChessPosition endPosition = new ChessPosition(startPosition.getRow() - y, startPosition.getColumn() + x);
-            moves.add(new ChessMove(currentPosition, endPosition, null));
-            startPosition = endPosition;
+            if (board.getPiece(endPosition) == null) {
+                moves.add(new ChessMove(currentPosition, endPosition, null));
+                startPosition = endPosition;
+            } else if (board.getPiece(endPosition).getTeamColor() != this.getTeamColor()) {
+                moves.add(new ChessMove(currentPosition, endPosition, null));
+                break;
+            } else {
+                break;
+            }
         }
+    }
+
+    private void moveDiagonal() {
+
     }
 
 
