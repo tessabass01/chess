@@ -64,10 +64,29 @@ public class ChessPiece {
         return moves;
     }
 
+//    private void moveHelper(ChessPosition startPosition, Collection<ChessMove> moves, ChessBoard board, int x, int y) {
+//        ChessPosition currentPosition = startPosition;
+//        while ((startPosition.getRow()) <= 7 && (startPosition.getRow()) >= 2 && (startPosition.getColumn()) <= 7 && (startPosition.getColumn()) >= 2) {
+//            ChessPosition endPosition = new ChessPosition(startPosition.getRow() - y, startPosition.getColumn() + x);
+//            if (board.getPiece(endPosition) == null) {
+//                moves.add(new ChessMove(currentPosition, endPosition, null));
+//                startPosition = endPosition;
+//            } else if (board.getPiece(endPosition).getTeamColor() != this.getTeamColor()) {
+//                moves.add(new ChessMove(currentPosition, endPosition, null));
+//                break;
+//            } else {
+//                break;
+//            }
+//        }
+//    }
+
     private void moveHelper(ChessPosition startPosition, Collection<ChessMove> moves, ChessBoard board, int x, int y) {
         ChessPosition currentPosition = startPosition;
-        while ((startPosition.getRow()) <= 7 && (startPosition.getRow()) >= 2 && (startPosition.getColumn()) <= 7 && (startPosition.getColumn()) >= 2) {
+        while ((startPosition.getRow()) <= 8 && (startPosition.getRow()) >= 1 && (startPosition.getColumn()) <= 8 && (startPosition.getColumn()) >= 1) {
             ChessPosition endPosition = new ChessPosition(startPosition.getRow() - y, startPosition.getColumn() + x);
+            if (endPosition.getColumn() > 8 || endPosition.getColumn() < 1 || endPosition.getRow() > 8 || endPosition.getRow() < 1) {
+                break;
+            }
             if (board.getPiece(endPosition) == null) {
                 moves.add(new ChessMove(currentPosition, endPosition, null));
                 startPosition = endPosition;
