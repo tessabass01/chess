@@ -63,6 +63,9 @@ public class ChessPiece {
         } else if (this.getPieceType() == PieceType.QUEEN) {
             moveDiagonal(myPosition, moves, board);
             moveLinear(myPosition, moves, board);
+        } else if (this.getPieceType() == PieceType.KING) {
+            moveDiagonal(myPosition, moves, board);
+            moveLinear(myPosition, moves, board);
         }
         return moves;
     }
@@ -77,6 +80,9 @@ public class ChessPiece {
             if (board.getPiece(endPosition) == null) {
                 moves.add(new ChessMove(currentPosition, endPosition, null));
                 startPosition = endPosition;
+                if (this.getPieceType() == PieceType.KING) {
+                    break;
+                }
             } else if (board.getPiece(endPosition).getTeamColor() != this.getTeamColor()) {
                 moves.add(new ChessMove(currentPosition, endPosition, null));
                 break;
