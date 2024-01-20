@@ -58,13 +58,15 @@ public class ChessPiece {
         var moves = new ArrayList<ChessMove>();
         if (this.getPieceType() == PieceType.BISHOP) {
             moveDiagonal(myPosition, moves, board);
+        } else if (this.getPieceType() == PieceType.ROOK) {
+            moveLinear(myPosition, moves, board);
         }
         return moves;
     }
 
     private void moveHelper(ChessPosition startPosition, Collection<ChessMove> moves, ChessBoard board, int x, int y) {
         ChessPosition currentPosition = startPosition;
-        while (startPosition.getRow() <= 7 && startPosition.getRow() >= 2 && startPosition.getColumn() <= 7 && startPosition.getColumn() >= 2) {
+        while ((startPosition.getRow()) <= 7 && (startPosition.getRow()) >= 2 && (startPosition.getColumn()) <= 7 && (startPosition.getColumn()) >= 2) {
             ChessPosition endPosition = new ChessPosition(startPosition.getRow() - y, startPosition.getColumn() + x);
             if (board.getPiece(endPosition) == null) {
                 moves.add(new ChessMove(currentPosition, endPosition, null));
@@ -77,12 +79,18 @@ public class ChessPiece {
             }
         }
     }
-
     private void moveDiagonal(ChessPosition myPosition, Collection<ChessMove> moves, ChessBoard board) {
         moveHelper(myPosition, moves, board, 1, -1);
         moveHelper(myPosition, moves, board, 1, 1);
         moveHelper(myPosition, moves, board, -1, 1);
         moveHelper(myPosition, moves, board, -1, -1);
+    }
+
+    private void moveLinear(ChessPosition myPosition, Collection<ChessMove> moves, ChessBoard board) {
+        moveHelper(myPosition, moves, board, 1, 0);
+        moveHelper(myPosition, moves, board, -1, 0);
+        moveHelper(myPosition, moves, board, 0, 1);
+        moveHelper(myPosition, moves, board, 0, -1);
     }
 
 
