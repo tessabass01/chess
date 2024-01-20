@@ -66,8 +66,10 @@ public class ChessPiece {
         } else if (this.getPieceType() == PieceType.KING) {
             moveDiagonal(myPosition, moves, board);
             moveLinear(myPosition, moves, board);
+        } else if (this.getPieceType() == PieceType.KNIGHT) {
+            moveL(myPosition, moves, board);
         }
-        return moves;
+            return moves;
     }
 
     private void moveHelper(ChessPosition startPosition, Collection<ChessMove> moves, ChessBoard board, int x, int y) {
@@ -80,7 +82,7 @@ public class ChessPiece {
             if (board.getPiece(endPosition) == null) {
                 moves.add(new ChessMove(currentPosition, endPosition, null));
                 startPosition = endPosition;
-                if (this.getPieceType() == PieceType.KING) {
+                if (this.getPieceType() == PieceType.KING || this.getPieceType() == PieceType.KNIGHT) {
                     break;
                 }
             } else if (board.getPiece(endPosition).getTeamColor() != this.getTeamColor()) {
@@ -103,6 +105,17 @@ public class ChessPiece {
         moveHelper(myPosition, moves, board, -1, 0);
         moveHelper(myPosition, moves, board, 0, 1);
         moveHelper(myPosition, moves, board, 0, -1);
+    }
+
+    private void moveL(ChessPosition myPosition, Collection<ChessMove> moves, ChessBoard board) {
+        moveHelper(myPosition, moves, board, 2, 1);
+        moveHelper(myPosition, moves, board, 2, -1);
+        moveHelper(myPosition, moves, board, -2, 1);
+        moveHelper(myPosition, moves, board, -2, -1);
+        moveHelper(myPosition, moves, board, 1, 2);
+        moveHelper(myPosition, moves, board, -1, 2);
+        moveHelper(myPosition, moves, board, 1, -2);
+        moveHelper(myPosition, moves, board, -1, -2);
     }
 
 
