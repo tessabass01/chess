@@ -128,11 +128,11 @@ public class ChessPiece {
                 if (startPosition.getRow() <= 6) {
                     if (board.getPiece(whiteFirstPosition) == null) {
                         moves.add(new ChessMove(startPosition, whiteFirstPosition, null));
-                    }
-                    if (startPosition.getRow() == 2) {
-                        ChessPosition secondPosition = new ChessPosition(startPosition.getRow() + 2, startPosition.getColumn());
-                        if (board.getPiece(secondPosition) == null) {
-                            moves.add(new ChessMove(startPosition, secondPosition, null));
+                        if (startPosition.getRow() == 2) {
+                            ChessPosition whiteSecondPosition = new ChessPosition(startPosition.getRow() + 2, startPosition.getColumn());
+                            if (board.getPiece(whiteSecondPosition) == null) {
+                                moves.add(new ChessMove(startPosition, whiteSecondPosition, null));
+                            }
                         }
                     }
                 } else if (startPosition.getRow() == 7) {
@@ -150,11 +150,11 @@ public class ChessPiece {
                 if (startPosition.getRow() >= 3) {
                     if (board.getPiece(firstBlackPosition) == null) {
                         moves.add(new ChessMove(startPosition, firstBlackPosition, null));
-                    }
-                    if (startPosition.getRow() == 7) {
-                        ChessPosition secondPosition = new ChessPosition(startPosition.getRow() - 2, startPosition.getColumn());
-                        if (board.getPiece(secondPosition) == null) {
-                            moves.add(new ChessMove(startPosition, secondPosition, null));
+                        if (startPosition.getRow() == 7) {
+                            ChessPosition blackSecondPosition = new ChessPosition(startPosition.getRow() - 2, startPosition.getColumn());
+                            if (board.getPiece(blackSecondPosition) == null) {
+                                moves.add(new ChessMove(startPosition, blackSecondPosition, null));
+                            }
                         }
                     }
                 } else if (startPosition.getRow() == 2) {
