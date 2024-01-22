@@ -44,6 +44,7 @@ public class ChessPiece {
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
+
         return this.type;
     }
 
@@ -68,6 +69,8 @@ public class ChessPiece {
             moveLinear(myPosition, moves, board);
         } else if (this.getPieceType() == PieceType.KNIGHT) {
             moveL(myPosition, moves, board);
+        } else if (this.getPieceType() == PieceType.PAWN) {
+            pawnMoveHelper(myPosition, moves, board);
         }
             return moves;
     }
@@ -116,6 +119,31 @@ public class ChessPiece {
         moveHelper(myPosition, moves, board, -1, 2);
         moveHelper(myPosition, moves, board, 1, -2);
         moveHelper(myPosition, moves, board, -1, -2);
+    }
+
+    private void pawnMoveHelper(ChessPosition startPosition, Collection<ChessMove> moves, ChessBoard board) {
+        if (board.getPiece(startPosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
+            ChessPosition firstPosition = new ChessPosition(startPosition.getRow()+1, startPosition.getColumn());
+            if (board.getPiece(firstPosition) == null && firstPosition.getColumn() <= 8 && firstPosition.getColumn() >= 1 && firstPosition.getRow() <= 8 || firstPosition.getRow() >= 1) {
+                moves.add(new ChessMove(startPosition, firstPosition, null));
+            }
+            if (startPosition.getRow() == 2) {
+                ChessPosition secondPosition = new ChessPosition(startPosition.getRow()+2, startPosition.getColumn());
+                if (board.getPiece(secondPosition) == null) {
+                    moves.add(new ChessMove(startPosition, secondPosition, null));
+                }
+            } else if (startPosition.getRow() == 7) {
+                ChessPosition promotePosition = new ChessPosition(startPosition.getRow()+2, startPosition.getColumn());
+
+            }
+        } else {
+            ChessPosition firstPosition = new ChessPosition(startPosition.getRow()-1, startPosition.getColumn());
+            moves.add(new ChessMove(startPosition, firstPosition, null));
+            if (startPosition.getRow() == 7) {
+                ChessPosition secondPosition = new ChessPosition(startPosition.getRow()-2, startPosition.getColumn());
+                moves.add(new ChessMove(startPosition, secondPosition, null));
+            }
+        }
     }
 
 
