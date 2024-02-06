@@ -65,7 +65,7 @@ public class ChessGame {
         var isValid = false;
         Collection<ChessMove> validMovesCollection = this.validMoves(move.getStartPosition());
         for (ChessMove element : validMovesCollection) {
-            if (element == move) {
+            if (Objects.equals(element, move)) {
                 isValid = true;
                 break;
             }
@@ -90,9 +90,9 @@ public class ChessGame {
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 var iterPosition = new ChessPosition(i, j);
-                if (Objects.equals(this.board.getPiece(iterPosition), new ChessPiece(teamColor, ChessPiece.PieceType.KING))) {
+                if (Objects.equals(board.getPiece(iterPosition), new ChessPiece(teamColor, ChessPiece.PieceType.KING))) {
                     kingPosition = iterPosition;
-                } else if (this.board.getPiece(iterPosition) != null && this.board.getPiece(iterPosition).getTeamColor() != teamColor) {
+                } else if (board.getPiece(iterPosition) != null && board.getPiece(iterPosition).getTeamColor() != teamColor) {
                     var someValidMoves = this.validMoves(iterPosition);
                     otherTeamValidMoves.addAll(someValidMoves);
                 }
@@ -154,7 +154,29 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        var otherTeamValidMoves = new ArrayList<ChessMove>();
+        Collection<ChessMove> kingValidMoves = new ArrayList<ChessMove>();
+        var kingPosition = new ChessPosition(0, 0);
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                var iterPosition = new ChessPosition(i, j);
+                if (Objects.equals(board.getPiece(iterPosition), new ChessPiece(teamColor, ChessPiece.PieceType.KING))) {
+                    kingValidMoves = this.validMoves(iterPosition);
+                    kingPosition = iterPosition;
+                } else if (board.getPiece(iterPosition) != null && board.getPiece(iterPosition).getTeamColor() != teamColor) {
+                    var someValidMoves = this.validMoves(iterPosition);
+                    otherTeamValidMoves.addAll(someValidMoves);
+                }
+            }
+        }
+        var kingEndPositions = this.getEndPositions(kingValidMoves);
+//        kingEndPositions.add(kingPosition);
+        var otherTeamEndPositions = this.getEndPositions(otherTeamValidMoves);
+        if (otherTeamEndPositions.containsAll(kingEndPositions)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
