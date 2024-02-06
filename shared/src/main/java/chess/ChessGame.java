@@ -80,6 +80,7 @@ public class ChessGame {
         var isValid = false;
         var startPosition = move.getStartPosition();
         var pieceColor = board.getPiece(startPosition).getTeamColor();
+        var promotion = move.getPromotionPiece();
         var isRightColor = false;
         if (this.turn == pieceColor) {
             isRightColor = true;
@@ -92,8 +93,13 @@ public class ChessGame {
             }
         }
         if (isValid && isRightColor) {
-            board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
-            board.addPiece(move.getStartPosition(), null);
+            if (promotion == null) {
+                board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+                board.addPiece(move.getStartPosition(), null);
+            } else {
+                board.addPiece(move.getEndPosition(), new ChessPiece(turn, promotion));
+                board.addPiece(move.getStartPosition(), null);
+            }
         } else {
             throw new InvalidMoveException("This is not a valid move");
         }
