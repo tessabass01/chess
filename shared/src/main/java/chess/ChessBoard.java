@@ -16,7 +16,14 @@ public class ChessBoard {
     }
 
     public ChessBoard(ChessBoard copy) {
-        board = Arrays.copyOf(copy.board, copy.board.length);
+        this.board = new ChessPiece[copy.board.length][copy.board[0].length];
+        for (int i = 0; i < copy.board.length; i++) {
+            for (int j = 0; j < copy.board[i].length; j++) {
+                if (copy.board[i][j] != null) {
+                    this.board[i][j] = new ChessPiece(copy.board[i][j]);
+                }
+            }
+        }
     }
 
     /**
@@ -80,39 +87,39 @@ public class ChessBoard {
         board[6][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder string = new StringBuilder();
-        string.append("\n");
-        for (int i = 1; i <= 8; i++) {
-            string.append(this.getPiece(new ChessPosition(8, i)).getTeamColor());
-            string.append(" ");
-            string.append(this.getPiece(new ChessPosition(8, i)).getPieceType());
-            string.append(" ");
-        }
-        string.append("\n");
-        for (int i = 1; i <= 8; i++) {
-            string.append(this.getPiece(new ChessPosition(7, i)).getTeamColor());
-            string.append(" ");
-            string.append(this.getPiece(new ChessPosition(7, i)).getPieceType());
-            string.append(" ");
-        }
-        string.append("\n");
-        for (int i = 1; i <= 8; i++) {
-            string.append(this.getPiece(new ChessPosition(2, i)).getTeamColor());
-            string.append(" ");
-            string.append(this.getPiece(new ChessPosition(2, i)).getPieceType());
-            string.append(" ");
-        }
-        string.append("\n");
-        for (int i = 1; i <= 8; i++) {
-            string.append(this.getPiece(new ChessPosition(1, i)).getTeamColor());
-            string.append(" ");
-            string.append(this.getPiece(new ChessPosition(1, i)).getPieceType());
-            string.append(" ");
-        }
-        return string.toString();
-    }
+//    @Override
+//    public String toString() {
+//        StringBuilder string = new StringBuilder();
+//        string.append("\n");
+//        for (int i = 1; i <= 8; i++) {
+//            string.append(this.getPiece(new ChessPosition(8, i)).getTeamColor());
+//            string.append(" ");
+//            string.append(this.getPiece(new ChessPosition(8, i)).getPieceType());
+//            string.append(" ");
+//        }
+//        string.append("\n");
+//        for (int i = 1; i <= 8; i++) {
+//            string.append(this.getPiece(new ChessPosition(7, i)).getTeamColor());
+//            string.append(" ");
+//            string.append(this.getPiece(new ChessPosition(7, i)).getPieceType());
+//            string.append(" ");
+//        }
+//        string.append("\n");
+//        for (int i = 1; i <= 8; i++) {
+//            string.append(this.getPiece(new ChessPosition(2, i)).getTeamColor());
+//            string.append(" ");
+//            string.append(this.getPiece(new ChessPosition(2, i)).getPieceType());
+//            string.append(" ");
+//        }
+//        string.append("\n");
+//        for (int i = 1; i <= 8; i++) {
+//            string.append(this.getPiece(new ChessPosition(1, i)).getTeamColor());
+//            string.append(" ");
+//            string.append(this.getPiece(new ChessPosition(1, i)).getPieceType());
+//            string.append(" ");
+//        }
+//        return string.toString();
+//    }
 
     @Override
     public boolean equals(Object o) {
