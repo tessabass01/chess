@@ -1,6 +1,6 @@
 package chess;
 
-import java.util.Collection;
+import java.util.*;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -85,7 +85,33 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> otherTeamValidMoves = new ArrayList<ChessMove>();
+        var kingPosition = new ChessPosition(0, 0);
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                var iterPosition = new ChessPosition(i, j);
+                if (Objects.equals(this.board.getPiece(iterPosition), new ChessPiece(teamColor, ChessPiece.PieceType.KING))) {
+                    kingPosition = iterPosition;
+                } else if (this.board.getPiece(iterPosition) != null && this.board.getPiece(iterPosition).getTeamColor() != teamColor) {
+                    var someValidMoves = this.validMoves(iterPosition);
+                    otherTeamValidMoves.addAll(someValidMoves);
+                }
+            }
+        }
+        for (var move : otherTeamValidMoves) {
+            if (Objects.equals(move.getEndPosition(), kingPosition)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Collection<ChessPosition> getEndPositions(Collection<ChessMove> movesArray) {
+        var endPositions = new ArrayList<ChessPosition>();
+        for (var move : movesArray) {
+            endPositions.add(move.getEndPosition());
+        }
+        return endPositions;
     }
 
     /**
@@ -95,7 +121,29 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        var otherTeamValidMoves = new ArrayList<ChessMove>();
+        Collection<ChessMove> kingValidMoves = new ArrayList<ChessMove>();
+        var kingPosition = new ChessPosition(0, 0);
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                var iterPosition = new ChessPosition(i, j);
+                if (Objects.equals(board.getPiece(iterPosition), new ChessPiece(teamColor, ChessPiece.PieceType.KING))) {
+                    kingValidMoves = this.validMoves(iterPosition);
+                    kingPosition = iterPosition;
+                } else if (board.getPiece(iterPosition) != null && board.getPiece(iterPosition).getTeamColor() != teamColor) {
+                    var someValidMoves = this.validMoves(iterPosition);
+                    otherTeamValidMoves.addAll(someValidMoves);
+                }
+            }
+        }
+        var kingEndPositions = this.getEndPositions(kingValidMoves);
+        kingEndPositions.add(kingPosition);
+        var otherTeamEndPositions = this.getEndPositions(otherTeamValidMoves);
+        if (otherTeamEndPositions.containsAll(kingEndPositions)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -115,7 +163,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        this.board.resetBoard();;
+        this.board = board;;
     }
 
     /**
