@@ -11,7 +11,7 @@ import java.util.*;
 public class ChessGame {
 
     private ChessBoard board = new ChessBoard();
-    private ChessGame.TeamColor turn = ChessGame.TeamColor.WHITE;
+    private ChessGame.TeamColor turn = ChessGame.TeamColor.BLACK;
 
     public ChessGame() {
     }
@@ -63,6 +63,12 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         var isValid = false;
+        var startPosition = move.getStartPosition();
+        var pieceColor = board.getPiece(startPosition).getTeamColor();
+        var isRightColor = false;
+        if (this.turn == pieceColor) {
+            isRightColor = true;
+        }
         Collection<ChessMove> validMovesCollection = this.validMoves(move.getStartPosition());
         for (ChessMove element : validMovesCollection) {
             if (Objects.equals(element, move)) {
@@ -70,12 +76,13 @@ public class ChessGame {
                 break;
             }
         }
-        if (isValid) {
+        if (isValid && isRightColor) {
             board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
             board.addPiece(move.getStartPosition(), null);
         } else {
             throw new InvalidMoveException("This is not a valid move");
         }
+        setTeamTurn(this.turn);
     }
 
     /**
@@ -121,29 +128,35 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        var otherTeamValidMoves = new ArrayList<ChessMove>();
-        Collection<ChessMove> kingValidMoves = new ArrayList<ChessMove>();
-        var kingPosition = new ChessPosition(0, 0);
-        for (int i = 1; i <= 8; i++) {
-            for (int j = 1; j <= 8; j++) {
-                var iterPosition = new ChessPosition(i, j);
-                if (Objects.equals(board.getPiece(iterPosition), new ChessPiece(teamColor, ChessPiece.PieceType.KING))) {
-                    kingValidMoves = this.validMoves(iterPosition);
-                    kingPosition = iterPosition;
-                } else if (board.getPiece(iterPosition) != null && board.getPiece(iterPosition).getTeamColor() != teamColor) {
-                    var someValidMoves = this.validMoves(iterPosition);
-                    otherTeamValidMoves.addAll(someValidMoves);
-                }
+//        var otherTeamValidMoves = new ArrayList<ChessMove>();
+//        Collection<ChessMove> kingValidMoves = new ArrayList<ChessMove>();
+//        var kingPosition = new ChessPosition(0, 0);
+//        for (int i = 1; i <= 8; i++) {
+//            for (int j = 1; j <= 8; j++) {
+//                var iterPosition = new ChessPosition(i, j);
+//                if (Objects.equals(board.getPiece(iterPosition), new ChessPiece(teamColor, ChessPiece.PieceType.KING))) {
+//                    kingValidMoves = this.validMoves(iterPosition);
+//                    kingPosition = iterPosition;
+//                } else if (board.getPiece(iterPosition) != null && board.getPiece(iterPosition).getTeamColor() != teamColor) {
+//                    var someValidMoves = this.validMoves(iterPosition);
+//                    otherTeamValidMoves.addAll(someValidMoves);
+//                }
+//            }
+//        }
+//        var kingEndPositions = this.getEndPositions(kingValidMoves);
+//        kingEndPositions.add(kingPosition);
+//        var otherTeamEndPositions = this.getEndPositions(otherTeamValidMoves);
+//        if (otherTeamEndPositions.containsAll(kingEndPositions)) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+        if (this.isInCheck(teamColor)) {
+            if (this.isInStalemate(teamColor)) {
+                return true;
             }
         }
-        var kingEndPositions = this.getEndPositions(kingValidMoves);
-        kingEndPositions.add(kingPosition);
-        var otherTeamEndPositions = this.getEndPositions(otherTeamValidMoves);
-        if (otherTeamEndPositions.containsAll(kingEndPositions)) {
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
 
     /**
@@ -197,8 +210,26 @@ public class ChessGame {
         return this.board;
     }
 
+    @Override
+    public String toString() {
+        return "ChessGame{" +
+                "board=" + board +
+                ", turn=" + turn +
+                '}';
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessGame chessGame = (ChessGame) o;
+        return Objects.equals(board, chessGame.board) && turn == chessGame.turn;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(board, turn);
+    }
 }
 
 
