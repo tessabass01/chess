@@ -54,13 +54,14 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
 //        return board.getPiece(startPosition).pieceMoves(board, startPosition);
         var copyBoard = new ChessBoard(board);
-        var previousBoard = copyBoard;
+//        var previousBoard = new ChessBoard(copyBoard);
         var piece = copyBoard.getPiece(startPosition);
         var moves = piece.pieceMoves(copyBoard, startPosition);
         var iter = moves.iterator();
         var validMoveList = new ArrayList<ChessMove>();
         for (int i = 0; i < moves.size(); i++) {
             var move = iter.next();
+            var previousBoard = new ChessBoard(copyBoard);
             copyBoard.copyAddPiece(move.getEndPosition(), copyBoard.getPiece(move.getStartPosition()), copyBoard);
             copyBoard.copyAddPiece(move.getStartPosition(), null, copyBoard);
             if (!this.copyIsInCheck(piece.getTeamColor(), copyBoard)) {
