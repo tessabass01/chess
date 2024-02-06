@@ -144,7 +144,7 @@ public class ChessGame {
                 if (Objects.equals(copyBoard.getPiece(iterPosition), new ChessPiece(teamColor, ChessPiece.PieceType.KING))) {
                     kingPosition = iterPosition;
                 } else if (copyBoard.getPiece(iterPosition) != null && copyBoard.getPiece(iterPosition).getTeamColor() != teamColor) {
-                    var someValidMoves = board.getPiece(iterPosition).pieceMoves(board, iterPosition);
+                    var someValidMoves = copyBoard.getPiece(iterPosition).pieceMoves(copyBoard, iterPosition);
                     otherTeamValidMoves.addAll(someValidMoves);
                 }
             }
@@ -195,15 +195,17 @@ public class ChessGame {
                 var iterPosition = new ChessPosition(i, j);
                 if (Objects.equals(board.getPiece(iterPosition), new ChessPiece(teamColor, ChessPiece.PieceType.KING))) {
                     kingValidMoves = this.validMoves(iterPosition);
-                } else if (board.getPiece(iterPosition) != null && board.getPiece(iterPosition).getTeamColor() != teamColor) {
-                    var someValidMoves = this.validMoves(iterPosition);
-                    otherTeamValidMoves.addAll(someValidMoves);
                 }
+//                else if (board.getPiece(iterPosition) != null && board.getPiece(iterPosition).getTeamColor() != teamColor) {
+//                    var someValidMoves = this.validMoves(iterPosition);
+//                    otherTeamValidMoves.addAll(someValidMoves);
+//                }
             }
         }
-        var kingEndPositions = this.getEndPositions(kingValidMoves);
-        var otherTeamEndPositions = this.getEndPositions(otherTeamValidMoves);
-        if (otherTeamEndPositions.containsAll(kingEndPositions)) {
+//        var kingEndPositions = this.getEndPositions(kingValidMoves);
+//        var otherTeamEndPositions = this.getEndPositions(otherTeamValidMoves);
+//        if (otherTeamEndPositions.containsAll(kingEndPositions)) {
+        if (kingValidMoves.isEmpty()) {
             return true;
         } else {
             return false;
