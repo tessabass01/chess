@@ -36,6 +36,10 @@ public class ChessBoard {
         board[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
+    public void copyAddPiece(ChessPosition position, ChessPiece piece, ChessBoard chessBoard) {
+        chessBoard.board[position.getRow()-1][position.getColumn()-1] = piece;
+    }
+
     /**
      * Gets a chess piece on the chessboard
      *
