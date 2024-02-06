@@ -121,7 +121,7 @@ public class ChessGame {
                 if (Objects.equals(board.getPiece(iterPosition), new ChessPiece(teamColor, ChessPiece.PieceType.KING))) {
                     kingPosition = iterPosition;
                 } else if (board.getPiece(iterPosition) != null && board.getPiece(iterPosition).getTeamColor() != teamColor) {
-                    var someValidMoves = this.validMoves(iterPosition);
+                    var someValidMoves = board.getPiece(iterPosition).pieceMoves(board, iterPosition);
                     otherTeamValidMoves.addAll(someValidMoves);
                 }
             }
