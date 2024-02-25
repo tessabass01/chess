@@ -20,6 +20,20 @@ public class ServiceTests {
     }
 
     @Test
+    void clearTest() throws DataAccessException {
+        var user1 = new UserData("hello", "goodbye", "hello@goodbye.com");
+        var authData1 = uservice.registerUser(user1);
+        var user2 = new UserData("hola", "goodbye", "hello@goodbye.com");
+        var authData2 = uservice.registerUser(user2);
+        var user3 = new UserData("hallo", "goodbye", "hello@goodbye.com");
+        var authData3 = uservice.registerUser(user3);
+        dservice.clearDB();
+        var users = dservice.listUsers();
+        Assertions.assertEquals(0, users.size());
+    }
+
+
+        @Test
     void registerNewUser() throws DataAccessException {
         var username = "hello";
         var user = new UserData(username, "goodbye", "hello@goodbye.com");
