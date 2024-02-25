@@ -11,15 +11,17 @@ public interface DataAccess {
 
     String createAuth(String username) throws DataAccessException;
 
-    void delAuth() throws DataAccessException;
+    Collection<String> listUsers() throws DataAccessException;
 
-    AuthData getAuth() throws DataAccessException;
-
-    Collection<GameData> listGames() throws DataAccessException;
-
-    void createGame() throws DataAccessException;
-
-    void updateGame() throws DataAccessException;
-
-    void clearDB() throws DataAccessException;
+//    void delAuth() throws DataAccessException;
+//
+//    AuthData getAuth() throws DataAccessException;
+//
+//    Collection<GameData> listGames() throws DataAccessException;
+//
+//    void createGame() throws DataAccessException;
+//
+//    void updateGame() throws DataAccessException;
+//
+//    void clearDB() throws DataAccessException;
 }

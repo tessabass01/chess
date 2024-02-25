@@ -5,6 +5,8 @@ import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 
+import java.util.Collection;
+
 public class UserService {
 
     private final DataAccess dataAccess;
@@ -16,8 +18,16 @@ public class UserService {
     public AuthData registerUser(UserData user) throws DataAccessException {
         if (dataAccess.getUser(user.username()) == null) {
             dataAccess.createUser(user.username(), user.password(), user.email());
+            var token = dataAccess.createAuth(user.username());
+            return new AuthData(user.username(), token);
+        } else {
+            throw new DataAccessException("already taken");
         }
     }
-    public AuthData login(UserData user) {}
-    public void logout(UserData user) {}
+
+    public Collection<String> listUsers() throws DataAccessException {
+        return dataAccess.listUsers();
+    }
+//    public AuthData login(UserData user) {}
+//    public void logout(UserData user) {}
 }

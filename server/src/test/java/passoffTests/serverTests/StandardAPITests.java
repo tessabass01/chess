@@ -1,6 +1,7 @@
 package passoffTests.serverTests;
 
 import chess.ChessGame;
+import dataAccess.MemoryDataAccess;
 import org.junit.jupiter.api.*;
 import passoffTests.obfuscatedTestClasses.TestServerFacade;
 import passoffTests.testClasses.TestException;
@@ -39,7 +40,7 @@ public class StandardAPITests {
 
     @BeforeAll
     public static void init() {
-        server = new Server();
+        server = new Server(new MemoryDataAccess());
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
 
