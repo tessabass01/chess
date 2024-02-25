@@ -10,8 +10,9 @@ import service.*;
 import java.util.HashMap;
 
 public class ServiceTests {
-    private final UserService uservice = new UserService(new MemoryDataAccess());
-    private final DataService dservice = new DataService(new MemoryDataAccess());
+    private final MemoryDataAccess data = new MemoryDataAccess();
+    private final UserService uservice = new UserService(data);
+    private final DataService dservice = new DataService(data);
 
 
     @BeforeEach
@@ -28,7 +29,7 @@ public class ServiceTests {
         var user3 = new UserData("hallo", "goodbye", "hello@goodbye.com");
         var authData3 = uservice.registerUser(user3);
         dservice.clearDB();
-        var users = dservice.listUsers();
+        var users = uservice.listUsers();
         Assertions.assertEquals(0, users.size());
     }
 

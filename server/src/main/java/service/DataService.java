@@ -19,7 +19,7 @@ public class DataService {
         dataAccess.clearDB();
     }
 
-    public Collection<String> listUsers() throws DataAccessException {
-        return dataAccess.listUsers();
-    }
+//    public Collection<String> listUsers() throws DataAccessException {
+//        return dataAccess.listUsers();
+//    }
 }
