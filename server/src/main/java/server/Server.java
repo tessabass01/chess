@@ -10,17 +10,15 @@ import service.*;
 
 public class Server {
 
-    private final UserService service;
+    private final UserService uservice;
+    private final DataService dservice;
 
     public Server(DataAccess dataAccess) {
 
-        service = new UserService(dataAccess);
+        uservice = new UserService(dataAccess);
+        dservice = new DataService(dataAccess);
 
     }
-//
-//    public Server(UserService service) {
-//        this.service = service;
-//    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -34,7 +32,7 @@ public class Server {
 //        Spark.get("/game", this::listGames);
 //        Spark.get("/game", this::createGame);
 //        Spark.put("/game", this::joinGame);
-//        Spark.delete("/db", this::clearDB);
+        Spark.delete("/db", this::clearDB);
 
 //        Spark.exception(DataAccessException.class, this::exceptionHandler);
 
@@ -44,8 +42,14 @@ public class Server {
 
     private Object registerUser(Request req, Response res) throws DataAccessException {
         UserData user = new Gson().fromJson(req.body(), UserData.class);
-        var authData = service.registerUser(user);
+        var authData = uservice.registerUser(user);
         return new Gson().toJson(authData);
+    }
+
+    private Object clearDB(Request req, Response res) throws DataAccessException {
+        dservice.clearDB();
+        res.status(200);
+        return null;
     }
 
     public void stop() {

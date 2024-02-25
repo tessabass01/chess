@@ -21,7 +21,7 @@ public class UserService {
             var token = dataAccess.createAuth(user.username());
             return new AuthData(user.username(), token);
         } else {
-            throw new DataAccessException("already taken");
+            return new AuthData("message", "Error: already taken");
         }
     }
 

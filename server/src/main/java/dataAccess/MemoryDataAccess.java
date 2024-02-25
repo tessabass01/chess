@@ -62,9 +62,9 @@ public class MemoryDataAccess implements DataAccess {
 //
 //            void updateGame () throws DataAccessException;
 
-//        public void clearDB () {
-//            UserDict.clear();
-//            AuthDict.clear();
-//            GameDict.clear();
-//        }
+        public void clearDB () {
+            UserDict.clear();
+            AuthDict.clear();
+            GameDict.clear();
+        }
 }

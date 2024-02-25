@@ -23,5 +23,5 @@ public interface DataAccess {
 //
 //    void updateGame() throws DataAccessException;
 //
-//    void clearDB() throws DataAccessException;
+    void clearDB() throws DataAccessException;
 }
