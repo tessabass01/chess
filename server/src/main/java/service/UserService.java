@@ -15,13 +15,13 @@ public class UserService {
         this.dataAccess = dataAccess;
     }
 
-    public AuthData registerUser(UserData user) throws DataAccessException {
+    public Object registerUser(UserData user) throws DataAccessException {
         if (dataAccess.getUser(user.username()) == null) {
             dataAccess.createUser(user.username(), user.password(), user.email());
             var token = dataAccess.createAuth(user.username());
             return new AuthData(token, user.username());
         } else {
-            return new AuthData("message", "Error: already taken");
+            return "already taken";
         }
     }
 

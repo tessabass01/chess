@@ -3,10 +3,12 @@ package server;
 import com.google.gson.Gson;
 import dataAccess.DataAccess;
 import model.AuthData;
+import model.ErrorMessage;
 import model.UserData;
 import spark.*;
 import dataAccess.DataAccessException;
 import service.*;
+
 
 public class Server {
 
@@ -43,8 +45,21 @@ public class Server {
     private Object registerUser(Request req, Response res) throws DataAccessException {
         UserData user = new Gson().fromJson(req.body(), UserData.class);
         var authData = uservice.registerUser(user);
-        return new Gson().toJson(authData);
+        var response = new Gson().toJson(authData);
+//        System.out.print(response);
+        if (response.contains("already taken")) {
+            res.status(403);
+            var error = new ErrorMessage("Error: already taken");
+            return new Gson().toJson(error);
+        } else {
+            res.status(200);
+        }
+        return response;
     }
+
+//    private Object login(Request req, Response res) throws DataAccessException {
+//
+//    }
 
     private Object clear(Request req, Response res) throws DataAccessException {
         dservice.clearDB();
