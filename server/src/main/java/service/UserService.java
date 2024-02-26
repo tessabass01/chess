@@ -40,7 +40,12 @@ public class UserService {
             return new AuthData(token, user.username());
         }
     }
-//    public void logout(UserData user) {
-//
-//    }
+    public Object logout(String authToken) throws DataAccessException {
+        if (dataAccess.getAuth(authToken) == null) {
+            return "unauthorized";
+        } else {
+            dataAccess.delAuth(authToken);
+            return "success";
+        }
+    }
 }

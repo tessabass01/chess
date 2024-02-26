@@ -15,9 +15,9 @@ public interface DataAccess {
 
     boolean isCorrectPassword(UserData user) throws DataAccessException;
 
-//    void delAuth() throws DataAccessException;
+    void delAuth(String authToken) throws DataAccessException;
 //
-//    AuthData getAuth() throws DataAccessException;
+    AuthData getAuth(String authToken) throws DataAccessException;
 //
 //    Collection<GameData> listGames() throws DataAccessException;
 //

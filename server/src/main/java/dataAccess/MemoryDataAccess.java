@@ -49,18 +49,18 @@ public class MemoryDataAccess implements DataAccess {
         return authToken.toString();
     }
 
-        public String createAuth(String username){
-            String authToken = genAuth();
-            var auth = new AuthData(authToken, username);
-            AuthDict.put(authToken, auth);
-            return authToken;
-        }
-//
-//            void delAuth () throws DataAccessException;
-//
-        public AuthData getAuth(String authToken) {
-            return AuthDict.getOrDefault(authToken, null);
-        }
+    public String createAuth(String username){
+        String authToken = genAuth();
+        var auth = new AuthData(authToken, username);
+        AuthDict.put(authToken, auth);
+        return authToken;
+    }
+    public void delAuth(String authToken) {
+        AuthDict.remove(authToken);
+    }
+    public AuthData getAuth(String authToken) {
+        return AuthDict.getOrDefault(authToken, null);
+    }
 //
 //            Collection<GameData> listGames () throws DataAccessException;
 //
