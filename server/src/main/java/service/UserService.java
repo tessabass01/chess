@@ -15,11 +15,11 @@ public class UserService {
         this.dataAccess = dataAccess;
     }
 
-    public Object registerUser(UserData user) throws DataAccessException {
+    public AuthData registerUser(UserData user) throws DataAccessException {
         if (dataAccess.getUser(user.username()) != null) {
-            return "already taken";
+            return new AuthData("already taken", user.username());
         } else if (user.password() == null) {
-            return "no password";
+            return new AuthData("no password", user.username());
         } else {
             dataAccess.createUser(user.username(), user.password(), user.email());
             var token = dataAccess.createAuth(user.username());
@@ -30,17 +30,17 @@ public class UserService {
     public Collection<String> listUsers() throws DataAccessException {
         return dataAccess.listUsers();
     }
-    public Object login(UserData user) throws DataAccessException {
+    public AuthData login(UserData user) throws DataAccessException {
         if (dataAccess.getUser(user.username()) == null) {
-            return "does not exist";
+            return new AuthData("does not exist", user.username());
         } else if (!dataAccess.isCorrectPassword(user)) {
-            return "wrong password";
+            return new AuthData("wrong password", user.username());
         } else {
             var token = dataAccess.createAuth(user.username());
             return new AuthData(token, user.username());
         }
     }
-    public Object logout(String authToken) throws DataAccessException {
+    public String logout(String authToken) throws DataAccessException {
         if (dataAccess.getAuth(authToken) == null) {
             return "unauthorized";
         } else {

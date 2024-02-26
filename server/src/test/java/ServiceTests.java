@@ -2,6 +2,7 @@ import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import passoffTests.testClasses.TestException;
 import model.*;
@@ -35,6 +36,7 @@ public class ServiceTests {
 
 
         @Test
+        @DisplayName("positive register test")
     void registerNewUser() throws DataAccessException {
         var username = "hello";
         var user = new UserData(username, "goodbye", "hello@goodbye.com");
@@ -45,6 +47,7 @@ public class ServiceTests {
     }
 
     @Test
+    @DisplayName("negative register test")
     void registerExistingUser() throws DataAccessException {
         var username = "hello";
         var user = new UserData(username, "goodbye", "hello@goodbye.com");
@@ -54,5 +57,24 @@ public class ServiceTests {
         var users = uservice.listUsers();
         Assertions.assertTrue(users.size() < 2);
         Assertions.assertTrue(users.contains(username));
+    }
+
+    @Test
+    @DisplayName("positive login test")
+    void loginExistingUser() throws DataAccessException {
+        var user = new UserData("hello", "goodbye", "hello@goodbye.com");
+        var authData = uservice.registerUser(user);
+        Assertions.assertEquals(authData.getClass(), AuthData.class);
+        var message = uservice.logout(authData.authToken());
+        var authData2 = uservice.login(user);
+        Assertions.assertNotSame("does not exist", authData2.authToken());
+        Assertions.assertNotNull(uservice.listUsers());
+        Assertions.assertEquals(1, uservice.listUsers().size());
+    }
+
+    @Test
+    @DisplayName("negative login test")
+    void loginNewUser() throws DataAccessException {
+
     }
 }
