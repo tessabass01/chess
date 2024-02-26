@@ -95,10 +95,11 @@ public class ServiceTests {
     void logoutUserTwice() throws DataAccessException {
         var user = new UserData("hello", "goodbye", "hello@goodbye.com");
         var authData = uservice.registerUser(user);
-        var message = uservice.logout(authData.authToken());
+        var message1 = uservice.logout(authData.authToken());
         var message2 = uservice.logout(authData.authToken());
         Assertions.assertEquals(1, uservice.listUsers().size());
         Assertions.assertEquals(0, uservice.authSize());
+        Assertions.assertNotSame("unauthorized", message1);
         Assertions.assertNotSame("success", message2);
     }
 
