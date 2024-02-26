@@ -3,6 +3,7 @@ package dataAccess;
 import model.*;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Random;
 import java.util.HashMap;
 
@@ -33,7 +34,7 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public boolean isCorrectPassword(UserData user) {
-        if (UserDict.get(user.username()).password() == user.password()) {
+        if (Objects.equals(UserDict.get(user.username()).password(), user.password())) {
             return true;
         } else { return false; }
     }

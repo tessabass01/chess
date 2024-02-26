@@ -64,6 +64,7 @@ public class Server {
         UserData user = new Gson().fromJson(req.body(), UserData.class);
         var authData = uservice.login(user);
         var response = new Gson().toJson(authData);
+        System.out.println(response);
         if (response.contains("does not exist") || response.contains("wrong password")) {
             res.status(401);
             var error = new ErrorMessage("Error: unauthorized");
@@ -73,6 +74,12 @@ public class Server {
             return response;
         }
     }
+
+//    private Object logout(Request req, Response res) throws DataAccessException {
+//        UserData user = new Gson().fromJson(req.body(), UserData.class);
+//        var authData = uservice.logout(user);
+//        var response = new Gson().toJson(authData);
+//    }
 
     private Object clear(Request req, Response res) throws DataAccessException {
         dservice.clearDB();

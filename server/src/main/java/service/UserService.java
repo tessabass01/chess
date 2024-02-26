@@ -36,8 +36,11 @@ public class UserService {
         } else if (!dataAccess.isCorrectPassword(user)) {
             return "wrong password";
         } else {
-            return "";
+            var token = dataAccess.createAuth(user.username());
+            return new AuthData(token, user.username());
         }
     }
-//    public void logout(UserData user) {}
+//    public void logout(UserData user) {
+//
+//    }
 }
