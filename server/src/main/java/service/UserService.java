@@ -19,7 +19,7 @@ public class UserService {
         if (dataAccess.getUser(user.username()) == null) {
             dataAccess.createUser(user.username(), user.password(), user.email());
             var token = dataAccess.createAuth(user.username());
-            return new AuthData(user.username(), token);
+            return new AuthData(token, user.username());
         } else {
             return new AuthData("message", "Error: already taken");
         }

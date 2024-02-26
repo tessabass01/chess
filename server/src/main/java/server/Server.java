@@ -32,7 +32,7 @@ public class Server {
 //        Spark.get("/game", this::listGames);
 //        Spark.get("/game", this::createGame);
 //        Spark.put("/game", this::joinGame);
-        Spark.delete("/db", this::clearDB);
+        Spark.delete("/db", this::clear);
 
 //        Spark.exception(DataAccessException.class, this::exceptionHandler);
 
@@ -46,10 +46,10 @@ public class Server {
         return new Gson().toJson(authData);
     }
 
-    private Object clearDB(Request req, Response res) throws DataAccessException {
+    private Object clear(Request req, Response res) throws DataAccessException {
         dservice.clearDB();
         res.status(200);
-        return null;
+        return "";
     }
 
     public void stop() {
