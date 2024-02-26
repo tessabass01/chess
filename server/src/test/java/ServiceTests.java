@@ -75,6 +75,8 @@ public class ServiceTests {
     @Test
     @DisplayName("negative login test")
     void loginNewUser() throws DataAccessException {
-
+        var user = new UserData("hello", "goodbye", "hello@goodbye.com");
+        var authData = uservice.login(user);
+        Assertions.assertEquals(0, uservice.listUsers().size());
     }
 }
