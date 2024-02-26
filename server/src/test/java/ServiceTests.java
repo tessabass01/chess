@@ -79,4 +79,14 @@ public class ServiceTests {
         var authData = uservice.login(user);
         Assertions.assertEquals(0, uservice.listUsers().size());
     }
+
+    @Test
+    @DisplayName("positive logout test")
+    void logoutUser() throws DataAccessException {
+        var user = new UserData("hello", "goodbye", "hello@goodbye.com");
+        var authData = uservice.registerUser(user);
+        var message = uservice.logout(authData.authToken());
+        Assertions.assertEquals(1, uservice.listUsers().size());
+        Assertions.assertEquals(0, uservice.authSize());
+    }
 }

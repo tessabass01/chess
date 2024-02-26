@@ -30,6 +30,10 @@ public class UserService {
     public Collection<String> listUsers() throws DataAccessException {
         return dataAccess.listUsers();
     }
+
+    public int authSize() throws DataAccessException {
+        return dataAccess.authSize();
+    }
     public AuthData login(UserData user) throws DataAccessException {
         if (dataAccess.getUser(user.username()) == null) {
             return new AuthData("does not exist", user.username());

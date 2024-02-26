@@ -61,6 +61,10 @@ public class MemoryDataAccess implements DataAccess {
     public AuthData getAuth(String authToken) {
         return AuthDict.getOrDefault(authToken, null);
     }
+
+    public int authSize() {
+        return AuthDict.size();
+    }
 //
 //            Collection<GameData> listGames () throws DataAccessException;
 //

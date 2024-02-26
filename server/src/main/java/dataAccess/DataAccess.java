@@ -18,6 +18,8 @@ public interface DataAccess {
     void delAuth(String authToken) throws DataAccessException;
 //
     AuthData getAuth(String authToken) throws DataAccessException;
+
+    int authSize() throws DataAccessException;
 //
 //    Collection<GameData> listGames() throws DataAccessException;
 //
