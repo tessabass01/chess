@@ -16,12 +16,14 @@ public class UserService {
     }
 
     public Object registerUser(UserData user) throws DataAccessException {
-        if (dataAccess.getUser(user.username()) == null) {
+        if (dataAccess.getUser(user.username()) != null) {
+            return "already taken";
+        } else if (user.password() == null) {
+            return "no password";
+        } else {
             dataAccess.createUser(user.username(), user.password(), user.email());
             var token = dataAccess.createAuth(user.username());
             return new AuthData(token, user.username());
-        } else {
-            return "already taken";
         }
     }
 

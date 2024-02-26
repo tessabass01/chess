@@ -51,6 +51,10 @@ public class Server {
             res.status(403);
             var error = new ErrorMessage("Error: already taken");
             return new Gson().toJson(error);
+        } else if (response.contains("no password")) {
+            res.status(400);
+            var error = new ErrorMessage("Error: bad request");
+            return new Gson().toJson(error);
         } else {
             res.status(200);
         }
