@@ -30,6 +30,14 @@ public class UserService {
     public Collection<String> listUsers() throws DataAccessException {
         return dataAccess.listUsers();
     }
-//    public AuthData login(UserData user) {}
+    public Object login(UserData user) throws DataAccessException {
+        if (dataAccess.getUser(user.username()) == null) {
+            return "does not exist";
+        } else if (!dataAccess.isCorrectPassword(user)) {
+            return "wrong password";
+        } else {
+            return "";
+        }
+    }
 //    public void logout(UserData user) {}
 }

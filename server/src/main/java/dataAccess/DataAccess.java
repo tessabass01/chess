@@ -13,6 +13,8 @@ public interface DataAccess {
 
     Collection<String> listUsers() throws DataAccessException;
 
+    boolean isCorrectPassword(UserData user) throws DataAccessException;
+
 //    void delAuth() throws DataAccessException;
 //
 //    AuthData getAuth() throws DataAccessException;

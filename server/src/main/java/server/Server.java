@@ -29,7 +29,7 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::registerUser);
-//        Spark.post("/session", this::login);
+        Spark.post("/session", this::login);
 //        Spark.delete("/session", this::logout);
 //        Spark.get("/game", this::listGames);
 //        Spark.get("/game", this::createGame);
@@ -46,7 +46,6 @@ public class Server {
         UserData user = new Gson().fromJson(req.body(), UserData.class);
         var authData = uservice.registerUser(user);
         var response = new Gson().toJson(authData);
-//        System.out.print(response);
         if (response.contains("already taken")) {
             res.status(403);
             var error = new ErrorMessage("Error: already taken");
@@ -61,9 +60,19 @@ public class Server {
         return response;
     }
 
-//    private Object login(Request req, Response res) throws DataAccessException {
-//
-//    }
+    private Object login(Request req, Response res) throws DataAccessException {
+        UserData user = new Gson().fromJson(req.body(), UserData.class);
+        var authData = uservice.login(user);
+        var response = new Gson().toJson(authData);
+        if (response.contains("does not exist") || response.contains("wrong password")) {
+            res.status(401);
+            var error = new ErrorMessage("Error: unauthorized");
+            return new Gson().toJson(error);
+        } else {
+            res.status(200);
+            return response;
+        }
+    }
 
     private Object clear(Request req, Response res) throws DataAccessException {
         dservice.clearDB();

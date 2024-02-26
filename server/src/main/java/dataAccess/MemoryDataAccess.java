@@ -32,6 +32,11 @@ public class MemoryDataAccess implements DataAccess {
         return UserDict.keySet();
     }
 
+    public boolean isCorrectPassword(UserData user) {
+        if (UserDict.get(user.username()).password() == user.password()) {
+            return true;
+        } else { return false; }
+    }
     public String genAuth() {
         String possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
         StringBuilder authToken = new StringBuilder();
