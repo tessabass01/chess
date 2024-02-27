@@ -15,7 +15,7 @@ public class GameService {
 
     public GameData createGame(String authToken, String gameName) throws DataAccessException {
         if (!dataAccess.checkAuth(authToken)) {
-            return new GameData(000, null, null, "not logged in", null);
+            return new GameData(-1, null, null, "not logged in", null);
         } else {
             var ID = dataAccess.genGameID();
             dataAccess.createGame(gameName, ID);

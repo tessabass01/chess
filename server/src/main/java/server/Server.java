@@ -10,6 +10,8 @@ import spark.*;
 import dataAccess.DataAccessException;
 import service.*;
 
+import java.util.Objects;
+
 
 public class Server {
 
@@ -96,16 +98,16 @@ public class Server {
         System.out.println(gameData);
         var authToken = new Gson().fromJson(req.headers("authorization"), String.class);
         var gameData2 = gservice.createGame(authToken, gameData.gameName());
-        var response = new Gson().toJson(gameData2);
-        if (response.contains("does not exist") || response.contains("wrong password")) {
+        if (Objects.equals(gameData2.gameName(), "not logged in")) {
             res.status(401);
             var error = new ErrorMessage("Error: unauthorized");
             return new Gson().toJson(error);
-        } else {
-            res.status(200);
-            return response;
         }
-    }
+        var response = new Gson().toJson(gameData2);
+        System.out.println(response);
+        res.status(200);
+        return response;
+        }
 
     private Object clear(Request req, Response res) throws DataAccessException {
         dservice.clearDB();
