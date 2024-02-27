@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataAccess.DataAccess;
 import model.AuthData;
 import model.ErrorMessage;
+import model.GameData;
 import model.UserData;
 import spark.*;
 import dataAccess.DataAccessException;
@@ -14,11 +15,13 @@ public class Server {
 
     private final UserService uservice;
     private final DataService dservice;
+    private final GameService gservice;
 
     public Server(DataAccess dataAccess) {
 
         uservice = new UserService(dataAccess);
         dservice = new DataService(dataAccess);
+        gservice = new GameService(dataAccess);
 
     }
 
@@ -32,7 +35,7 @@ public class Server {
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
 //        Spark.get("/game", this::listGames);
-//        Spark.get("/game", this::createGame);
+        Spark.post("/game", this::createGame);
 //        Spark.put("/game", this::joinGame);
         Spark.delete("/db", this::clear);
 
@@ -64,7 +67,7 @@ public class Server {
         UserData user = new Gson().fromJson(req.body(), UserData.class);
         var authData = uservice.login(user);
         var response = new Gson().toJson(authData);
-        System.out.println(response);
+//        System.out.println(response);
         if (response.contains("does not exist") || response.contains("wrong password")) {
             res.status(401);
             var error = new ErrorMessage("Error: unauthorized");
@@ -85,6 +88,22 @@ public class Server {
         } else {
             res.status(200);
             return "";
+        }
+    }
+
+    private Object createGame(Request req, Response res) throws DataAccessException {
+        var gameData = new Gson().fromJson(req.body(), GameData.class);
+        System.out.println(gameData);
+        var authToken = new Gson().fromJson(req.headers("authorization"), String.class);
+        var gameData2 = gservice.createGame(authToken, gameData.gameName());
+        var response = new Gson().toJson(gameData2);
+        if (response.contains("does not exist") || response.contains("wrong password")) {
+            res.status(401);
+            var error = new ErrorMessage("Error: unauthorized");
+            return new Gson().toJson(error);
+        } else {
+            res.status(200);
+            return response;
         }
     }
 

@@ -19,7 +19,13 @@ public interface DataAccess {
 //
     AuthData getAuth(String authToken) throws DataAccessException;
 
-    int authSize() throws DataAccessException;
+    int authSize();
+
+    int genGameID();
+
+    boolean checkAuth(String authToken) throws DataAccessException;
+
+    int createGame(String gameName, int gameID) throws DataAccessException;
 //
 //    Collection<GameData> listGames() throws DataAccessException;
 //

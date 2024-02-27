@@ -1,5 +1,6 @@
 package dataAccess;
 
+import chess.ChessGame;
 import model.*;
 
 import java.util.Collection;
@@ -64,6 +65,25 @@ public class MemoryDataAccess implements DataAccess {
 
     public int authSize() {
         return AuthDict.size();
+    }
+
+    public boolean checkAuth(String authToken) {
+        if (AuthDict.containsKey(authToken)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public int genGameID() {
+        var gameID = new Random();
+        return gameID.nextInt(1000);
+    }
+
+    public int createGame(String gameName, int gameID) {
+        var game = new GameData(gameID, "", "", gameName, new ChessGame());
+        GameDict.put(Integer.toString(gameID), game);
+        return gameID;
     }
 //
 //            Collection<GameData> listGames () throws DataAccessException;
