@@ -3,15 +3,14 @@ package dataAccess;
 import chess.ChessGame;
 import model.*;
 
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Random;
-import java.util.HashMap;
+import java.util.*;
 
 public class MemoryDataAccess implements DataAccess {
     private final HashMap<String, UserData> UserDict = new HashMap<String, UserData>();
     private final HashMap<String, AuthData> AuthDict = new HashMap<String, AuthData>();
     private final HashMap<String, GameData> GameDict = new HashMap<String, GameData>();
+    private final ArrayList<GameData> GameList = new ArrayList<GameData>();
+
 
 
     public String getUser(String username) {
@@ -83,10 +82,13 @@ public class MemoryDataAccess implements DataAccess {
     public int createGame(String gameName, int gameID) {
         var game = new GameData(gameID, "", "", gameName, new ChessGame());
         GameDict.put(Integer.toString(gameID), game);
+        GameList.add(game);
         return gameID;
     }
 //
-//            Collection<GameData> listGames () throws DataAccessException;
+    public ArrayList<GameData> listGames () {
+        return GameList;
+    }
 //
 //            void createGame () throws DataAccessException;
 //
@@ -96,5 +98,6 @@ public class MemoryDataAccess implements DataAccess {
             UserDict.clear();
             AuthDict.clear();
             GameDict.clear();
+            GameList.clear();
         }
 }

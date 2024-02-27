@@ -2,7 +2,10 @@ package dataAccess;
 
 import model.*;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 public interface DataAccess {
     String getUser(String username) throws DataAccessException;
@@ -26,9 +29,13 @@ public interface DataAccess {
     boolean checkAuth(String authToken) throws DataAccessException;
 
     int createGame(String gameName, int gameID) throws DataAccessException;
-//
-//    Collection<GameData> listGames() throws DataAccessException;
-//
+
+    //
+    default ArrayList<GameData> listGames() throws DataAccessException {
+        return null;
+    }
+
+    //
 //    void createGame() throws DataAccessException;
 //
 //    void updateGame() throws DataAccessException;
