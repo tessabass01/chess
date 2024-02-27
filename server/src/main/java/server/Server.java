@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dataAccess.DataAccess;
 import model.*;
 import spark.*;
@@ -123,8 +124,7 @@ public class Server {
 
     private Object joinGame(Request req, Response res) throws DataAccessException {
         var gameData = new Gson().fromJson(req.body(), JoinData.class);
-        var authToken = new Gson().fromJson(req.headers("authorization"), String.class);
-        System.out.print(authToken);
+        var authToken = req.headers("authorization");
         var response = gservice.joinGame(authToken, gameData.gameID(), gameData.playerColor());
         if (Objects.equals(response, "unauthorized")) {
             res.status(401);

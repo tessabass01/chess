@@ -66,11 +66,7 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public boolean checkAuth(String authToken) {
-        if (AuthDict.containsKey(authToken)) {
-            return true;
-        } else {
-            return false;
-        }
+        return AuthDict.containsKey(authToken);
     }
 
     public int genGameID() {
