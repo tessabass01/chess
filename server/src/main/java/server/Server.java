@@ -68,7 +68,6 @@ public class Server {
         UserData user = new Gson().fromJson(req.body(), UserData.class);
         var authData = uservice.login(user);
         var response = new Gson().toJson(authData);
-//        System.out.println(response);
         if (response.contains("does not exist") || response.contains("wrong password")) {
             res.status(401);
             var error = new ErrorMessage("Error: unauthorized");
@@ -94,7 +93,6 @@ public class Server {
 
     private Object createGame(Request req, Response res) throws DataAccessException {
         var gameData = new Gson().fromJson(req.body(), GameData.class);
-        System.out.println(gameData);
         var authToken = new Gson().fromJson(req.headers("authorization"), String.class);
         var gameData2 = gservice.createGame(authToken, gameData.gameName());
         if (Objects.equals(gameData2.gameName(), "not logged in")) {
@@ -103,7 +101,6 @@ public class Server {
             return new Gson().toJson(error);
         }
         var response = new Gson().toJson(gameData2);
-        System.out.println(response);
         res.status(200);
         return response;
         }
