@@ -6,12 +6,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import passoffTests.testClasses.TestException;
 import model.*;
 import service.*;
-
-import javax.xml.crypto.Data;
-import java.util.HashMap;
 
 public class ServiceTests {
     private final MemoryDataAccess data = new MemoryDataAccess();
@@ -30,11 +26,11 @@ public class ServiceTests {
     @DisplayName("clear test")
     void clearTest() throws DataAccessException {
         var user1 = new UserData("hello", "goodbye", "hello@goodbye.com");
-        var authData1 = uservice.registerUser(user1);
+        uservice.registerUser(user1);
         var user2 = new UserData("hola", "goodbye", "hello@goodbye.com");
-        var authData2 = uservice.registerUser(user2);
+        uservice.registerUser(user2);
         var user3 = new UserData("hallo", "goodbye", "hello@goodbye.com");
-        var authData3 = uservice.registerUser(user3);
+        uservice.registerUser(user3);
         dservice.clearDB();
         var users = uservice.listUsers();
         Assertions.assertEquals(0, users.size());
@@ -46,7 +42,7 @@ public class ServiceTests {
     void registerNewUser() throws DataAccessException {
         var username = "hello";
         var user = new UserData(username, "goodbye", "hello@goodbye.com");
-        var authData = uservice.registerUser(user);
+        uservice.registerUser(user);
         var users = uservice.listUsers();
         Assertions.assertFalse(users.isEmpty());
         Assertions.assertTrue(users.contains(username));
@@ -58,8 +54,8 @@ public class ServiceTests {
         var username = "hello";
         var user = new UserData(username, "goodbye", "hello@goodbye.com");
         var user2 = new UserData(username, "goodbye", "hello@goodbye.com");
-        var authData = uservice.registerUser(user);
-        var authData2 = uservice.registerUser(user2);
+        uservice.registerUser(user);
+        uservice.registerUser(user2);
         var users = uservice.listUsers();
         Assertions.assertTrue(users.size() < 2);
         Assertions.assertTrue(users.contains(username));
@@ -72,7 +68,7 @@ public class ServiceTests {
         var authData = uservice.registerUser(user);
         Assertions.assertEquals(authData.getClass(), AuthData.class);
 
-        var message = uservice.logout(authData.authToken());
+        uservice.logout(authData.authToken());
         var authData2 = uservice.login(user);
         Assertions.assertNotSame("does not exist", authData2.authToken());
         Assertions.assertNotNull(uservice.listUsers());
@@ -83,7 +79,7 @@ public class ServiceTests {
     @DisplayName("negative login test")
     void loginNewUser() throws DataAccessException {
         var user = new UserData("hello", "goodbye", "hello@goodbye.com");
-        var authData = uservice.login(user);
+        uservice.login(user);
         Assertions.assertEquals(0, uservice.listUsers().size());
     }
 
@@ -92,7 +88,7 @@ public class ServiceTests {
     void logoutUser() throws DataAccessException {
         var user = new UserData("hello", "goodbye", "hello@goodbye.com");
         var authData = uservice.registerUser(user);
-        var message = uservice.logout(authData.authToken());
+        uservice.logout(authData.authToken());
         Assertions.assertEquals(1, uservice.listUsers().size());
         Assertions.assertEquals(0, uservice.authSize());
     }
@@ -127,7 +123,7 @@ public class ServiceTests {
         var users = uservice.listUsers();
         Assertions.assertFalse(users.contains(user.username()));
 
-        var gameData = gservice.createGame("blah blah blah", "afternoon");
+        gservice.createGame("blah blah blah", "afternoon");
         System.out.print(gservice.listGames("blah blah blah"));
         Assertions.assertNull(gservice.listGames("blah blah blah").get("games"));
     }
@@ -137,11 +133,11 @@ public class ServiceTests {
     void listGames() throws DataAccessException {
         var user = new UserData("hello", "goodbye", "hello@goodbye.com");
         var authData = uservice.registerUser(user);
-        var gameData = gservice.createGame(authData.authToken(), "grover");
+        gservice.createGame(authData.authToken(), "grover");
         Assertions.assertNotNull(gservice.listGames(authData.authToken()).get("games"));
         Assertions.assertSame("grover", gservice.listGames(authData.authToken()).get("games").getFirst().gameName());
 
-        var gameData2 = gservice.createGame(authData.authToken(), "grover2");
+        gservice.createGame(authData.authToken(), "grover2");
         Assertions.assertEquals(2, gservice.listGames(authData.authToken()).get("games").size());
         Assertions.assertSame("grover2", gservice.listGames(authData.authToken()).get("games").getLast().gameName());
     }
@@ -149,7 +145,7 @@ public class ServiceTests {
     @Test
     @DisplayName("negative listGames test")
     void listGamesBadAuth() throws DataAccessException {
-        var gameData = gservice.createGame("false token", "grover");
+        gservice.createGame("false token", "grover");
         Assertions.assertNull(gservice.listGames("false token").get("games"));
     }
 
@@ -161,19 +157,19 @@ public class ServiceTests {
         var user = new UserData("hello", "goodbye", "hello@goodbye.com");
         var authData = uservice.registerUser(user);
         var gameData = gservice.createGame(authData.authToken(), "grover");
-        var message = gservice.joinGame(authData.authToken(), gameData.gameID(), "WHITE");
+        gservice.joinGame(authData.authToken(), gameData.gameID(), "WHITE");
         Assertions.assertSame(user.username(), gservice.listGames(authData.authToken()).get("games").getFirst().whiteUsername());
 
         // second player
         var user2 = new UserData("hola", "goodbye", "hello@goodbye.com");
         var authData2 = uservice.registerUser(user2);
-        var message2 = gservice.joinGame(authData2.authToken(), gameData.gameID(), "BLACK");
+        gservice.joinGame(authData2.authToken(), gameData.gameID(), "BLACK");
         Assertions.assertSame(user2.username(), gservice.listGames(authData2.authToken()).get("games").getFirst().blackUsername());
 
         // observer
         var user3 = new UserData("hallo", "goodbye", "hello@goodbye.com");
         var authData3 = uservice.registerUser(user3);
-        var message3 = gservice.joinGame(authData3.authToken(), gameData.gameID(), null);
+        gservice.joinGame(authData3.authToken(), gameData.gameID(), null);
         Assertions.assertNotNull(gservice.listGames(authData3.authToken()).get("games"));
     }
 
@@ -184,7 +180,7 @@ public class ServiceTests {
         var user = new UserData("hello", "goodbye", "hello@goodbye.com");
         var authData = uservice.registerUser(user);
         var gameData = gservice.createGame(authData.authToken(), "grover");
-        var message = gservice.joinGame(authData.authToken(), gameData.gameID(), "WHITE");
+        gservice.joinGame(authData.authToken(), gameData.gameID(), "WHITE");
 
         // second player
         var user2 = new UserData("hola", "goodbye", "hello@goodbye.com");
