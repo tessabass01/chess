@@ -9,7 +9,6 @@ public class MemoryDataAccess implements DataAccess {
     private final HashMap<String, UserData> UserDict = new HashMap<String, UserData>();
     private final HashMap<String, AuthData> AuthDict = new HashMap<String, AuthData>();
     private final HashMap<String, GameData> GameDict = new HashMap<String, GameData>();
-    private final ArrayList<GameData> GameList = new ArrayList<GameData>();
 
 
 
@@ -80,24 +79,42 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public int createGame(String gameName, int gameID) {
-        var game = new GameData(gameID, "", "", gameName, new ChessGame());
+        var game = new GameData(gameID, null, null, gameName, new ChessGame());
         GameDict.put(Integer.toString(gameID), game);
-        GameList.add(game);
         return gameID;
     }
 //
-    public ArrayList<GameData> listGames () {
-        return GameList;
+    public ArrayList<GameData> listGames() {
+        var gameCollection = GameDict.values();
+        return new ArrayList<>(gameCollection);
     }
-//
-//            void createGame () throws DataAccessException;
-//
-//            void updateGame () throws DataAccessException;
 
-        public void clearDB () {
-            UserDict.clear();
-            AuthDict.clear();
-            GameDict.clear();
-            GameList.clear();
+     public String updateGame(int gameID, String username, String color) {
+        var strGameID = Integer.toString(gameID);
+        if (GameDict.containsKey(strGameID)) {
+            var gameData = GameDict.get(strGameID);
+            if (Objects.equals(color, "WHITE")) {
+                if (gameData.whiteUsername() == null) {
+                    GameDict.put(strGameID, new GameData(gameID, username, gameData.blackUsername(), gameData.gameName(), gameData.game()));
+                } else {
+                    return "already taken";
+                }
+            } else if (Objects.equals(color, "BLACK")) {
+                if (gameData.blackUsername() == null) {
+                    GameDict.put(strGameID, new GameData(gameID, gameData.whiteUsername(), username, gameData.gameName(), gameData.game()));
+                } else {
+                    return "already taken";
+                }
+            }
+            return "success";
+        } else {
+            return "does not exist";
         }
+    }
+
+    public void clearDB() {
+        UserDict.clear();
+        AuthDict.clear();
+        GameDict.clear();
+    }
 }

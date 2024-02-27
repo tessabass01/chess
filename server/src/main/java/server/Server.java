@@ -2,14 +2,12 @@ package server;
 
 import com.google.gson.Gson;
 import dataAccess.DataAccess;
-import model.AuthData;
-import model.ErrorMessage;
-import model.GameData;
-import model.UserData;
+import model.*;
 import spark.*;
 import dataAccess.DataAccessException;
 import service.*;
 
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -38,7 +36,7 @@ public class Server {
         Spark.delete("/session", this::logout);
         Spark.get("/game", this::listGames);
         Spark.post("/game", this::createGame);
-//        Spark.put("/game", this::joinGame);
+        Spark.put("/game", this::joinGame);
         Spark.delete("/db", this::clear);
 
 //        Spark.exception(DataAccessException.class, this::exceptionHandler);
@@ -119,10 +117,31 @@ public class Server {
                 return new Gson().toJson(error);
             }
             var response = new Gson().toJson(gameList);
-//            System.out.println(response);
             res.status(200);
             return response;
         }
+
+    private Object joinGame(Request req, Response res) throws DataAccessException {
+        var gameData = new Gson().fromJson(req.body(), JoinData.class);
+        var authToken = new Gson().fromJson(req.headers("authorization"), String.class);
+        System.out.print(authToken);
+        var response = gservice.joinGame(authToken, gameData.gameID(), gameData.playerColor());
+        if (Objects.equals(response, "unauthorized")) {
+            res.status(401);
+            var error = new ErrorMessage("Error: unauthorized");
+            return new Gson().toJson(error);
+        } else if (Objects.equals(response, "does not exist")) {
+            res.status(400);
+            var error = new ErrorMessage("Error: bad request");
+            return new Gson().toJson(error);
+        } else if (Objects.equals(response, "already taken")) {
+            res.status(403);
+            var error = new ErrorMessage("Error: already taken");
+            return new Gson().toJson(error);
+        }
+        res.status(200);
+        return "";
+    }
 
     private Object clear(Request req, Response res) throws DataAccessException {
         dservice.clearDB();

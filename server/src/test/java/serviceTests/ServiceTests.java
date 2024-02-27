@@ -15,6 +15,8 @@ public class ServiceTests {
     private final UserService uservice = new UserService(data);
     private final DataService dservice = new DataService(data);
 
+    private final GameService gservice = new GameService(data);
+
 
     @BeforeEach
     void clear() throws DataAccessException {

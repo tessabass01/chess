@@ -35,10 +35,7 @@ public interface DataAccess {
         return null;
     }
 
-    //
-//    void createGame() throws DataAccessException;
-//
-//    void updateGame() throws DataAccessException;
-//
+    String updateGame(int gameID, String username, String color) throws DataAccessException;
+
     void clearDB() throws DataAccessException;
 }

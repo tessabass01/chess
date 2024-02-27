@@ -5,10 +5,10 @@ import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import model.GameData;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class GameService {
 
@@ -31,12 +31,26 @@ public class GameService {
     public HashMap<String, ArrayList<GameData>> listGames(String authToken) throws DataAccessException {
         var response = new HashMap<String, ArrayList<GameData>>();
         response.put("games", null);
-        if (!dataAccess.checkAuth(authToken)) {
-            return response;
-        } else {
+        if (dataAccess.checkAuth(authToken)) {
             var gamesList = dataAccess.listGames();
             response.put("games", gamesList);
-            return response;
+        }
+        return response;
+    }
+
+    public String joinGame(String authToken, int gameID, String color) throws DataAccessException {
+        if (dataAccess.checkAuth(authToken)) {
+            var username = dataAccess.getAuth(authToken).username();
+            var response = dataAccess.updateGame(gameID, username, color);
+            if (Objects.equals(response, "success")) {
+                return "success";
+            } else if (Objects.equals(response, "does not exist")) {
+                return "does not exist";
+            } else {
+                return "already taken";
+            }
+        } else {
+            return "unauthorized";
         }
     }
 }
