@@ -139,7 +139,7 @@ public class ServiceTests {
 
         gservice.createGame(authData.authToken(), "grover2");
         Assertions.assertEquals(2, gservice.listGames(authData.authToken()).get("games").size());
-        Assertions.assertSame("grover2", gservice.listGames(authData.authToken()).get("games").getLast().gameName());
+        Assertions.assertSame("grover2", gservice.listGames(authData.authToken()).get("games").getFirst().gameName());
     }
 
     @Test
