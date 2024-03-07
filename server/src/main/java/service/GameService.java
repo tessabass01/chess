@@ -21,8 +21,7 @@ public class GameService {
         if (!dataAccess.checkAuth(authToken)) {
             return new GameData(-1, null, null, "not logged in", null);
         } else {
-            var ID = dataAccess.genGameID();
-            dataAccess.createGame(gameName, ID);
+            var ID = dataAccess.createGame(gameName);
             return new GameData(ID, "", "", gameName, new ChessGame());
         }
     }

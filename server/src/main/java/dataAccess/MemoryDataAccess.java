@@ -74,7 +74,8 @@ public class MemoryDataAccess implements DataAccess {
         return gameID.nextInt(10000);
     }
 
-    public int createGame(String gameName, int gameID) {
+    public int createGame(String gameName) {
+        var gameID = genGameID();
         var game = new GameData(gameID, null, null, gameName, new ChessGame());
         GameDict.put(Integer.toString(gameID), game);
         return gameID;
