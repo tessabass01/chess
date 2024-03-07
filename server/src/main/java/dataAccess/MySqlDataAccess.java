@@ -18,7 +18,7 @@ import static java.sql.Types.NULL;
 
 public class MySqlDataAccess implements DataAccess {
 
-    public MySqlDataAccess() throws DataAccessException {
+    public MySqlDataAccess() throws Exception {
         configureDatabase();
     }
 
@@ -229,7 +229,7 @@ public class MySqlDataAccess implements DataAccess {
     };
 
 
-    private void configureDatabase() throws DataAccessException {
+    private void configureDatabase() throws Exception {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {

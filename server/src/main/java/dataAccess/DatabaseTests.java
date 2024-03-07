@@ -16,7 +16,7 @@ public class DatabaseTests {
 
     private final GameService gservice = new GameService(data);
 
-    public DatabaseTests() throws DataAccessException {
+    public DatabaseTests() throws Exception {
     }
 
     @BeforeEach
