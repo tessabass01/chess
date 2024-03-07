@@ -26,6 +26,7 @@ public class MySqlDataAccess implements DataAccess {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username FROM users WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
                         return readUsers(rs);
