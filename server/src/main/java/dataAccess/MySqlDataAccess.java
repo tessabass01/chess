@@ -52,14 +52,28 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public Collection<String> listUsers() {
-//        return UserDict.keySet();
         return null;
     }
 
-    public boolean isCorrectPassword(UserData user) {
-//        if (Objects.equals(UserDict.get(user.username()).password(), user.password())) {
-//            return true;
-//        } else { return false; }
+    public boolean isCorrectPassword(UserData user) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT password FROM users WHERE username=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, user.username());
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        var correctPassword = readUsers(rs);
+                        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                        String hashedPassword = encoder.encode(user.password());
+                        if (Objects.equals(correctPassword, hashedPassword)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
         return false;
     }
 
@@ -108,35 +122,51 @@ public class MySqlDataAccess implements DataAccess {
         return null;
     }
 //
-    public int authSize() {
-//        return AuthDict.size();
-        return 0;
+    public int authSize() throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT COUNT(*) AS row_count FROM auth";
+            var ps = conn.prepareStatement(statement);
+            var rs = ps.executeQuery();
+            return rs.getInt("row_count");
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
     }
 //
-    public boolean checkAuth(String authToken) {
-//        return AuthDict.containsKey(authToken);
-        return false;
+    public boolean checkAuth(String authToken) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT EXISTS (SELECT 1 FROM auth WHERE authToken=?) AS row_exists;";
+            var ps = conn.prepareStatement(statement);
+            ps.setString(1, authToken);
+            var rs = ps.executeQuery();
+            return rs.getBoolean("row_exists");
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
     }
 //
     public int genGameID() {
         var gameID = new Random();
         return gameID.nextInt(10000);
     }
-//
-    public int createGame(String gameName, int gameID) {
-//        var game = new GameData(gameID, null, null, gameName, new ChessGame());
-//        GameDict.put(Integer.toString(gameID), game);
-//        return gameID;
-        return 3;
+
+    public int createGame(String gameName, int gameID) throws DataAccessException {
+        var statement = "INSERT INTO games (gameID, gameName, game) VALUES (?, ?, ?)";
+        try {
+            executeUpdate(statement, gameID, gameName, new Gson().toJson(new ChessGame()));
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+        return gameID;
     }
-//    //
+
     public ArrayList<GameData> listGames() {
 //        var gameCollection = GameDict.values();
 //        return new ArrayList<>(gameCollection);
         return null;
 
     }
-//
+
     public String updateGame(int gameID, String username, String color) {
         return "hello";
 //        var strGameID = Integer.toString(gameID);
@@ -160,7 +190,6 @@ public class MySqlDataAccess implements DataAccess {
 //            return "does not exist";
 //        }
     }
-//
     public void clearDB() throws DataAccessException {
         var statement = "TRUNCATE users";
         executeUpdate(statement);

@@ -31,7 +31,7 @@ public class UserService {
         return dataAccess.listUsers();
     }
 
-    public int authSize() {
+    public int authSize() throws DataAccessException {
         return dataAccess.authSize();
     }
     public AuthData login(UserData user) throws DataAccessException {

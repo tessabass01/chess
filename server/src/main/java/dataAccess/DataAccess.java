@@ -22,7 +22,7 @@ public interface DataAccess {
 //
     AuthData getAuth(String authToken) throws DataAccessException;
 
-    int authSize();
+    int authSize() throws DataAccessException;
 
     int genGameID();
 
