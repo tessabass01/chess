@@ -71,7 +71,7 @@ public class MemoryDataAccess implements DataAccess {
 
     public int genGameID() {
         var gameID = new Random();
-        return gameID.nextInt(1000);
+        return gameID.nextInt(10000);
     }
 
     public int createGame(String gameName, int gameID) {

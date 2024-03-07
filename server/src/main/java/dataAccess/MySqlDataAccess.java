@@ -1,13 +1,16 @@
 package dataAccess;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
-import exception.ResponseException;
-import model.Pet;
-import model.PetType;
+//import exception.ResponseException;
+import model.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.sql.*;
+import java.util.Objects;
+import java.util.Random;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -19,72 +22,171 @@ public class MySqlDataAccess implements DataAccess {
         configureDatabase();
     }
 
-    public Pet addPet(Pet pet) throws ResponseException {
-        var statement = "INSERT INTO pet (name, type, json) VALUES (?, ?, ?)";
-        var json = new Gson().toJson(pet);
-        var id = executeUpdate(statement, pet.name(), pet.type(), json);
-        return new Pet(id, pet.name(), pet.type());
-    }
-
-    public Pet getPet(int id) throws ResponseException {
+    public String getUser(String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT id, json FROM pet WHERE id=?";
+            var statement = "SELECT username FROM users WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
-                ps.setInt(1, id);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return readPet(rs);
+                        return readUsers(rs);
                     }
                 }
             }
         } catch (Exception e) {
-            throw new ResponseException(500, String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
         return null;
     }
 
-    public Collection<Pet> listPets() throws ResponseException {
-        var result = new ArrayList<Pet>();
+
+    public void createUser(String username, String password, String email) throws DataAccessException {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(password);
+        var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+        try {
+            executeUpdate(statement, username, hashedPassword, email);
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    public Collection<String> listUsers() {
+//        return UserDict.keySet();
+        return null;
+    }
+
+    public boolean isCorrectPassword(UserData user) {
+//        if (Objects.equals(UserDict.get(user.username()).password(), user.password())) {
+//            return true;
+//        } else { return false; }
+        return false;
+    }
+
+    public String genAuth() {
+        String possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder authToken = new StringBuilder();
+        Random rnd = new Random();
+        while (authToken.length() < 18) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * possible.length());
+            authToken.append(possible.charAt(index));
+        }
+        return authToken.toString();
+    }
+
+    public String createAuth(String username) throws DataAccessException {
+        var authToken = genAuth();
+        var statement = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
+        try {
+            executeUpdate(statement, authToken, username);
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+        return authToken;
+    }
+    public void delAuth(String authToken) {
+        var statement = "DELETE FROM auth WHERE authToken=?";
+        try {
+            executeUpdate(statement, authToken);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public AuthData getAuth(String authToken) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT id, json FROM pet";
+            var statement = "SELECT authToken, username FROM auth WHERE authToken=?";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        result.add(readPet(rs));
+                    if (rs.next()) {
+                        return readAuth(rs);
                     }
                 }
             }
         } catch (Exception e) {
-            throw new ResponseException(500, String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
-        return result;
+        return null;
     }
-
-    public void deletePet(Integer id) throws ResponseException {
-        var statement = "DELETE FROM pet WHERE id=?";
-        executeUpdate(statement, id);
+//
+    public int authSize() {
+//        return AuthDict.size();
+        return 0;
     }
+//
+    public boolean checkAuth(String authToken) {
+//        return AuthDict.containsKey(authToken);
+        return false;
+    }
+//
+    public int genGameID() {
+        var gameID = new Random();
+        return gameID.nextInt(10000);
+    }
+//
+    public int createGame(String gameName, int gameID) {
+//        var game = new GameData(gameID, null, null, gameName, new ChessGame());
+//        GameDict.put(Integer.toString(gameID), game);
+//        return gameID;
+        return 3;
+    }
+//    //
+    public ArrayList<GameData> listGames() {
+//        var gameCollection = GameDict.values();
+//        return new ArrayList<>(gameCollection);
+        return null;
 
-    public void deleteAllPets() throws ResponseException {
-        var statement = "TRUNCATE pet";
+    }
+//
+    public String updateGame(int gameID, String username, String color) {
+        return "hello";
+//        var strGameID = Integer.toString(gameID);
+//        if (GameDict.containsKey(strGameID)) {
+//            var gameData = GameDict.get(strGameID);
+//            if (Objects.equals(color, "WHITE")) {
+//                if (gameData.whiteUsername() == null) {
+//                    GameDict.put(strGameID, new GameData(gameID, username, gameData.blackUsername(), gameData.gameName(), gameData.game()));
+//                } else {
+//                    return "already taken";
+//                }
+//            } else if (Objects.equals(color, "BLACK")) {
+//                if (gameData.blackUsername() == null) {
+//                    GameDict.put(strGameID, new GameData(gameID, gameData.whiteUsername(), username, gameData.gameName(), gameData.game()));
+//                } else {
+//                    return "already taken";
+//                }
+//            }
+//            return "success";
+//        } else {
+//            return "does not exist";
+//        }
+    }
+//
+    public void clearDB() throws DataAccessException {
+        var statement = "TRUNCATE users";
+        executeUpdate(statement);
+        statement = "TRUNCATE auth";
+        executeUpdate(statement);
+        statement = "TRUNCATE games";
         executeUpdate(statement);
     }
 
-    private Pet readPet(ResultSet rs) throws SQLException {
-        var id = rs.getInt("id");
-        var json = rs.getString("json");
-        var pet = new Gson().fromJson(json, Pet.class);
-        return pet.setId(id);
+    private String readUsers(ResultSet rs) throws SQLException {
+        var var = rs.getString("username");
+        return new Gson().fromJson(var, String.class);
     }
 
-    private int executeUpdate(String statement, Object... params) throws ResponseException {
+    private AuthData readAuth(ResultSet rs) throws SQLException {
+        var var = rs.getString("authToken");
+        return new Gson().fromJson(var, AuthData.class);
+    }
+
+    private int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
                     var param = params[i];
                     if (param instanceof String p) ps.setString(i + 1, p);
                     else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param instanceof PetType p) ps.setString(i + 1, p.toString());
+                    else if (param instanceof UserData p) ps.setString(i + 1, p.toString());
                     else if (param == null) ps.setNull(i + 1, NULL);
                 }
                 ps.executeUpdate();
@@ -97,26 +199,37 @@ public class MySqlDataAccess implements DataAccess {
                 return 0;
             }
         } catch (SQLException e) {
-            throw new ResponseException(500, String.format("unable to update database: %s, %s", statement, e.getMessage()));
+            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
         }
     }
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  pet (
-              `id` int NOT NULL AUTO_INCREMENT,
-              `name` varchar(256) NOT NULL,
-              `type` ENUM('CAT', 'DOG', 'FISH', 'FROG', 'ROCK') DEFAULT 'CAT',
-              `json` TEXT DEFAULT NULL,
-              PRIMARY KEY (`id`),
-              INDEX(type),
-              INDEX(name)
+            CREATE TABLE IF NOT EXISTS  users (
+              `username` varchar(256) NOT NULL,
+              `password` varchar(256) NOT NULL,
+              `email` varchar(256) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS  auth (
+              `authToken` varchar(256) NOT NULL,
+              `username` varchar(256) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS  games (
+              `gameID` int NOT NULL,
+              `whiteUsername` varchar(256) DEFAULT NULL,
+              `blackUsername` varchar(256) DEFAULT NULL,
+              `gameName` varchar(256) NOT NULL,
+              `game` TEXT DEFAULT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
 
 
-    private void configureDatabase() throws ResponseException {
+    private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
@@ -125,7 +238,7 @@ public class MySqlDataAccess implements DataAccess {
                 }
             }
         } catch (SQLException ex) {
-            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
         }
     }
 }
