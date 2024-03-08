@@ -40,13 +40,15 @@ public class MySqlDataAccess implements DataAccess {
 
 
     public void createUser(UserData user) throws DataAccessException {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String hashedPassword = encoder.encode(user.password());
-        var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
-        try {
-            executeUpdate(statement, user.username(), hashedPassword, user.email());
-        } catch (DataAccessException e) {
-            throw new DataAccessException(e.getMessage());
+        if (getUser(user.username()) == null) {
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            String hashedPassword = encoder.encode(user.password());
+            var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+            try {
+                executeUpdate(statement, user.username(), hashedPassword, user.email());
+            } catch (DataAccessException e) {
+                throw new DataAccessException(e.getMessage());
+            }
         }
     }
 
