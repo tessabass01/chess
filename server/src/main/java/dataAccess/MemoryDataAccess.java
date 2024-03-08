@@ -21,15 +21,14 @@ public class MemoryDataAccess implements DataAccess {
     }
 
 
-    public void createUser(String username, String password, String email) {
-        if (getUser(username) == null) {
-            var user = new UserData(username, password, email);
-            UserDict.put(username, user);
+    public void createUser(UserData user) {
+        if (getUser(user.username()) == null) {
+            UserDict.put(user.username(), user);
         }
     }
 
-    public Collection<String> listUsers() {
-        return UserDict.keySet();
+    public ArrayList<UserData> listUsers() {
+        return new ArrayList<UserData>(UserDict.values());
     }
 
     public boolean isCorrectPassword(UserData user) {

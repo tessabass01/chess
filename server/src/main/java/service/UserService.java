@@ -5,6 +5,7 @@ import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class UserService {
@@ -21,13 +22,13 @@ public class UserService {
         } else if (user.password() == null) {
             return new AuthData("no password", user.username());
         } else {
-            dataAccess.createUser(user.username(), user.password(), user.email());
+            dataAccess.createUser(user);
             var token = dataAccess.createAuth(user.username());
             return new AuthData(token, user.username());
         }
     }
 
-    public Collection<String> listUsers() throws DataAccessException {
+    public ArrayList<UserData> listUsers() throws DataAccessException {
         return dataAccess.listUsers();
     }
 

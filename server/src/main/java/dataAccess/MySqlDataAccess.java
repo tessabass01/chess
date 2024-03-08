@@ -40,25 +40,25 @@ public class MySqlDataAccess implements DataAccess {
     }
 
 
-    public void createUser(String username, String password, String email) throws DataAccessException {
+    public void createUser(UserData user) throws DataAccessException {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String hashedPassword = encoder.encode(password);
+        String hashedPassword = encoder.encode(user.password());
         var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
         try {
-            executeUpdate(statement, username, hashedPassword, email);
+            executeUpdate(statement, user.username(), hashedPassword, user.email());
         } catch (DataAccessException e) {
             throw new DataAccessException(e.getMessage());
         }
     }
 
-    public Collection<String> listUsers() throws DataAccessException {
+    public ArrayList<UserData> listUsers() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT * FROM users";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
-                    var users = new ArrayList<String>();
+                    var users = new ArrayList<UserData>();
                     if (rs.next()) {
-                        var user = readUsers(rs).username();
+                        var user = readUsers(rs);
                         users.add(user);
                     }
                     return users;
