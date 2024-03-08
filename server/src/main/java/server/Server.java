@@ -8,6 +8,7 @@ import spark.*;
 import dataAccess.DataAccessException;
 import service.*;
 
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -119,7 +120,7 @@ public class Server {
             return response;
         }
 
-    private Object joinGame(Request req, Response res) throws DataAccessException {
+    private Object joinGame(Request req, Response res) throws DataAccessException, SQLException {
         var gameData = new Gson().fromJson(req.body(), JoinData.class);
         var authToken = req.headers("authorization");
         var response = gservice.joinGame(authToken, gameData.gameID(), gameData.playerColor());

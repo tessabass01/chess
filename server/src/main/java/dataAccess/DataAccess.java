@@ -3,6 +3,7 @@ package dataAccess;
 import model.*;
 
 import java.lang.reflect.Array;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,7 +34,7 @@ public interface DataAccess {
         return null;
     }
 
-    String updateGame(int gameID, String username, String color) throws DataAccessException;
+    String updateGame(int gameID, String username, String color) throws DataAccessException, SQLException;
 
     void clearDB() throws DataAccessException;
 }

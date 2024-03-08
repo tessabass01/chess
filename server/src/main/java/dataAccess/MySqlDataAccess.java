@@ -51,8 +51,22 @@ public class MySqlDataAccess implements DataAccess {
         }
     }
 
-    public Collection<String> listUsers() {
-        return null;
+    public Collection<String> listUsers() throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM users";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    var users = new ArrayList<String>();
+                    if (rs.next()) {
+                        var user = readUsers(rs).username();
+                        users.add(user);
+                    }
+                    return users;
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
     }
 
     public boolean isCorrectPassword(UserData user) throws DataAccessException {
@@ -153,6 +167,23 @@ public class MySqlDataAccess implements DataAccess {
         return false;
     }
 
+    public GameData getGame(int gameID) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM games WHERE gameID=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameID);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readGame(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return null;
+    }
+
     public int createGame(String gameName) throws DataAccessException {
         var statement = "INSERT INTO games (gameName, game) VALUES (?, ?)";
         try {
@@ -180,28 +211,38 @@ public class MySqlDataAccess implements DataAccess {
         }
     }
 
-    public String updateGame(int gameID, String username, String color) {
-        return "hello";
-//        var strGameID = Integer.toString(gameID);
-//        if (GameDict.containsKey(strGameID)) {
-//            var gameData = GameDict.get(strGameID);
-//            if (Objects.equals(color, "WHITE")) {
-//                if (gameData.whiteUsername() == null) {
-//                    GameDict.put(strGameID, new GameData(gameID, username, gameData.blackUsername(), gameData.gameName(), gameData.game()));
-//                } else {
-//                    return "already taken";
-//                }
-//            } else if (Objects.equals(color, "BLACK")) {
-//                if (gameData.blackUsername() == null) {
-//                    GameDict.put(strGameID, new GameData(gameID, gameData.whiteUsername(), username, gameData.gameName(), gameData.game()));
-//                } else {
-//                    return "already taken";
-//                }
-//            }
-//            return "success";
-//        } else {
-//            return "does not exist";
-//        }
+    public String updateGame(int gameID, String username, String color) throws DataAccessException, SQLException {
+        var game = getGame(gameID);
+        if (game != null) {
+            if (Objects.equals(color, "WHITE")) {
+                if (game.whiteUsername() == null) {
+                    var statement = "UPDATE games SET whiteUsername=? WHERE gameID=?;";
+                    try {
+                        executeUpdate(statement, username, gameID);
+                        return "success";
+                    } catch (Exception e) {
+                        throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+                    }
+                } else {
+                    return "already taken";
+                }
+            } else if (Objects.equals(color, "BLACK")) {
+                if (game.blackUsername() == null) {
+                    var statement = "UPDATE games SET blackUsername=? WHERE gameID=?;";
+                    try {
+                        executeUpdate(statement, username, gameID);
+                        return "success";
+                    } catch (Exception e) {
+                        throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+                    }
+                } else {
+                    return "already taken";
+                }
+            }
+            return "success";
+        } else {
+            return "does not exist";
+        }
     }
     public void clearDB() throws DataAccessException {
         var statement = "TRUNCATE users";

@@ -5,6 +5,7 @@ import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import model.GameData;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -36,7 +37,7 @@ public class GameService {
         return response;
     }
 
-    public String joinGame(String authToken, int gameID, String color) throws DataAccessException {
+    public String joinGame(String authToken, int gameID, String color) throws DataAccessException, SQLException {
         if (dataAccess.checkAuth(authToken)) {
             var username = dataAccess.getAuth(authToken).username();
             var response = dataAccess.updateGame(gameID, username, color);

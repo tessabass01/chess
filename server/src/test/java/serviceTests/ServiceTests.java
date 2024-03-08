@@ -2,6 +2,7 @@ package serviceTests;
 
 import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess;
+import dataAccess.MySqlDataAccess;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,12 +10,17 @@ import org.junit.jupiter.api.Test;
 import model.*;
 import service.*;
 
+import java.sql.SQLException;
+
 public class ServiceTests {
-    private final MemoryDataAccess data = new MemoryDataAccess();
+    private final MySqlDataAccess data = new MySqlDataAccess();
     private final UserService uservice = new UserService(data);
     private final DataService dservice = new DataService(data);
 
     private final GameService gservice = new GameService(data);
+
+    public ServiceTests() throws Exception {
+    }
 
 
     @BeforeEach
@@ -151,7 +157,7 @@ public class ServiceTests {
 
     @Test
     @DisplayName("positive joinGame test")
-    void joinGame() throws DataAccessException {
+    void joinGame() throws DataAccessException, SQLException {
 
         // first player
         var user = new UserData("hello", "goodbye", "hello@goodbye.com");
@@ -175,7 +181,7 @@ public class ServiceTests {
 
     @Test
     @DisplayName("negative joinGame test")
-    void joinGameWrongColor() throws DataAccessException {
+    void joinGameWrongColor() throws DataAccessException, SQLException {
         // first player
         var user = new UserData("hello", "goodbye", "hello@goodbye.com");
         var authData = uservice.registerUser(user);
