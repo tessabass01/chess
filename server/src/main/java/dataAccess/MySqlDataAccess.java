@@ -18,7 +18,6 @@ public class MySqlDataAccess implements DataAccess {
 
     public MySqlDataAccess() throws Exception {
         configureDatabase();
-
     }
 
     public String getUser(String username) throws DataAccessException {

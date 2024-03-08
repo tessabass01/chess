@@ -1,16 +1,13 @@
 package server;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import dataAccess.DataAccess;
-import dataAccess.MySqlDataAccess;
+import dataAccess.MemoryDataAccess;
 import model.*;
 import spark.*;
 import dataAccess.DataAccessException;
 import service.*;
-
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.Objects;
 
 
@@ -19,8 +16,8 @@ public class Server {
     private final DataService dservice;
     private final GameService gservice;
 
-    public Server() throws Exception {
-        DataAccess dataAccess = new MySqlDataAccess();
+    public Server() {
+        DataAccess dataAccess = new MemoryDataAccess();
         uservice = new UserService(dataAccess);
         dservice = new DataService(dataAccess);
         gservice = new GameService(dataAccess);
