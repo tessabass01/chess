@@ -34,7 +34,7 @@ public class PersistenceTests {
     }
 
     public static void startServer() throws Exception{
-        server = new Server(new MySqlDataAccess());
+        server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
 
