@@ -6,7 +6,6 @@ import model.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.sql.*;
 import java.util.Objects;
 import java.util.Random;
@@ -57,7 +56,7 @@ public class MySqlDataAccess implements DataAccess {
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     var users = new ArrayList<UserData>();
-                    if (rs.next()) {
+                    while (rs.next()) {
                         var user = readUsers(rs);
                         users.add(user);
                     }
@@ -149,7 +148,7 @@ public class MySqlDataAccess implements DataAccess {
         }
         return 0;
     }
-//
+
     public boolean checkAuth(String authToken) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT EXISTS (SELECT 1 FROM auth WHERE authToken=?) AS row_exists;";
@@ -199,7 +198,7 @@ public class MySqlDataAccess implements DataAccess {
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     var games = new ArrayList<GameData>();
-                    if (rs.next()) {
+                    while (rs.next()) {
                         var game = readGame(rs);
                         games.add(game);
                     }

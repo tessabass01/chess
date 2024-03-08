@@ -4,6 +4,8 @@ import dataAccess.DataAccessException;
 import dataAccess.MySqlDataAccess;
 import model.UserData;
 import org.junit.jupiter.api.*;
+
+import java.sql.SQLException;
 import java.util.Objects;
 
 public class DatabaseTests {
@@ -89,14 +91,36 @@ public class DatabaseTests {
         var hacker = new UserData("username", "wrong password", "email");
         Assertions.assertFalse(data.isCorrectPassword(hacker));
     }
+    @Test
+    @DisplayName("positive getAuth test")
+    void existingAuth() throws DataAccessException{
+        var auth = data.createAuth("username");
+        Assertions.assertNotNull(data.getAuth(auth));
+    }
 
-//    void delAuth(String authToken) throws DataAccessException;
+    @Test
+    @DisplayName("negative getAuth test")
+    void nonexistentAuth() throws DataAccessException {
+        var auth = data.createAuth("username");
+        var falseAuth = "this is a fake token";
+        Assertions.assertNull(data.getAuth(falseAuth));
+        Assertions.assertNotNull(data.getAuth(auth));
+    }
 
-//    AuthData getAuth(String authToken) throws DataAccessException;
+    @Test
+    @DisplayName("positive checkAuth test")
+    void checkAuth() throws DataAccessException {
+        var auth = data.createAuth("username");
+        Assertions.assertTrue(data.checkAuth(auth));
+    }
 
-//    int authSize() throws DataAccessException;
-
-//    boolean checkAuth(String authToken) throws DataAccessException;
+    @Test
+    @DisplayName("negative checkAuth test")
+    void falseAuth() throws DataAccessException {
+        var auth = data.createAuth("username");
+        var falseAuth = "this is a fake token";
+        Assertions.assertFalse(data.checkAuth(falseAuth));
+    }
 
     @Test
     @DisplayName("positive createGame test")
@@ -106,13 +130,64 @@ public class DatabaseTests {
         Assertions.assertSame(games.getFirst().gameID(), gameID);
     }
 
-//    default ArrayList<GameData> listGames() throws DataAccessException {
-//        return null;
-//    }
+    @Test
+    @DisplayName("negative createGame test")
+    void createGameSameName() throws DataAccessException {
+        var gameID = data.createGame("monkeypie");
+        var gameID2 = data.createGame("monkeypie");
+        var games = data.listGames();
+        Assertions.assertSame(games.getFirst().gameID(), gameID);
+        Assertions.assertFalse(games.size() == 1);
+        Assertions.assertNotSame(gameID, gameID2);
+    }
+
+    @Test
+    @DisplayName("positive listGames test")
+    void listGames() throws DataAccessException {
+        var gameID = data.createGame("monkeypie");
+        var gameID2 = data.createGame("donkeypie");
+        var games = data.listGames();
+        Assertions.assertEquals(2, games.size());
+        Assertions.assertSame(games.getFirst().gameID(), gameID);
+        Assertions.assertSame(games.getLast().gameID(), gameID2);
+        Assertions.assertNotSame(gameID, gameID2);
+    }
+
+    @Test
+    @DisplayName("negative listGames test")
+    void listGamesSameName() throws DataAccessException {
+        var gameID = data.createGame("monkeypie");
+        var gameID2 = data.createGame("monkeypie");
+        var games = data.listGames();
+        Assertions.assertEquals(2, games.size());
+        Assertions.assertNotSame(data.getGame(gameID), data.getGame(gameID2));
+    }
 
 //    String updateGame(int gameID, String username, String color) throws DataAccessException, SQLException;
 
-//    void clearDB() throws DataAccessException;
+    @Test
+    @DisplayName("positive updateGame test")
+    void updateGame() throws DataAccessException, SQLException {
+        var gameID = data.createGame("monkeypie");
+        var message = data.updateGame(gameID, "user1", "WHITE");
+        Assertions.assertSame("success", message);
 
+        var message2 = data.updateGame(gameID, "user2", "BLACK");
+        Assertions.assertSame("success", message2);
+
+        var message3 = data.updateGame(gameID, "user3", null);
+        Assertions.assertSame("success", message3);
+    }
+
+    @Test
+    @DisplayName("negative updateGame test")
+    void updateGameWrongColor() throws DataAccessException, SQLException {
+        var gameID = data.createGame("monkeypie");
+        var message = data.updateGame(gameID, "user1", "WHITE");
+        Assertions.assertSame("success", message);
+
+        var message2 = data.updateGame(gameID, "user2", "WHITE");
+        Assertions.assertSame("already taken", message2);
+    }
 
 }
