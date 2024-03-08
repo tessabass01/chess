@@ -9,6 +9,7 @@ public class MemoryDataAccess implements DataAccess {
     private final HashMap<String, UserData> UserDict = new HashMap<String, UserData>();
     private final HashMap<String, AuthData> AuthDict = new HashMap<String, AuthData>();
     private final HashMap<String, GameData> GameDict = new HashMap<String, GameData>();
+    private int ID = 0;
 
 
 
@@ -69,8 +70,8 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     public int genGameID() {
-        var gameID = new Random();
-        return gameID.nextInt(10000);
+        this.ID += 1;
+        return this.ID;
     }
 
     public int createGame(String gameName) {
@@ -83,6 +84,11 @@ public class MemoryDataAccess implements DataAccess {
     public ArrayList<GameData> listGames() {
         var gameCollection = GameDict.values();
         return new ArrayList<>(gameCollection);
+    }
+
+    public GameData getGame(int gameID) {
+        var strID = Integer.toString(gameID);
+        return GameDict.getOrDefault(strID, null);
     }
 
      public String updateGame(int gameID, String username, String color) {

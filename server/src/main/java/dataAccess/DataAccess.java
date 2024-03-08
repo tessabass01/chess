@@ -33,6 +33,8 @@ public interface DataAccess {
         return null;
     }
 
+    GameData getGame(int gameID) throws DataAccessException;
+
     String updateGame(int gameID, String username, String color) throws DataAccessException, SQLException; //
 
     void clearDB() throws DataAccessException; //

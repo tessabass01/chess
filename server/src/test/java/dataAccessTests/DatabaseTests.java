@@ -1,51 +1,71 @@
 package dataAccessTests;
 
-import dataAccess.DataAccessException;
+import dataAccess.DataAccess;
+import dataAccess.MemoryDataAccess;
 import dataAccess.MySqlDataAccess;
 import model.UserData;
 import org.junit.jupiter.api.*;
-
-import java.sql.SQLException;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import java.util.Objects;
 
 public class DatabaseTests {
 
-    private final MySqlDataAccess data = new MySqlDataAccess();
+    private DataAccess getDataAccess(Class<? extends DataAccess> databaseClass) throws Exception {
+        DataAccess db;
+        if (databaseClass.equals(MySqlDataAccess.class)) {
+            db = new MySqlDataAccess();
+        } else {
+            db = new MemoryDataAccess();
+        }
+        db.clearDB();
+        return db;
+    }
 
     public DatabaseTests() throws Exception {
     }
 
-    @BeforeEach
+    @ParameterizedTest
     @DisplayName("positive clear test")
-    void clear() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void clear(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         data.clearDB();
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("positive getUser test")
-    void getUser() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void getUser(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var user = new UserData("username", "password", "email");
         data.createUser(user);
         Assertions.assertNotNull(data.getUser("username"));
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("negative getUser test")
-    void getNonexistentUser() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void getNonexistentUser(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         Assertions.assertNull(data.getUser("username"));
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("positive createUser test")
-    void createUser() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void createUser(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var user = new UserData("username", "password", "email");
         data.createUser(user);
         Assertions.assertNotNull(data.getUser("username"));
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("negative createUser test")
-    void createExistingUser() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void createExistingUser(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var user = new UserData("username", "password", "email");
         data.createUser(user);
         data.createUser(user);
@@ -54,18 +74,22 @@ public class DatabaseTests {
         Assertions.assertTrue(Objects.equals(users.getFirst().username(), "username"));
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("positive listUsers test")
-    void listUsers() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void listUsers(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var user = new UserData("username", "password", "email");
         data.createUser(user);
         var users = data.listUsers();
         Assertions.assertEquals(1, users.size());
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("negative listUsers test")
-    void listUsersFalseAdd() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void listUsersFalseAdd(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var user = new UserData("username", "password", "email");
         data.createUser(user);
         data.createUser(user);
@@ -74,65 +98,81 @@ public class DatabaseTests {
         Assertions.assertTrue(Objects.equals(users.getFirst().username(), "username"));
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("positive isCorrectPassword test")
-    void isCorrectPassword() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void isCorrectPassword(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var user = new UserData("username", "password", "email");
         data.createUser(user);
         var user2 = new UserData("username", "password", "email");
         Assertions.assertTrue(data.isCorrectPassword(user2));
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("negative isCorrectPassword test")
-    void incorrectPassword() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void incorrectPassword(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var user = new UserData("username", "password", "email");
         data.createUser(user);
         var hacker = new UserData("username", "wrong password", "email");
         Assertions.assertFalse(data.isCorrectPassword(hacker));
     }
-    @Test
+    @ParameterizedTest
     @DisplayName("positive getAuth test")
-    void existingAuth() throws DataAccessException{
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void existingAuth(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var auth = data.createAuth("username");
         Assertions.assertNotNull(data.getAuth(auth));
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("negative getAuth test")
-    void nonexistentAuth() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void nonexistentAuth(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var auth = data.createAuth("username");
         var falseAuth = "this is a fake token";
         Assertions.assertNull(data.getAuth(falseAuth));
         Assertions.assertNotNull(data.getAuth(auth));
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("positive checkAuth test")
-    void checkAuth() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void checkAuth(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var auth = data.createAuth("username");
         Assertions.assertTrue(data.checkAuth(auth));
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("negative checkAuth test")
-    void falseAuth() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void falseAuth(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var auth = data.createAuth("username");
         var falseAuth = "this is a fake token";
         Assertions.assertFalse(data.checkAuth(falseAuth));
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("positive createGame test")
-    void createGame() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void createGame(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var gameID = data.createGame("monkeypie");
         var games = data.listGames();
         Assertions.assertSame(games.getFirst().gameID(), gameID);
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("negative createGame test")
-    void createGameSameName() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void createGameSameName(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var gameID = data.createGame("monkeypie");
         var gameID2 = data.createGame("monkeypie");
         var games = data.listGames();
@@ -141,9 +181,11 @@ public class DatabaseTests {
         Assertions.assertNotSame(gameID, gameID2);
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("positive listGames test")
-    void listGames() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void listGames(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var gameID = data.createGame("monkeypie");
         var gameID2 = data.createGame("donkeypie");
         var games = data.listGames();
@@ -153,9 +195,11 @@ public class DatabaseTests {
         Assertions.assertNotSame(gameID, gameID2);
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("negative listGames test")
-    void listGamesSameName() throws DataAccessException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void listGamesSameName(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var gameID = data.createGame("monkeypie");
         var gameID2 = data.createGame("monkeypie");
         var games = data.listGames();
@@ -163,11 +207,11 @@ public class DatabaseTests {
         Assertions.assertNotSame(data.getGame(gameID), data.getGame(gameID2));
     }
 
-//    String updateGame(int gameID, String username, String color) throws DataAccessException, SQLException;
-
-    @Test
+    @ParameterizedTest
     @DisplayName("positive updateGame test")
-    void updateGame() throws DataAccessException, SQLException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void updateGame(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var gameID = data.createGame("monkeypie");
         var message = data.updateGame(gameID, "user1", "WHITE");
         Assertions.assertSame("success", message);
@@ -179,9 +223,11 @@ public class DatabaseTests {
         Assertions.assertSame("success", message3);
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("negative updateGame test")
-    void updateGameWrongColor() throws DataAccessException, SQLException {
+    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
+    void updateGameWrongColor(Class<? extends DataAccess> dbClass) throws Exception {
+        DataAccess data = getDataAccess(dbClass);
         var gameID = data.createGame("monkeypie");
         var message = data.updateGame(gameID, "user1", "WHITE");
         Assertions.assertSame("success", message);
