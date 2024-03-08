@@ -2,7 +2,6 @@ package dataAccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-//import exception.ResponseException;
 import model.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -214,10 +213,13 @@ public class MySqlDataAccess implements DataAccess {
         return new Gson().fromJson(var, AuthData.class);
     }
     private GameData readGame(ResultSet rs) throws SQLException {
-        var var = rs.getString("game");
         var gameID = rs.getInt("gameID");
-        var v = new Gson().fromJson(var, GameData.class);
-        return new GameData(gameID, v.whiteUsername(), v.blackUsername(), v.gameName(), v.game());
+        var whiteUsername = rs.getString("whiteUsername");
+        var blackUsername = rs.getString("blackUsername");
+        var gameName = rs.getString("gameName");
+        var v = rs.getString("game");
+        var game = new Gson().fromJson(v, ChessGame.class);
+        return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
