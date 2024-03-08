@@ -51,7 +51,7 @@ public class ServiceTests {
         uservice.registerUser(user);
         var users = uservice.listUsers();
         Assertions.assertFalse(users.isEmpty());
-        Assertions.assertTrue(users.contains(username));
+        Assertions.assertNotNull(data.getUser(username));
     }
 
     @Test
@@ -64,7 +64,7 @@ public class ServiceTests {
         uservice.registerUser(user2);
         var users = uservice.listUsers();
         Assertions.assertTrue(users.size() < 2);
-        Assertions.assertTrue(users.contains(username));
+        Assertions.assertNotNull(data.getUser(username));
     }
 
     @Test
@@ -141,11 +141,11 @@ public class ServiceTests {
         var authData = uservice.registerUser(user);
         gservice.createGame(authData.authToken(), "grover");
         Assertions.assertNotNull(gservice.listGames(authData.authToken()).get("games"));
-        Assertions.assertSame("grover", gservice.listGames(authData.authToken()).get("games").getFirst().gameName());
+        Assertions.assertEquals("grover", gservice.listGames(authData.authToken()).get("games").getFirst().gameName());
 
         gservice.createGame(authData.authToken(), "grover2");
         Assertions.assertEquals(2, gservice.listGames(authData.authToken()).get("games").size());
-        Assertions.assertSame("grover2", gservice.listGames(authData.authToken()).get("games").getFirst().gameName());
+        Assertions.assertEquals("grover2", gservice.listGames(authData.authToken()).get("games").getLast().gameName());
     }
 
     @Test
@@ -164,13 +164,13 @@ public class ServiceTests {
         var authData = uservice.registerUser(user);
         var gameData = gservice.createGame(authData.authToken(), "grover");
         gservice.joinGame(authData.authToken(), gameData.gameID(), "WHITE");
-        Assertions.assertSame(user.username(), gservice.listGames(authData.authToken()).get("games").getFirst().whiteUsername());
+        Assertions.assertEquals(user.username(), gservice.listGames(authData.authToken()).get("games").getFirst().whiteUsername());
 
         // second player
         var user2 = new UserData("hola", "goodbye", "hello@goodbye.com");
         var authData2 = uservice.registerUser(user2);
         gservice.joinGame(authData2.authToken(), gameData.gameID(), "BLACK");
-        Assertions.assertSame(user2.username(), gservice.listGames(authData2.authToken()).get("games").getFirst().blackUsername());
+        Assertions.assertEquals(user2.username(), gservice.listGames(authData2.authToken()).get("games").getFirst().blackUsername());
 
         // observer
         var user3 = new UserData("hallo", "goodbye", "hello@goodbye.com");
