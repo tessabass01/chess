@@ -319,7 +319,7 @@ public class MySqlDataAccess implements DataAccess {
               `gameID` int NOT NULL AUTO_INCREMENT,
               `whiteUsername` varchar(256) DEFAULT NULL,
               `blackUsername` varchar(256) DEFAULT NULL,
-              `gameName` varchar(256) NOT NULL,
+              `gameName` varchar(256) DEFAULT NULL,
               `game` TEXT DEFAULT NULL,
               PRIMARY KEY (`gameID`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

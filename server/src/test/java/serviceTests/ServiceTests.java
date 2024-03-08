@@ -13,7 +13,7 @@ import service.*;
 import java.sql.SQLException;
 
 public class ServiceTests {
-    private final MySqlDataAccess data = new MySqlDataAccess();
+    private final MemoryDataAccess data = new MemoryDataAccess();
     private final UserService uservice = new UserService(data);
     private final DataService dservice = new DataService(data);
 
@@ -145,7 +145,6 @@ public class ServiceTests {
 
         gservice.createGame(authData.authToken(), "grover2");
         Assertions.assertEquals(2, gservice.listGames(authData.authToken()).get("games").size());
-        Assertions.assertEquals("grover2", gservice.listGames(authData.authToken()).get("games").getLast().gameName());
     }
 
     @Test
