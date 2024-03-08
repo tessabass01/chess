@@ -19,16 +19,17 @@ public class MySqlDataAccess implements DataAccess {
 
     public MySqlDataAccess() throws Exception {
         configureDatabase();
+
     }
 
     public String getUser(String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username FROM users WHERE username=?";
+            var statement = "SELECT * FROM users WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return readUsers(rs);
+                        return readUsers(rs).username();
                     }
                 }
             }
@@ -56,17 +57,14 @@ public class MySqlDataAccess implements DataAccess {
 
     public boolean isCorrectPassword(UserData user) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT password FROM users WHERE username=?";
+            var statement = "SELECT * FROM users WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, user.username());
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        var correctPassword = readUsers(rs);
+                        var correctPassword = readUsers(rs).password();
                         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-                        String hashedPassword = encoder.encode(user.password());
-                        if (Objects.equals(correctPassword, hashedPassword)) {
-                            return true;
-                        }
+                        return encoder.matches(user.password(), correctPassword);
                     }
                 }
             }
@@ -107,8 +105,9 @@ public class MySqlDataAccess implements DataAccess {
     }
     public AuthData getAuth(String authToken) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT authToken, username FROM auth WHERE authToken=?";
+            var statement = "SELECT * FROM auth WHERE authToken=?";
             try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
                         return readAuth(rs);
@@ -124,24 +123,34 @@ public class MySqlDataAccess implements DataAccess {
     public int authSize() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT COUNT(*) AS row_count FROM auth";
-            var ps = conn.prepareStatement(statement);
-            var rs = ps.executeQuery();
-            return rs.getInt("row_count");
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt("row_count");
+                    }
+                }
+            }
         } catch (Exception e) {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
+        return 0;
     }
 //
     public boolean checkAuth(String authToken) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT EXISTS (SELECT 1 FROM auth WHERE authToken=?) AS row_exists;";
-            var ps = conn.prepareStatement(statement);
-            ps.setString(1, authToken);
-            var rs = ps.executeQuery();
-            return rs.getBoolean("row_exists");
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getBoolean("row_exists");
+                    }
+                }
+            }
         } catch (Exception e) {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
+        return false;
     }
 
     public int createGame(String gameName) throws DataAccessException {
@@ -203,14 +212,17 @@ public class MySqlDataAccess implements DataAccess {
         executeUpdate(statement);
     }
 
-    private String readUsers(ResultSet rs) throws SQLException {
-        var var = rs.getString("username");
-        return new Gson().fromJson(var, String.class);
+    private UserData readUsers(ResultSet rs) throws SQLException {
+        var username = rs.getString("username");
+        var password = rs.getString("password");
+        var email = rs.getString("email");
+        return new UserData(username, password, email);
     }
 
     private AuthData readAuth(ResultSet rs) throws SQLException {
-        var var = rs.getString("authToken");
-        return new Gson().fromJson(var, AuthData.class);
+        var authToken = rs.getString("authToken");
+        var username = rs.getString("username");
+        return new AuthData(authToken, username);
     }
     private GameData readGame(ResultSet rs) throws SQLException {
         var gameID = rs.getInt("gameID");
