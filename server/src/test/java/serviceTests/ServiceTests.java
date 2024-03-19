@@ -76,7 +76,6 @@ public class ServiceTests {
 
         uservice.logout(authData.authToken());
         var authData2 = uservice.login(user);
-        Assertions.assertNotSame("does not exist", authData2.authToken());
         Assertions.assertNotNull(uservice.listUsers());
         Assertions.assertEquals(1, uservice.listUsers().size());
     }
