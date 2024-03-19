@@ -8,11 +8,11 @@ import java.io.*;
 import java.net.*;
 
 public class ServerFacade {
+    private final int port;
 
-    private final String serverUrl;
 
-    public ServerFacade(String url) {
-        serverUrl = url;
+    public ServerFacade(int port) {
+        this.port = port;
     }
 
 
@@ -41,7 +41,7 @@ public class ServerFacade {
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
-            URL url = (new URI(serverUrl + path)).toURL();
+            URL url = (new URI(port + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);

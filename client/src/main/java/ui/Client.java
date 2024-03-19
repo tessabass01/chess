@@ -7,14 +7,12 @@ import server.ServerFacade;
 import java.util.Arrays;
 
 public class Client {
-    private ServerFacade serverFacade;
-    private final String serverUrl;
-    private String currentUser;
+    private final ServerFacade serverFacade;
+    private final String currentUser;
     private State state;
 
-    public Client(String serverUrl) {
-        this.serverUrl = serverUrl;
-        ServerFacade serverFacade = new ServerFacade(serverUrl);
+    public Client(int port) {
+        serverFacade = new ServerFacade(port);
         currentUser = null;
         state = State.SIGNEDOUT;
     }
