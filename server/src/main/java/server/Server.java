@@ -70,8 +70,8 @@ public class Server {
 
     private Object login(Request req, Response res) throws DataAccessException {
         UserData user = new Gson().fromJson(req.body(), UserData.class);
-        var authData = uservice.login(user);
-        var response = new Gson().toJson(authData);
+        var authToken = uservice.login(user);
+        var response = new Gson().toJson(authToken);
         if (response.contains("does not exist") || response.contains("wrong password")) {
             res.status(401);
             var error = new ErrorMessage("Error: unauthorized");
@@ -85,7 +85,7 @@ public class Server {
     private Object logout(Request req, Response res) throws DataAccessException {
         String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
         var response = uservice.logout(authToken);
-        if (response == "unauthorized") {
+        if (Objects.equals(response, "unauthorized")) {
             res.status(401);
             var error = new ErrorMessage("Error: unauthorized");
             return new Gson().toJson(error);

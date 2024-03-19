@@ -35,14 +35,13 @@ public class UserService {
     public int authSize() throws DataAccessException {
         return dataAccess.authSize();
     }
-    public AuthData login(UserData user) throws DataAccessException {
+    public String login(UserData user) throws DataAccessException {
         if (dataAccess.getUser(user.username()) == null) {
-            return new AuthData("does not exist", user.username());
+            return "does not exist";
         } else if (!dataAccess.isCorrectPassword(user)) {
-            return new AuthData("wrong password", user.username());
+            return "wrong password";
         } else {
-            var token = dataAccess.createAuth(user.username());
-            return new AuthData(token, user.username());
+            return dataAccess.createAuth(user.username());
         }
     }
     public String logout(String authToken) throws DataAccessException {
