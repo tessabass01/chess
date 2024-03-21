@@ -42,13 +42,13 @@ public class ServerFacade {
 //        this.makeRequest("DELETE", path, null, null);
 //    }
 
-//    public Pet[] listPets() throws ResponseException {
-//        var path = "/pet";
-//        record listPetResponse(Pet[] pet) {
-//        }
-//        var response = this.makeRequest("GET", path, null, listPetResponse.class);
-//        return response.pet();
-//    }
+    public GameData[] listGames(String authToken) throws ResponseException {
+        var path = "/game";
+        record listGameResponse(GameData[] games) {
+        }
+        var response = this.makeRequest("GET", path, null, listGameResponse.class, authToken);
+        return response.games();
+    }
 
         public void clearDB() throws ResponseException {
         var path = "/db";

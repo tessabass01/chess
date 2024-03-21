@@ -33,7 +33,7 @@ public class Client {
                 case "register" -> register(params);
                 case "clear" -> clearDB();
                 case "create-game" -> createGame(params);
-//                case "list" -> listGames();
+                case "list" -> listGames();
                 case "logout" -> logout();
                 case "quit" -> "quit";
                 default -> help();
@@ -83,6 +83,11 @@ public class Client {
             return String.format("You have created a new game called %s. The game ID is %s, invite a friend!", gameName, gameID);
         }
         throw new ResponseException(400, "Expected: create-game <game name>");
+    }
+
+    public String listGames() throws ResponseException {
+        var games = serverFacade.listGames(currentAuth);
+        return Arrays.toString(games);
     }
 
 
