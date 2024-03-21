@@ -5,7 +5,10 @@ import model.UserData;
 import server.ServerFacade;
 
 import java.util.Arrays;
+import java.util.Objects;
 
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
 import static java.lang.String.join;
 
 public class Client {
@@ -33,6 +36,8 @@ public class Client {
                 case "register" -> register(params);
                 case "clear" -> clearDB();
                 case "create-game" -> createGame(params);
+                case "join-game" -> joinGame(params);
+                case "join-observer" -> joinGame(params);
                 case "list" -> listGames();
                 case "logout" -> logout();
                 case "quit" -> "quit";
@@ -77,6 +82,7 @@ public class Client {
         }
 
     public String createGame(String... params) throws ResponseException {
+        assertSignedIn();
         if (params.length >= 1) {
             var gameName = join("-", params);
             var gameID = serverFacade.createGame(gameName, currentAuth);
@@ -86,12 +92,35 @@ public class Client {
     }
 
     public String listGames() throws ResponseException {
+        assertSignedIn();
         var games = serverFacade.listGames(currentAuth);
         return Arrays.toString(games);
     }
 
 
-
+    public String joinGame(String... params) throws ResponseException {
+        assertSignedIn();
+        if (params.length == 1) {
+            try {
+                serverFacade.joinObserver(params[0], currentAuth);
+                return "Enjoy the show!";
+            } catch (NumberFormatException e) {
+                throw new ResponseException(400, "Expected: join-observer <game ID>\n" +
+                                                        "\t\t\t\tor\n\t\t" +
+                                                            "join-game <game ID> <WHITE|BLACK>");
+            }
+        } else {
+            if (Objects.equals(params[1], "white")) {
+                serverFacade.joinGame(params[0], "WHITE", currentAuth);
+                return "Go get 'em, WHITE!";
+            } else  if (Objects.equals(params[1], "black")) {
+                serverFacade.joinGame(params[0], "BLACK", currentAuth);
+                return "You got this, BLACK!";
+            } else {
+                throw new ResponseException(400, "Expected: join-game <game ID> <WHITE|BLACK>");
+            }
+        }
+    }
     public String help() {
         if (state == State.SIGNEDOUT) {
             return """
@@ -113,7 +142,7 @@ public class Client {
 
     private void assertSignedIn() throws ResponseException {
         if (state == State.SIGNEDOUT) {
-            throw new ResponseException(400, "You must sign in");
+            throw new ResponseException(400, "You must login");
         }
     }
 }

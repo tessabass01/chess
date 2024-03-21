@@ -37,10 +37,17 @@ public class ServerFacade {
         return this.makeRequest("POST", path, gameName, String.class, authToken);
     };
 
-//    public void deleteAllPets() throws ResponseException {
-//        var path = "/pet";
-//        this.makeRequest("DELETE", path, null, null);
-//    }
+    public String joinObserver(String gameID, String authToken) throws ResponseException {
+        var path = "/game";
+        var req = new JoinData(Integer.parseInt(gameID), null);
+        return this.makeRequest("PUT", path, req, String.class, authToken);
+    }
+
+    public String joinGame(String gameID, String color, String authToken) throws ResponseException {
+        var path = "/game";
+        var req = new JoinData(Integer.parseInt(gameID), color);
+        return this.makeRequest("PUT", path, req, String.class, authToken);
+    }
 
     public GameData[] listGames(String authToken) throws ResponseException {
         var path = "/game";
