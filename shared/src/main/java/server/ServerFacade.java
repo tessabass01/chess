@@ -6,18 +6,27 @@ import model.*;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class ServerFacade {
     private String url;
+    public ArrayList<UserData> users;
+    public ArrayList<String> usernames;
 
 
     public ServerFacade(String url) {
         this.url = url;
+        users = new ArrayList<>();
+        usernames = new ArrayList<>();
     }
 
 
     public String addUser(UserData user) throws ResponseException {
+         if (!usernames.contains(user.username())) {
+            users.add(user);
+            usernames.add(user.username());
+        }
         var path = "/user";
         return this.makeRequest("POST", path, user, String.class,null);
     }
@@ -58,8 +67,14 @@ public class ServerFacade {
     }
 
         public void clearDB() throws ResponseException {
+        users.clear();
+        usernames.clear();
         var path = "/db";
         this.makeRequest("DELETE", path, null, null, null);
+    }
+
+    public ArrayList<UserData> listUsers() {
+        return users;
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authHeader) throws ResponseException {
@@ -117,4 +132,3 @@ public class ServerFacade {
         return status / 100 == 2;
     }
 }
-
