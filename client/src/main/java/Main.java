@@ -7,7 +7,7 @@
 //        System.out.println("♕ 240 Chess Client: " + piece);
 //    }
 //}
-import client.Repl;
+import ui.Repl;
 
 public class Main {
     public static void main(String[] args) {

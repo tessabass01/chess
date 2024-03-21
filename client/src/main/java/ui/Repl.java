@@ -1,10 +1,15 @@
-package client;
+package ui;
+
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.Random;
+
+import static ui.EscapeSequences.*;
 
 import ui.Client;
 
 import java.util.Scanner;
-
-import static ui.EscapeSequences.*;
 
 public class Repl {
     private final Client client;
@@ -16,7 +21,7 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println("\uD83D\uDC36 Welcome to Chess!");
+        System.out.println(SET_TEXT_COLOR_BLUE + "Welcome to Chess!");
         System.out.print(client.help());
 
         Scanner scanner = new Scanner(System.in);
@@ -28,6 +33,11 @@ public class Repl {
             try {
                 result = client.eval(line);
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
+                if (Objects.equals(result, "Go get 'em, WHITE!\n")) {
+                    printBoardWhite();
+                } else if (Objects.equals(result, "You got this, BLACK!\n")) {
+                    printBoardBlack();
+                }
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -40,4 +50,34 @@ public class Repl {
         System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 
-}
+    private void printBoardWhite() {
+            var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+
+            out.print(ERASE_SCREEN);
+
+            JoinBoard.printHeader(out);
+
+            JoinBoard.drawChessBoard(out);
+
+            JoinBoard.printHeader(out);
+
+            out.print(SET_BG_COLOR_BLACK);
+            out.print(SET_TEXT_COLOR_WHITE);
+        }
+
+    private void printBoardBlack() {
+        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+
+        out.print(ERASE_SCREEN);
+
+        JoinBoard.printHeader(out);
+
+        JoinBoard.drawChessBoard(out);
+
+        JoinBoard.printHeader(out);
+
+        out.print(SET_BG_COLOR_BLACK);
+        out.print(SET_TEXT_COLOR_WHITE);
+    }
+
+    }

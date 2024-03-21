@@ -112,10 +112,10 @@ public class Client {
         } else {
             if (Objects.equals(params[1], "white")) {
                 serverFacade.joinGame(params[0], "WHITE", currentAuth);
-                return "Go get 'em, WHITE!";
+                return "Go get 'em, WHITE!\n";
             } else  if (Objects.equals(params[1], "black")) {
                 serverFacade.joinGame(params[0], "BLACK", currentAuth);
-                return "You got this, BLACK!";
+                return "You got this, BLACK!\n";
             } else {
                 throw new ResponseException(400, "Expected: join-game <game ID> <WHITE|BLACK>");
             }
