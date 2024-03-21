@@ -17,7 +17,7 @@ public class ServerFacadeTests {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        serverFacade = new ServerFacade(port);
+        serverFacade = new ServerFacade("http://localhost:" + port);
     }
 
     @AfterAll
@@ -25,10 +25,15 @@ public class ServerFacadeTests {
         server.stop();
     }
 
+    @BeforeEach
+    public void clear() throws ResponseException {
+        serverFacade.clearDB();
+    }
+
 
     @Test
     public void addUser() throws ResponseException {
-        var message = serverFacade.addUser(new UserData("john", "monkeypie", null));
+        var message = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
         System.out.println(message);
         Assertions.assertTrue(true);
     }

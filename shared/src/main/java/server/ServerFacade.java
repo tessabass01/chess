@@ -8,17 +8,17 @@ import java.io.*;
 import java.net.*;
 
 public class ServerFacade {
-    private final int port;
+    private String url;
 
 
-    public ServerFacade(int port) {
-        this.port = port;
+    public ServerFacade(String url) {
+        this.url = url;
     }
 
 
-    public UserData addUser(UserData user) throws ResponseException {
+    public String addUser(UserData user) throws ResponseException {
         var path = "/user";
-        return this.makeRequest("POST", path, user, UserData.class);
+        return this.makeRequest("POST", path, user, String.class);
     }
 
     public String login(UserData user) throws ResponseException {
@@ -39,9 +39,14 @@ public class ServerFacade {
 //        return response.pet();
 //    }
 
+        public void clearDB() throws ResponseException {
+        var path = "/db";
+        this.makeRequest("DELETE", path, null, null);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
-            URL url = (new URI(port + path)).toURL();
+            URL url = (new URI(this.url + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);

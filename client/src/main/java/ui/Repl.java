@@ -8,9 +8,11 @@ import static ui.EscapeSequences.*;
 
 public class Repl {
     private final Client client;
+    private final String url;
 
-    public Repl(int port) {
-        client = new Client(port);
+    public Repl(String url) {
+        client = new Client(url);
+        this.url = url;
     }
 
     public void run() {

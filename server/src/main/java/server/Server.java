@@ -52,8 +52,7 @@ public class Server {
 
     private Object registerUser(Request req, Response res) throws DataAccessException {
         UserData user = new Gson().fromJson(req.body(), UserData.class);
-        var authData = uservice.registerUser(user);
-        var response = new Gson().toJson(authData);
+        var response = uservice.registerUser(user);
         if (response.contains("already taken")) {
             res.status(403);
             var error = new ErrorMessage("Error: already taken");

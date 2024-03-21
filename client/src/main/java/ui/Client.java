@@ -8,11 +8,13 @@ import java.util.Arrays;
 
 public class Client {
     private final ServerFacade serverFacade;
-    private final String currentUser;
+    private String currentUser;
+    private final String serverUrl;
     private State state;
 
-    public Client(int port) {
-        serverFacade = new ServerFacade(port);
+    public Client(String serverUrl) {
+        serverFacade = new ServerFacade(serverUrl);
+        this.serverUrl = serverUrl;
         currentUser = null;
         state = State.SIGNEDOUT;
     }
@@ -40,6 +42,7 @@ public class Client {
             state = State.SIGNEDIN;
             var user = new UserData(params[0], params[1], null);
             var authToken = serverFacade.login(user);
+            currentUser = user.username();
             return String.format("Get ready to play some chess, %s!", currentUser);
         }
         throw new ResponseException(400, "Expected: <username> <password>");
@@ -48,10 +51,19 @@ public class Client {
     public String register(String... params) throws ResponseException {
         if (params.length >= 3) {
             var user = new UserData(params[0], params[1], params[2]);
-            UserData newUser = serverFacade.addUser(user);
-            return String.format("Welcome, %s.", newUser.username());
+            String authToken = serverFacade.addUser(user);
+            return "Thank you for registering with us!";
         }
         throw new ResponseException(400, "Expected: <username> <password> <email>");
+    }
+
+    public String clearDB() throws ResponseException {
+        try {
+            serverFacade.clearDB();
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        }
+        return "Database successfully cleared";
     }
 
     public String help() {
