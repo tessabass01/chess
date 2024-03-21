@@ -33,9 +33,15 @@ public class ServerFacadeTests {
 
     @Test
     public void addUser() throws ResponseException {
-        var message = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
-        System.out.println(message);
+        var token = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
+        System.out.println(token);
         Assertions.assertTrue(true);
+    }
+
+    @Test
+    public void loginUser() throws ResponseException {
+        var token = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
+        var token2 = serverFacade.login(new UserData("john", "monkeypie", null));
     }
 
 }

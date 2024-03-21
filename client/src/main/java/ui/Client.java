@@ -6,9 +6,12 @@ import server.ServerFacade;
 
 import java.util.Arrays;
 
+import static java.lang.String.join;
+
 public class Client {
     private final ServerFacade serverFacade;
     private String currentUser;
+    private String currentAuth;
     private final String serverUrl;
     private State state;
 
@@ -16,6 +19,7 @@ public class Client {
         serverFacade = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         currentUser = null;
+        currentAuth = null;
         state = State.SIGNEDOUT;
     }
 
@@ -27,8 +31,10 @@ public class Client {
             return switch (cmd) {
                 case "login" -> login(params);
                 case "register" -> register(params);
+                case "clear" -> clearDB();
+                case "create-game" -> createGame(params);
 //                case "list" -> listGames();
-//                case "logout" -> logout();
+                case "logout" -> logout();
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -41,7 +47,7 @@ public class Client {
         if (params.length == 2) {
             state = State.SIGNEDIN;
             var user = new UserData(params[0], params[1], null);
-            var authToken = serverFacade.login(user);
+            currentAuth = serverFacade.login(user);
             currentUser = user.username();
             return String.format("Get ready to play some chess, %s!", currentUser);
         }
@@ -51,20 +57,33 @@ public class Client {
     public String register(String... params) throws ResponseException {
         if (params.length >= 3) {
             var user = new UserData(params[0], params[1], params[2]);
-            String authToken = serverFacade.addUser(user);
+            currentAuth = serverFacade.addUser(user);
             return "Thank you for registering with us!";
         }
         throw new ResponseException(400, "Expected: <username> <password> <email>");
     }
 
     public String clearDB() throws ResponseException {
-        try {
-            serverFacade.clearDB();
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        serverFacade.clearDB();
         return "Database successfully cleared";
     }
+
+    public String logout() throws ResponseException {
+        assertSignedIn();
+        serverFacade.logout(currentAuth);
+        return "You have successfully logged out";
+        }
+
+    public String createGame(String... params) throws ResponseException {
+        if (params.length >= 1) {
+            var gameName = join("-", params);
+            var gameID = serverFacade.createGame(gameName, currentAuth);
+            return String.format("You have created a new game called %s. The game ID is %s, invite a friend!", gameName, gameID);
+        }
+        throw new ResponseException(400, "Expected: create-game <game name>");
+    }
+
+
 
     public String help() {
         if (state == State.SIGNEDOUT) {

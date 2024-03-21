@@ -18,12 +18,11 @@ public class GameService {
         this.dataAccess = dataAccess;
     }
 
-    public GameData createGame(String authToken, String gameName) throws DataAccessException {
+    public int createGame(String authToken, String gameName) throws DataAccessException {
         if (!dataAccess.checkAuth(authToken)) {
-            return new GameData(-1, null, null, "not logged in", null);
+            return -1;
         } else {
-            var ID = dataAccess.createGame(gameName);
-            return new GameData(ID, "", "", gameName, new ChessGame());
+            return dataAccess.createGame(gameName);
         }
     }
 
