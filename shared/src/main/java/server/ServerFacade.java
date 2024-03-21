@@ -73,11 +73,11 @@ public class ServerFacade {
 
 
     private static void writeBody(Object request, HttpURLConnection http, String authHeader) throws IOException {
+        if (authHeader != null) {
+            http.addRequestProperty("authorization", authHeader);
+        }
         if (request != null) {
             http.addRequestProperty("Content-Type", "application/json");
-            if (authHeader != null) {
-                http.addRequestProperty("authorization", authHeader);
-            }
             String reqData = new Gson().toJson(request);
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());

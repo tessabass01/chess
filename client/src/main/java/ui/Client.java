@@ -58,6 +58,7 @@ public class Client {
         if (params.length >= 3) {
             var user = new UserData(params[0], params[1], params[2]);
             currentAuth = serverFacade.addUser(user);
+            state = State.SIGNEDIN;
             return "Thank you for registering with us!";
         }
         throw new ResponseException(400, "Expected: <username> <password> <email>");
@@ -71,6 +72,7 @@ public class Client {
     public String logout() throws ResponseException {
         assertSignedIn();
         serverFacade.logout(currentAuth);
+        state = State.SIGNEDOUT;
         return "You have successfully logged out";
         }
 
