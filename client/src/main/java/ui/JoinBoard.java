@@ -2,7 +2,6 @@ package ui;
 
 import java.io.PrintStream;
 import java.util.Objects;
-import java.util.Random;
 
 import static ui.EscapeSequences.*;
 import static ui.EscapeSequences.SET_TEXT_COLOR_BLACK;
@@ -72,7 +71,7 @@ public class JoinBoard {
         if (rowN == 0) {
             if (Objects.equals(color, "white")) {
                 out.print(SET_BG_COLOR_WHITE);
-                out.print(SET_TEXT_COLOR_RED);
+                out.print(SET_TEXT_COLOR_MAGENTA);
                 out.print(pieces[0]);
                 out.print(SET_BG_COLOR_BLACK);
                 out.print(pieces[1]);
@@ -111,7 +110,7 @@ public class JoinBoard {
         } else if (rowN == 1) {
             out.print(SET_BG_COLOR_BLACK);
             if (Objects.equals(color, "white")) {
-                out.print(SET_TEXT_COLOR_RED);
+                out.print(SET_TEXT_COLOR_MAGENTA);
             } else if (Objects.equals(color, "black")) {
                 out.print(SET_TEXT_COLOR_BLUE);
             }
@@ -172,7 +171,7 @@ public class JoinBoard {
             if (Objects.equals(color, "white")) {
                 out.print(SET_TEXT_COLOR_BLUE);
             } else if (Objects.equals(color, "black")) {
-                out.print(SET_TEXT_COLOR_RED);
+                out.print(SET_TEXT_COLOR_MAGENTA);
             }
             out.print(" P ");
             out.print(SET_BG_COLOR_BLACK);
@@ -211,7 +210,7 @@ public class JoinBoard {
                 out.print(pieces[7]);
             } else if (Objects.equals(color, "black")) {
                 out.print(SET_BG_COLOR_BLACK);
-                out.print(SET_TEXT_COLOR_RED);
+                out.print(SET_TEXT_COLOR_MAGENTA);
                 out.print(pieces[0]);
                 out.print(SET_BG_COLOR_WHITE);
                 out.print(pieces[1]);
@@ -235,11 +234,6 @@ public class JoinBoard {
     private static void setWhite(PrintStream out) {
         out.print(SET_BG_COLOR_WHITE);
         out.print(SET_TEXT_COLOR_WHITE);
-    }
-
-    private static void setRed(PrintStream out) {
-        out.print(SET_BG_COLOR_RED);
-        out.print(SET_TEXT_COLOR_RED);
     }
 
     private static void setBlack(PrintStream out) {

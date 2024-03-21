@@ -6,21 +6,16 @@ import server.ServerFacade;
 
 import java.util.Arrays;
 import java.util.Objects;
-
-import static chess.ChessGame.TeamColor.BLACK;
-import static chess.ChessGame.TeamColor.WHITE;
 import static java.lang.String.join;
 
 public class Client {
     private final ServerFacade serverFacade;
     private String currentUser;
     private String currentAuth;
-    private final String serverUrl;
     private State state;
 
     public Client(String serverUrl) {
         serverFacade = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
         currentUser = null;
         currentAuth = null;
         state = State.SIGNEDOUT;
@@ -106,8 +101,8 @@ public class Client {
                 return "Enjoy the show!\n";
             } catch (NumberFormatException e) {
                 throw new ResponseException(400, "Expected: join-observer <game ID>\n" +
-                                                        "\t\t\t\tor\n\t\t" +
-                                                            "join-game <game ID> <WHITE|BLACK>");
+                                                 "\t\t\t\tor\n" +
+                                                 "\t\tjoin-game <game ID> <WHITE|BLACK>");
             }
         } else {
             if (Objects.equals(params[1], "white")) {

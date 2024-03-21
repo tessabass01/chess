@@ -21,8 +21,8 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println(SET_TEXT_COLOR_BLUE + "Welcome to Chess!");
-        System.out.print(client.help());
+        System.out.println(SET_TEXT_COLOR_WHITE + "Welcome to Chess!");
+        System.out.print(SET_TEXT_COLOR_BLUE + client.help());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -32,16 +32,20 @@ public class Repl {
 
             try {
                 result = client.eval(line);
-                System.out.print(SET_TEXT_COLOR_BLUE + result);
                 if (Objects.equals(result, "Go get 'em, WHITE!\n")) {
+                    System.out.print(SET_TEXT_COLOR_BLUE + SET_TEXT_BLINKING + result);
                     printBoard("white");
                     printBoard("black");
                 } else if (Objects.equals(result, "You got this, BLACK!\n")) {
+                    System.out.print(SET_TEXT_COLOR_MAGENTA + SET_TEXT_BLINKING + result);
                     printBoard("black");
                     printBoard("white");
                 } else if (Objects.equals(result, "Enjoy the show!\n")) {
+                    System.out.print(SET_TEXT_COLOR_WHITE + SET_TEXT_BLINKING + result);
                     printBoard("white");
                     printBoard("black");
+                } else {
+                    System.out.print(SET_TEXT_COLOR_BLUE + result);
                 }
             } catch (Throwable e) {
                 var msg = e.toString();
@@ -52,7 +56,7 @@ public class Repl {
     }
 
     private void printPrompt() {
-        System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
+        System.out.print("\n" + SET_TEXT_COLOR_WHITE + ">>> " + RESET_TEXT_COLOR);
     }
 
     private void printBoard(String color) {
