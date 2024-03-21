@@ -21,6 +21,7 @@ public class JoinBoard {
         out.print(SET_TEXT_COLOR_BLACK);
 
         out.print("    a  b  c  d  e  f  g  h    ");
+        out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
         out.println();
     }
 
@@ -30,12 +31,14 @@ public class JoinBoard {
             out.print(SET_BG_COLOR_LIGHT_GREY);
             out.print(SET_TEXT_COLOR_BLACK);
             out.print(" " + (boardRow+1) + " ");
+            out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
 
             drawRowOfSquares(out, boardRow);
 
             out.print(SET_BG_COLOR_LIGHT_GREY);
             out.print(SET_TEXT_COLOR_BLACK);
             out.print(" " + (boardRow+1) + " ");
+            out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
             out.println();
         }
     }
@@ -62,12 +65,11 @@ public class JoinBoard {
             out.print(pieces[6]);
             out.print(SET_BG_COLOR_BLACK);
             out.print(pieces[7]);
+            out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
         } else if (rowN == 1) {
-            out.print(SET_BG_COLOR_WHITE);
+            out.print(SET_BG_COLOR_BLACK);
             out.print(SET_TEXT_COLOR_RED);
             out.print(" P ");
-            out.print(SET_BG_COLOR_BLACK);
-            out.print(" P ");
             out.print(SET_BG_COLOR_WHITE);
             out.print(" P ");
             out.print(SET_BG_COLOR_BLACK);
@@ -80,6 +82,9 @@ public class JoinBoard {
             out.print(" P ");
             out.print(SET_BG_COLOR_BLACK);
             out.print(" P ");
+            out.print(SET_BG_COLOR_WHITE);
+            out.print(" P ");
+            out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
         } else if (rowN == 2 || rowN == 4) {
             setWhite(out);
             out.print("   ");
@@ -97,6 +102,7 @@ public class JoinBoard {
             out.print("   ");
             setBlack(out);
             out.print("   ");
+            out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
         } else if (rowN == 3 || rowN == 5) {
             setBlack(out);
             out.print("   ");
@@ -114,6 +120,7 @@ public class JoinBoard {
             out.print("   ");
             setWhite(out);
             out.print("   ");
+            out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
         } else if (rowN == 6) {
             out.print(SET_BG_COLOR_WHITE);
             out.print(SET_TEXT_COLOR_BLUE);
@@ -132,24 +139,26 @@ public class JoinBoard {
             out.print(" P ");
             out.print(SET_BG_COLOR_BLACK);
             out.print(" P ");
+            out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
         } else if (rowN == 7) {
-            out.print(SET_BG_COLOR_WHITE);
+            out.print(SET_BG_COLOR_BLACK);
             out.print(SET_TEXT_COLOR_BLUE);
             out.print(pieces[0]);
-            out.print(SET_BG_COLOR_BLACK);
+            out.print(SET_BG_COLOR_WHITE);
             out.print(pieces[1]);
-            out.print(SET_BG_COLOR_WHITE);
+            out.print(SET_BG_COLOR_BLACK);
             out.print(pieces[2]);
-            out.print(SET_BG_COLOR_BLACK);
+            out.print(SET_BG_COLOR_WHITE);
             out.print(pieces[3]);
-            out.print(SET_BG_COLOR_WHITE);
+            out.print(SET_BG_COLOR_BLACK);
             out.print(pieces[4]);
-            out.print(SET_BG_COLOR_BLACK);
-            out.print(pieces[5]);
             out.print(SET_BG_COLOR_WHITE);
-            out.print(pieces[6]);
+            out.print(pieces[5]);
             out.print(SET_BG_COLOR_BLACK);
+            out.print(pieces[6]);
+            out.print(SET_BG_COLOR_WHITE);
             out.print(pieces[7]);
+            out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
         }
     }
 
