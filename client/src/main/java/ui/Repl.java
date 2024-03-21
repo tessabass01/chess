@@ -34,9 +34,14 @@ public class Repl {
                 result = client.eval(line);
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
                 if (Objects.equals(result, "Go get 'em, WHITE!\n")) {
-                    printBoardWhite();
+                    printBoard("white");
+                    printBoard("black");
                 } else if (Objects.equals(result, "You got this, BLACK!\n")) {
-                    printBoardBlack();
+                    printBoard("black");
+                    printBoard("white");
+                } else if (Objects.equals(result, "Enjoy the show!\n")) {
+                    printBoard("white");
+                    printBoard("black");
                 }
             } catch (Throwable e) {
                 var msg = e.toString();
@@ -50,34 +55,19 @@ public class Repl {
         System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 
-    private void printBoardWhite() {
+    private void printBoard(String color) {
             var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
             out.print(ERASE_SCREEN);
 
-            JoinBoard.printHeader(out);
+            JoinBoard.printHeader(out, color);
 
-            JoinBoard.drawChessBoard(out);
+            JoinBoard.drawChessBoard(out, color);
 
-            JoinBoard.printHeader(out);
+            JoinBoard.printHeader(out, color);
 
             out.print(SET_BG_COLOR_BLACK);
             out.print(SET_TEXT_COLOR_WHITE);
+            out.println();
         }
-
-    private void printBoardBlack() {
-        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-
-        out.print(ERASE_SCREEN);
-
-        JoinBoard.printHeader(out);
-
-        JoinBoard.drawChessBoard(out);
-
-        JoinBoard.printHeader(out);
-
-        out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_WHITE);
-    }
-
     }

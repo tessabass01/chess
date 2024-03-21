@@ -103,7 +103,7 @@ public class Client {
         if (params.length == 1) {
             try {
                 serverFacade.joinObserver(params[0], currentAuth);
-                return "Enjoy the show!";
+                return "Enjoy the show!\n";
             } catch (NumberFormatException e) {
                 throw new ResponseException(400, "Expected: join-observer <game ID>\n" +
                                                         "\t\t\t\tor\n\t\t" +
