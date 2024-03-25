@@ -214,29 +214,31 @@ public class MySqlDataAccess implements DataAccess {
     public String updateGame(int gameID, String username, String color) throws DataAccessException, SQLException {
         var game = getGame(gameID);
         if (game != null) {
-            if (Objects.equals(color, "WHITE")) {
-                if (game.whiteUsername() == null) {
-                    var statement = "UPDATE games SET whiteUsername=? WHERE gameID=?;";
-                    try {
-                        executeUpdate(statement, username, gameID);
-                        return "success";
-                    } catch (Exception e) {
-                        throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            if (color != null) {
+                if (color.equalsIgnoreCase( "WHITE")) {
+                    if (game.whiteUsername() == null) {
+                        var statement = "UPDATE games SET whiteUsername=? WHERE gameID=?;";
+                        try {
+                            executeUpdate(statement, username, gameID);
+                            return "success";
+                        } catch (Exception e) {
+                            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+                        }
+                    } else {
+                        return "already taken";
                     }
-                } else {
-                    return "already taken";
-                }
-            } else if (Objects.equals(color, "BLACK")) {
-                if (game.blackUsername() == null) {
-                    var statement = "UPDATE games SET blackUsername=? WHERE gameID=?;";
-                    try {
-                        executeUpdate(statement, username, gameID);
-                        return "success";
-                    } catch (Exception e) {
-                        throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+                } else if (color.equalsIgnoreCase( "BLACK")) {
+                    if (game.blackUsername() == null) {
+                        var statement = "UPDATE games SET blackUsername=? WHERE gameID=?;";
+                        try {
+                            executeUpdate(statement, username, gameID);
+                            return "success";
+                        } catch (Exception e) {
+                            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+                        }
+                    } else {
+                        return "already taken";
                     }
-                } else {
-                    return "already taken";
                 }
             }
             return "success";

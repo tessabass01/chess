@@ -26,7 +26,7 @@ public class JoinBoard {
 
     static void drawChessBoard(PrintStream out, String color) {
 
-        if (Objects.equals(color, "white")) {
+        if (Objects.equals(color, "black")) {
 
             for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
                 out.print(SET_BG_COLOR_LIGHT_GREY);
@@ -42,7 +42,7 @@ public class JoinBoard {
                 out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
                 out.println();
             }
-        } else if (Objects.equals(color, "black")) {
+        } else if (Objects.equals(color, "white")) {
             int reverseRow = 8;
 
             for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
@@ -69,7 +69,7 @@ public class JoinBoard {
         String[] pieces = {" R ", " N ", " B ", " K ", " Q ", " B ", " N ", " R "};
 
         if (rowN == 0) {
-            if (Objects.equals(color, "white")) {
+            if (Objects.equals(color, "black")) {
                 out.print(SET_BG_COLOR_WHITE);
                 out.print(SET_TEXT_COLOR_MAGENTA);
                 out.print(pieces[0]);
@@ -78,16 +78,16 @@ public class JoinBoard {
                 out.print(SET_BG_COLOR_WHITE);
                 out.print(pieces[2]);
                 out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[3]);
-                out.print(SET_BG_COLOR_WHITE);
                 out.print(pieces[4]);
+                out.print(SET_BG_COLOR_WHITE);
+                out.print(pieces[3]);
                 out.print(SET_BG_COLOR_BLACK);
                 out.print(pieces[5]);
                 out.print(SET_BG_COLOR_WHITE);
                 out.print(pieces[6]);
                 out.print(SET_BG_COLOR_BLACK);
                 out.print(pieces[7]);
-            } else if (Objects.equals(color, "black")) {
+            } else if (Objects.equals(color, "white")) {
                 out.print(SET_BG_COLOR_WHITE);
                 out.print(SET_TEXT_COLOR_BLUE);
                 out.print(pieces[0]);
@@ -96,9 +96,9 @@ public class JoinBoard {
                 out.print(SET_BG_COLOR_WHITE);
                 out.print(pieces[2]);
                 out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[4]);
-                out.print(SET_BG_COLOR_WHITE);
                 out.print(pieces[3]);
+                out.print(SET_BG_COLOR_WHITE);
+                out.print(pieces[4]);
                 out.print(SET_BG_COLOR_BLACK);
                 out.print(pieces[5]);
                 out.print(SET_BG_COLOR_WHITE);
@@ -109,9 +109,9 @@ public class JoinBoard {
             out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
         } else if (rowN == 1) {
             out.print(SET_BG_COLOR_BLACK);
-            if (Objects.equals(color, "white")) {
+            if (Objects.equals(color, "black")) {
                 out.print(SET_TEXT_COLOR_MAGENTA);
-            } else if (Objects.equals(color, "black")) {
+            } else if (Objects.equals(color, "white")) {
                 out.print(SET_TEXT_COLOR_BLUE);
             }
             out.print(" P ");
@@ -168,9 +168,9 @@ public class JoinBoard {
             out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
         } else if (rowN == 6) {
             out.print(SET_BG_COLOR_WHITE);
-            if (Objects.equals(color, "white")) {
+            if (Objects.equals(color, "black")) {
                 out.print(SET_TEXT_COLOR_BLUE);
-            } else if (Objects.equals(color, "black")) {
+            } else if (Objects.equals(color, "white")) {
                 out.print(SET_TEXT_COLOR_MAGENTA);
             }
             out.print(" P ");
@@ -190,7 +190,7 @@ public class JoinBoard {
             out.print(" P ");
             out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
         } else if (rowN == 7) {
-            if (Objects.equals(color, "white")) {
+            if (Objects.equals(color, "black")) {
                 out.print(SET_BG_COLOR_BLACK);
                 out.print(SET_TEXT_COLOR_BLUE);
                 out.print(pieces[0]);
@@ -199,16 +199,16 @@ public class JoinBoard {
                 out.print(SET_BG_COLOR_BLACK);
                 out.print(pieces[2]);
                 out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[3]);
-                out.print(SET_BG_COLOR_BLACK);
                 out.print(pieces[4]);
+                out.print(SET_BG_COLOR_BLACK);
+                out.print(pieces[3]);
                 out.print(SET_BG_COLOR_WHITE);
                 out.print(pieces[5]);
                 out.print(SET_BG_COLOR_BLACK);
                 out.print(pieces[6]);
                 out.print(SET_BG_COLOR_WHITE);
                 out.print(pieces[7]);
-            } else if (Objects.equals(color, "black")) {
+            } else if (Objects.equals(color, "white")) {
                 out.print(SET_BG_COLOR_BLACK);
                 out.print(SET_TEXT_COLOR_MAGENTA);
                 out.print(pieces[0]);
@@ -217,9 +217,9 @@ public class JoinBoard {
                 out.print(SET_BG_COLOR_BLACK);
                 out.print(pieces[2]);
                 out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[4]);
-                out.print(SET_BG_COLOR_BLACK);
                 out.print(pieces[3]);
+                out.print(SET_BG_COLOR_BLACK);
+                out.print(pieces[4]);
                 out.print(SET_BG_COLOR_WHITE);
                 out.print(pieces[5]);
                 out.print(SET_BG_COLOR_BLACK);
