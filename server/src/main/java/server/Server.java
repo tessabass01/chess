@@ -10,20 +10,23 @@ import dataAccess.DataAccessException;
 import service.*;
 import java.sql.SQLException;
 import java.util.Objects;
+import server.websocket.WebSocketHandler;
 
 
 public class Server {
     private final UserService uservice;
     private final DataService dservice;
     private final GameService gservice;
+    private final WebSocketHandler webSocketHandler;
 
     public Server() {
-        DataAccess dataAccess = null;
+        DataAccess dataAccess;
         try {
             dataAccess = new MySqlDataAccess();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        webSocketHandler = new WebSocketHandler();
         uservice = new UserService(dataAccess);
         dservice = new DataService(dataAccess);
         gservice = new GameService(dataAccess);
@@ -34,6 +37,8 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        Spark.webSocket("/connect", webSocketHandler);
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::registerUser);
