@@ -34,7 +34,7 @@ public class JoinBoard {
                 out.print(" " + (boardRow + 1) + " ");
                 out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
 
-                drawRowOfSquares(out, boardRow, color);
+                printRow(out, "black", boardRow);
 
                 out.print(SET_BG_COLOR_LIGHT_GREY);
                 out.print(SET_TEXT_COLOR_BLACK);
@@ -51,7 +51,7 @@ public class JoinBoard {
                 out.print(" " + reverseRow + " ");
                 out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
 
-                drawRowOfSquares(out, boardRow, color);
+                printRow(out, "white", boardRow);
 
                 out.print(SET_BG_COLOR_LIGHT_GREY);
                 out.print(SET_TEXT_COLOR_BLACK);
@@ -63,181 +63,46 @@ public class JoinBoard {
             }
         }
     }
-
-    private static void drawRowOfSquares(PrintStream out, int rowN, String color) {
-
-        String[] pieces = {" R ", " N ", " B ", " K ", " Q ", " B ", " N ", " R "};
-
-        if (rowN == 0) {
-            if (Objects.equals(color, "black")) {
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(SET_TEXT_COLOR_MAGENTA);
-                out.print(pieces[0]);
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[1]);
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[2]);
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[4]);
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[3]);
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[5]);
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[6]);
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[7]);
-            } else if (Objects.equals(color, "white")) {
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(SET_TEXT_COLOR_BLUE);
-                out.print(pieces[0]);
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[1]);
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[2]);
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[3]);
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[4]);
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[5]);
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[6]);
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[7]);
+    private static void printRow(PrintStream out, String playerColor, int rowIndex) {
+        boolean bgIsWhite = true;
+        String[] pieces = {};
+        if (playerColor == "white") {
+            out.print(SET_TEXT_COLOR_BLUE);
+            if (rowIndex == 0 || rowIndex == 7) {
+                pieces = new String[]{" R ", " N ", " B ", " Q ", " K ", " B ", " N ", " R "};
             }
-            out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
-        } else if (rowN == 1) {
-            out.print(SET_BG_COLOR_BLACK);
-            if (Objects.equals(color, "black")) {
-                out.print(SET_TEXT_COLOR_MAGENTA);
-            } else if (Objects.equals(color, "white")) {
-                out.print(SET_TEXT_COLOR_BLUE);
-            }
-            out.print(" P ");
-            out.print(SET_BG_COLOR_WHITE);
-            out.print(" P ");
-            out.print(SET_BG_COLOR_BLACK);
-            out.print(" P ");
-            out.print(SET_BG_COLOR_WHITE);
-            out.print(" P ");
-            out.print(SET_BG_COLOR_BLACK);
-            out.print(" P ");
-            out.print(SET_BG_COLOR_WHITE);
-            out.print(" P ");
-            out.print(SET_BG_COLOR_BLACK);
-            out.print(" P ");
-            out.print(SET_BG_COLOR_WHITE);
-            out.print(" P ");
-            out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
-        } else if (rowN == 2 || rowN == 4) {
-            setWhite(out);
-            out.print("   ");
-            setBlack(out);
-            out.print("   ");
-            setWhite(out);
-            out.print("   ");
-            setBlack(out);
-            out.print("   ");
-            setWhite(out);
-            out.print("   ");
-            setBlack(out);
-            out.print("   ");
-            setWhite(out);
-            out.print("   ");
-            setBlack(out);
-            out.print("   ");
-            out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
-        } else if (rowN == 3 || rowN == 5) {
-            setBlack(out);
-            out.print("   ");
-            setWhite(out);
-            out.print("   ");
-            setBlack(out);
-            out.print("   ");
-            setWhite(out);
-            out.print("   ");
-            setBlack(out);
-            out.print("   ");
-            setWhite(out);
-            out.print("   ");
-            setBlack(out);
-            out.print("   ");
-            setWhite(out);
-            out.print("   ");
-            out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
-        } else if (rowN == 6) {
-            out.print(SET_BG_COLOR_WHITE);
-            if (Objects.equals(color, "black")) {
-                out.print(SET_TEXT_COLOR_BLUE);
-            } else if (Objects.equals(color, "white")) {
+            if (rowIndex == 6 || rowIndex == 7) {
                 out.print(SET_TEXT_COLOR_MAGENTA);
             }
-            out.print(" P ");
-            out.print(SET_BG_COLOR_BLACK);
-            out.print(" P ");
-            out.print(SET_BG_COLOR_WHITE);
-            out.print(" P ");
-            out.print(SET_BG_COLOR_BLACK);
-            out.print(" P ");
-            out.print(SET_BG_COLOR_WHITE);
-            out.print(" P ");
-            out.print(SET_BG_COLOR_BLACK);
-            out.print(" P ");
-            out.print(SET_BG_COLOR_WHITE);
-            out.print(" P ");
-            out.print(SET_BG_COLOR_BLACK);
-            out.print(" P ");
-            out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
-        } else if (rowN == 7) {
-            if (Objects.equals(color, "black")) {
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(SET_TEXT_COLOR_BLUE);
-                out.print(pieces[0]);
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[1]);
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[2]);
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[4]);
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[3]);
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[5]);
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[6]);
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[7]);
-            } else if (Objects.equals(color, "white")) {
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(SET_TEXT_COLOR_MAGENTA);
-                out.print(pieces[0]);
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[1]);
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[2]);
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[3]);
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[4]);
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[5]);
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(pieces[6]);
-                out.print(SET_BG_COLOR_WHITE);
-                out.print(pieces[7]);
+        } else if (playerColor == "black"){
+            out.print(SET_TEXT_COLOR_MAGENTA);
+            if (rowIndex == 0 || rowIndex == 7) {
+                pieces = new String[]{" R ", " N ", " B ", " K ", " Q ", " B ", " N ", " R "};
             }
-            out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
+            if (rowIndex == 6 || rowIndex == 7) {
+                out.print(SET_TEXT_COLOR_BLUE);
+            }
         }
-    }
-
-    private static void setWhite(PrintStream out) {
-        out.print(SET_BG_COLOR_WHITE);
-        out.print(SET_TEXT_COLOR_WHITE);
-    }
-
-    private static void setBlack(PrintStream out) {
-        out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_BLACK);
+        if (rowIndex == 1 || rowIndex == 6) {
+            pieces = new String[]{" P ", " P ", " P ", " P ", " P ", " P ", " P ", " P "};
+        } else if (rowIndex > 1 && rowIndex < 6) {
+            pieces = new String[]{"   ", "   ", "   ", "   ", "   ", "   ", "   ", "   "};
+        }
+        if (rowIndex % 2 == 0) {
+            out.print(SET_BG_COLOR_WHITE);
+        } else {
+            out.print(SET_BG_COLOR_BLACK);
+            bgIsWhite = false;
+        }
+        for (String piece : pieces) {
+            out.print(piece);
+            if (bgIsWhite) {
+                out.print(SET_BG_COLOR_BLACK);
+                bgIsWhite = false;
+            } else {
+                out.print(SET_BG_COLOR_WHITE);
+                bgIsWhite = true;
+            }
+        }
     }
 }
