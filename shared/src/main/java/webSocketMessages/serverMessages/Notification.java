@@ -4,9 +4,11 @@ import com.google.gson.Gson;
 
 public record Notification(Type type, String message) {
     public enum Type {
-        ARRIVAL,
-        NOISE,
-        DEPARTURE
+        JOINED_AS_PLAYER,
+        JOINED_AS_OBSERVER,
+        MADE_MOVE,
+        LEFT_GAME,
+        RESIGNED_GAME
     }
 
     public String toString() {
