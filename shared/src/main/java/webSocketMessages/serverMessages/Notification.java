@@ -2,7 +2,7 @@ package webSocketMessages.serverMessages;
 
 import com.google.gson.Gson;
 
-public record Notification(Type type, String message) {
+public record Notification (Type type, String message) {
     public enum Type {
         JOINED_AS_PLAYER,
         JOINED_AS_OBSERVER,

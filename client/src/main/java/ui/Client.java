@@ -3,12 +3,14 @@ package ui;
 import exception.ResponseException;
 import model.UserData;
 import server.ServerFacade;
+import webSocketMessages.serverMessages.Notification;
+import webSocketMessages.serverMessages.ServerMessage;
 
 import java.util.Arrays;
 import java.util.Objects;
 import static java.lang.String.join;
 
-public class Client {
+public class Client implements ServerMessageObserver {
     private final ServerFacade serverFacade;
     private String currentUser;
     private String currentAuth;
@@ -138,6 +140,13 @@ public class Client {
     private void assertSignedIn() throws ResponseException {
         if (state == State.SIGNEDOUT) {
             throw new ResponseException(400, "You must login");
+        }
+    }
+
+    @Override
+    public void notify(ServerMessage message) {
+        switch (message.getServerMessageType()) {
+            case NOTIFICATION -> displayNotification(((Notification) message).getMessage());
         }
     }
 }

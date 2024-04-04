@@ -19,8 +19,9 @@ import static webSocketMessages.userCommands.UserGameCommand.CommandType.*;
 
 
 @WebSocket
-public class WebSocketHandler {
+public class WebSocketHandler(ServerMessageObserver observer) {
 
+    private final ServerMessageObserver observer;
     private final ConnectionManager connections = new ConnectionManager();
 
     @OnWebSocketMessage
@@ -38,7 +39,8 @@ public class WebSocketHandler {
     private void joinp(String visitorName, Session session, int gameID, ChessGame.TeamColor playerColor) throws IOException {
         connections.add(visitorName, session);
         var message = String.format("%s joined as %s", visitorName, playerColor.toString());
-        var notification = new Notification(Notification.Type.JOINED_AS_PLAYER, message);
+//        var notification = new Notification(Notification.Type.JOINED_AS_PLAYER, message);
+        observer.notify(ServerMessage message);
         connections.broadcast("", notification);
     }
 
@@ -51,7 +53,7 @@ public class WebSocketHandler {
 
     public void move(String visitorName, int gameID, ChessMove move) throws ResponseException {
         try {
-            var message = String.format("%s moved their %s from %s to %s", visitorName, "piece", move.getStartPosition().toString(), move.getEndPosition().toString());
+            var message = String.format("%s moved from %s to %s", visitorName, move.getStartPosition().toString(), move.getEndPosition().toString());
             var notification = new Notification(Notification.Type.MADE_MOVE, message);
             connections.broadcast("", notification);
         } catch (Exception ex) {
