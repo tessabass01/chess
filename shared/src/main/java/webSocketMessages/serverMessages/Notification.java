@@ -2,8 +2,16 @@ package webSocketMessages.serverMessages;
 
 import com.google.gson.Gson;
 
-public record Notification (Type type, String message) {
-    public enum Type {
+public class Notification extends ServerMessage {
+
+    public final String message;
+
+    public Notification(String message) {
+        super(ServerMessageType.NOTIFICATION);
+        this.message = message;
+    }
+
+    public enum NotificationType {
         JOINED_AS_PLAYER,
         JOINED_AS_OBSERVER,
         MADE_MOVE,
