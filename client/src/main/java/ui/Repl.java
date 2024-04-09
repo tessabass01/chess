@@ -7,10 +7,11 @@ import java.util.Objects;
 import static ui.EscapeSequences.*;
 
 import ui.Client;
+import webSocketMessages.serverMessages.ServerMessage;
 
 import java.util.Scanner;
 
-public class Repl {
+public class Repl implements NotificationHandler {
     private final Client client;
     private final String url;
 
@@ -52,6 +53,26 @@ public class Repl {
             }
         }
         System.out.println();
+    }
+
+    public void notify(ServerMessage message) {
+        switch (message.getServerMessageType()) {
+            case LOAD_GAME -> loadGame();
+            case ERROR -> error();
+            case NOTIFICATION -> notification();
+        }
+    }
+
+    private void loadGame() {
+        System.out.print("loaded game");
+    }
+
+    private void error() {
+        System.out.print("error");
+    }
+
+    private void notification() {
+        System.out.print("notification");
     }
 
     private void printPrompt() {

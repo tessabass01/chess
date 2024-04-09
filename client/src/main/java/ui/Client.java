@@ -10,7 +10,9 @@ import java.util.Arrays;
 import java.util.Objects;
 import static java.lang.String.join;
 
-public class Client implements ServerMessageObserver {
+public class Client {
+
+    // implements ServerMessageObserver
     private final ServerFacade serverFacade;
     private String currentUser;
     private String currentAuth;
@@ -100,6 +102,8 @@ public class Client implements ServerMessageObserver {
         if (params.length == 1) {
             try {
                 serverFacade.joinObserver(params[0], currentAuth);
+                // new websocket
+                // ws.join
                 return "Enjoy the show!\n";
             } catch (NumberFormatException e) {
                 throw new ResponseException(400, "Expected: join-observer <game ID>\n" +
@@ -140,13 +144,6 @@ public class Client implements ServerMessageObserver {
     private void assertSignedIn() throws ResponseException {
         if (state == State.SIGNEDOUT) {
             throw new ResponseException(400, "You must login");
-        }
-    }
-
-    @Override
-    public void notify(ServerMessage message) {
-        switch (message.getServerMessageType()) {
-            case NOTIFICATION -> displayNotification(((Notification) message).getMessage());
         }
     }
 }

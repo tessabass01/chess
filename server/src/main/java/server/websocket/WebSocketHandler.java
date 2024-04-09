@@ -40,7 +40,7 @@ public class WebSocketHandler(ServerMessageObserver observer) {
         connections.add(visitorName, session);
         var message = String.format("%s joined as %s", visitorName, playerColor.toString());
 //        var notification = new Notification(Notification.Type.JOINED_AS_PLAYER, message);
-        observer.notify(ServerMessage message);
+//        observer.notify(ServerMessage message);
         connections.broadcast("", notification);
     }
 
