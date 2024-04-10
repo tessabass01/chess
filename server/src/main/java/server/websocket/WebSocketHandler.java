@@ -1,36 +1,35 @@
 package server.websocket;
-
-import chess.ChessGame;
-import chess.ChessMove;
 import com.google.gson.Gson;
 import dataAccess.DataAccess;
+import dataAccess.DataAccessException;
 import dataAccess.MySqlDataAccess;
-import exception.ResponseException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import service.DataService;
-import service.GameService;
-import service.UserService;
 import webSocketMessages.serverMessages.*;
 import webSocketMessages.userCommands.*;
 import java.io.IOException;
 
 
 @WebSocket
-public class WebSocketHandler() {
+public class WebSocketHandler {
+    private final DataAccess dataAccess;
 
+    {
+        try {
+            dataAccess = new MySqlDataAccess();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
     private final ConnectionManager connections = new ConnectionManager();
-    private final UserService uservice = new UserService(new MySqlDataAccess());
-    private final DataService dservice;
-    private final GameService gservice;
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message, int gameID) throws IOException {
+    public void onMessage(Session session, String message) throws IOException, DataAccessException {
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
         switch (action.getCommandType()) {
 //            case JOIN_PLAYER -> joinp(action.visitorName(), session);
-            case JOIN_OBSERVER -> joino();
+            case JOIN_OBSERVER -> joino(message, session);
 //            case MAKE_MOVE -> move(action.visitorName(), session);
 //            case LEAVE -> leave(action.visitorName());
 //            case RESIGN -> resign(action.visitorName(), session);
@@ -45,10 +44,11 @@ public class WebSocketHandler() {
 //        connections.broadcast("", notification);
 //    }
 
-    private void joino(String visitorName, Session session, int gameID) throws IOException {
-        connections.add(visitorName, session);
-        var message = String.format("%s joined as an observer", visitorName);
-        var notification = new Notification(Notification.Type.JOINED_AS_OBSERVER, message);
+    private void joino(String message, Session session) throws IOException, DataAccessException {
+        var observer = new Gson().fromJson(message, JoinObserver.class);
+        connections.add(observer.gameID, observer.getAuthString(), session);
+        var notifyMsg = String.format("%s joined as an observer", dataAccess.getAuth(observer.getAuthString()).username());
+        var notification = new Notification(notifyMsg);
         connections.broadcast("", notification);
     }
 
