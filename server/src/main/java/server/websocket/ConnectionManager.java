@@ -12,7 +12,7 @@ public class ConnectionManager {
 
     public void add(String gameID, String authToken, Session session) {
         var connection = new Connection(authToken, session);
-        if (!connections.contains(gameID)) {
+        if (!connections.containsKey(gameID)) {
             connections.put(gameID, new ArrayList<>());
             connections.get(gameID).add(connection);
         } else {
