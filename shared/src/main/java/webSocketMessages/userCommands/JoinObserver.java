@@ -4,10 +4,8 @@ import chess.ChessGame;
 
 public class JoinObserver extends UserGameCommand {
 
-    private final int gameID;
-    public JoinObserver(String authToken, int gameID, ChessGame.TeamColor playerColor) {
+    public JoinObserver(String authToken, String gameID) {
         super(authToken);
-        this.gameID = gameID;
         this.commandType = CommandType.JOIN_OBSERVER;
     }
 }

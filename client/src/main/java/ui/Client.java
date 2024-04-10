@@ -12,7 +12,7 @@ import static java.lang.String.join;
 
 public class Client {
 
-    // implements ServerMessageObserver
+    private final NotificationHandler notificationHandler;
     private final ServerFacade serverFacade;
     private String currentUser;
     private String currentAuth;
@@ -22,6 +22,12 @@ public class Client {
         serverFacade = new ServerFacade(serverUrl);
         currentUser = null;
         currentAuth = null;
+        notificationHandler = new NotificationHandler() {
+            @Override
+            public void notify(ServerMessage message) {
+
+            }
+        };
         state = State.SIGNEDOUT;
     }
 
@@ -102,13 +108,15 @@ public class Client {
         if (params.length == 1) {
             try {
                 serverFacade.joinObserver(params[0], currentAuth);
-                // new websocket
-                // ws.join
+                var ws = new WebSocketFacade(notificationHandler);
+                 ws.observe(params[0], currentAuth);
                 return "Enjoy the show!\n";
             } catch (NumberFormatException e) {
                 throw new ResponseException(400, "Expected: join-observer <game ID>\n" +
                                                  "\t\t\t\tor\n" +
                                                  "\t\tjoin-game <game ID> <WHITE|BLACK>");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         } else {
             if (Objects.equals(params[1], "white")) {

@@ -34,16 +34,16 @@ public class Repl implements NotificationHandler {
                 result = client.eval(line);
                 if (Objects.equals(result, "Go get 'em, WHITE!\n")) {
                     System.out.print(SET_TEXT_COLOR_BLUE + SET_TEXT_BLINKING + result);
-                    printBoard("white");
-                    printBoard("black");
+//                    printBoard("white");
+//                    printBoard("black");
                 } else if (Objects.equals(result, "You got this, BLACK!\n")) {
                     System.out.print(SET_TEXT_COLOR_MAGENTA + SET_TEXT_BLINKING + result);
-                    printBoard("black");
-                    printBoard("white");
+//                    printBoard("black");
+//                    printBoard("white");
                 } else if (Objects.equals(result, "Enjoy the show!\n")) {
                     System.out.print(SET_TEXT_COLOR_WHITE + SET_TEXT_BLINKING + result);
-                    printBoard("white");
-                    printBoard("black");
+//                    printBoard("white");
+//                    printBoard("black");
                 } else {
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                 }

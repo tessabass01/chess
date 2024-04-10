@@ -1,21 +1,14 @@
 package ui;
 
+import com.google.gson.Gson;
 import webSocketMessages.serverMessages.ServerMessage;
+import webSocketMessages.userCommands.JoinObserver;
 
 import javax.websocket.*;
 import java.net.URI;
 import java.util.Scanner;
 
 public class WebSocketFacade extends Endpoint {
-
-    public static void main(String[] args) throws Exception {
-        var ws = new WebSocketFacade();
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Enter a message you want to echo");
-        while (true) ws.send(scanner.nextLine());
-    }
-
     public Session session;
 
     public WebSocketFacade(NotificationHandler notificationHandler) throws Exception {
@@ -37,5 +30,11 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+    }
+
+    public void observe(String gameID, String authToken) throws Exception {
+        var observer = new JoinObserver(authToken, gameID);
+        var msg = new Gson().toJson(observer);
+        send(msg);
     }
 }
