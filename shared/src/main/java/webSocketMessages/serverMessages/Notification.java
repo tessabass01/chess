@@ -11,14 +11,6 @@ public class Notification extends ServerMessage {
         this.message = message;
     }
 
-    public enum NotificationType {
-        JOINED_AS_PLAYER,
-        JOINED_AS_OBSERVER,
-        MADE_MOVE,
-        LEFT_GAME,
-        RESIGNED_GAME
-    }
-
     public String toString() {
         return new Gson().toJson(this);
     }

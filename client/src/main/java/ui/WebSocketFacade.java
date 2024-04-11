@@ -1,8 +1,10 @@
 package ui;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.JoinObserver;
+import webSocketMessages.userCommands.JoinPlayer;
 
 import javax.websocket.*;
 import java.net.URI;
@@ -34,6 +36,12 @@ public class WebSocketFacade extends Endpoint {
 
     public void observe(String gameID, String authToken) throws Exception {
         var observer = new JoinObserver(authToken, gameID);
+        var msg = new Gson().toJson(observer);
+        send(msg);
+    }
+
+    public void joinGame(String gameID, String authToken, ChessGame.TeamColor playerColor) throws Exception {
+        var observer = new JoinPlayer(authToken, Integer.parseInt(gameID), playerColor);
         var msg = new Gson().toJson(observer);
         send(msg);
     }

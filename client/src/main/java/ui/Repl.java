@@ -66,15 +66,15 @@ public class Repl implements NotificationHandler {
     }
 
     private void loadGame() {
-        System.out.print(SET_TEXT_COLOR_WHITE + "loaded game");
+        System.out.println(SET_TEXT_COLOR_WHITE + "loaded game");
     }
 
     private void error() {
-        System.out.print(SET_TEXT_COLOR_WHITE + "error");
+        System.out.println(SET_TEXT_COLOR_WHITE + "error");
     }
 
     private void notification() {
-        System.out.print(SET_TEXT_COLOR_WHITE + "notification");
+        System.out.println(SET_TEXT_COLOR_WHITE + "notification");
     }
 
     private void printPrompt() {

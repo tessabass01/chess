@@ -29,7 +29,7 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws Exception {
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
         switch (action.getCommandType()) {
-//            case JOIN_PLAYER -> joinp(action.visitorName(), session);
+            case JOIN_PLAYER -> joinp(message, session);
             case JOIN_OBSERVER -> joino(message, session);
 //            case MAKE_MOVE -> move(action.visitorName(), session);
 //            case LEAVE -> leave(action.visitorName());
@@ -37,13 +37,17 @@ public class WebSocketHandler {
         }
     }
 
-//    private void joinp(String visitorName, Session session, int gameID, ChessGame.TeamColor playerColor) throws IOException {
-//        connections.add(visitorName, session);
-//        var message = String.format("%s joined as %s", visitorName, playerColor.toString());
-////        var notification = new Notification(Notification.Type.JOINED_AS_PLAYER, message);
-////        observer.notify(ServerMessage message);
-//        connections.broadcast("", notification);
-//    }
+    private void joinp(String message, Session session) throws Exception {
+        var player = new Gson().fromJson(message, JoinPlayer.class);
+        var connection = new Connection(player.getAuthString(), session);
+        connections.add(Integer.toString(player.gameID), connection);
+        // needs to send a LOAD_GAME msg to root client
+        var board = new LoadGame(new ChessGame());
+        connection.send(new Gson().toJson(board));
+        var notifyMsg = String.format("%s joined as %s", dataAccess.getAuth(player.getAuthString()).username(), player.playerColor);
+        var notification = new Notification(notifyMsg);
+        connections.broadcast(player.getAuthString(), notification);
+    }
 
     private void joino(String message, Session session) throws Exception {
         var observer = new Gson().fromJson(message, JoinObserver.class);

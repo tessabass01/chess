@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessGame;
 import exception.ResponseException;
 import model.UserData;
 import server.ServerFacade;
@@ -26,7 +27,7 @@ public class Client {
         state = State.SIGNEDOUT;
     }
 
-    public String eval(String input) {
+    public String eval(String input) throws Exception {
         try {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
@@ -98,7 +99,7 @@ public class Client {
     }
 
 
-    public String joinGame(String... params) throws ResponseException {
+    public String joinGame(String... params) throws Exception {
         assertSignedIn();
         if (params.length == 1) {
             try {
@@ -114,11 +115,15 @@ public class Client {
                 throw new RuntimeException(e);
             }
         } else {
-            if (Objects.equals(params[1], "white")) {
+            if (params[1].equalsIgnoreCase("white")) {
                 serverFacade.joinGame(params[0], "WHITE", currentAuth);
+                var ws = new WebSocketFacade(notificationHandler);
+                ws.joinGame(params[0], currentAuth, ChessGame.TeamColor.WHITE);
                 return "Go get 'em, WHITE!\n";
             } else  if (Objects.equals(params[1], "black")) {
                 serverFacade.joinGame(params[0], "BLACK", currentAuth);
+                var ws = new WebSocketFacade(notificationHandler);
+                ws.joinGame(params[0], currentAuth, ChessGame.TeamColor.BLACK);
                 return "You got this, BLACK!\n";
             } else {
                 throw new ResponseException(400, "Expected: join-game <game ID> <WHITE|BLACK>");
