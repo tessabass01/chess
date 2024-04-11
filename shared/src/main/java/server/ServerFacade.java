@@ -22,13 +22,13 @@ public class ServerFacade {
     }
 
 
-    public String addUser(UserData user) throws ResponseException {
+    public AuthData addUser(UserData user) throws ResponseException {
          if (!usernames.contains(user.username())) {
             users.add(user);
             usernames.add(user.username());
         }
         var path = "/user";
-        return this.makeRequest("POST", path, user, String.class,null);
+        return this.makeRequest("POST", path, user, AuthData.class,null);
     }
 
     public String login(UserData user) throws ResponseException {
@@ -41,9 +41,9 @@ public class ServerFacade {
         return this.makeRequest("DELETE", path, null, String.class, authToken);
     }
 
-    public String createGame(String gameName, String authToken) throws ResponseException {
+    public GameData createGame(String gameName, String authToken) throws ResponseException {
         var path = "/game";
-        return this.makeRequest("POST", path, gameName, String.class, authToken);
+        return this.makeRequest("POST", path, gameName, GameData.class, authToken);
     };
 
     public String joinObserver(String gameID, String authToken) throws ResponseException {

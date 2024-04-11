@@ -69,7 +69,7 @@ public class Client {
     public String register(String... params) throws ResponseException {
         if (params.length >= 3) {
             var user = new UserData(params[0], params[1], params[2]);
-            currentAuth = serverFacade.addUser(user);
+            currentAuth = serverFacade.addUser(user).authToken();
             state = State.SIGNEDIN;
             return "Thank you for registering with us!";
         }

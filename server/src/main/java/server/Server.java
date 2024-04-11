@@ -58,18 +58,18 @@ public class Server {
     private Object registerUser(Request req, Response res) throws DataAccessException {
         UserData user = new Gson().fromJson(req.body(), UserData.class);
         var response = uservice.registerUser(user);
-        if (response.contains("already taken")) {
-            res.status(403);
-            var error = new ErrorMessage("Error: already taken");
-            return new Gson().toJson(error);
-        } else if (response.contains("no password")) {
-            res.status(400);
-            var error = new ErrorMessage("Error: bad request");
-            return new Gson().toJson(error);
-        } else {
-            res.status(200);
-        }
-        return response;
+//        if (response.contains("already taken")) {
+//            res.status(403);
+//            var error = new ErrorMessage("Error: already taken");
+//            return new Gson().toJson(error);
+//        } else if (response.contains("no password")) {
+//            res.status(400);
+//            var error = new ErrorMessage("Error: bad request");
+//            return new Gson().toJson(error);
+//        } else {
+        res.status(200);
+        return new Gson().toJson(response);
+//        return response;
     }
 
     private Object login(Request req, Response res) throws DataAccessException {
@@ -100,15 +100,15 @@ public class Server {
     }
 
     private Object createGame(Request req, Response res) throws DataAccessException {
-        var gameName = new Gson().fromJson(req.body(), String.class);
+        var gameName = new Gson().fromJson(req.body(), GameData.class);
         var authToken = new Gson().fromJson(req.headers("authorization"), String.class);
-        var gameID = gservice.createGame(authToken, gameName);
-        if (gameID == -1) {
-            res.status(401);
-            var error = new ErrorMessage("Error: unauthorized");
-            return new Gson().toJson(error);
-        }
-        var response = new Gson().toJson(gameID);
+        var game = gservice.createGame(authToken, gameName.gameName());
+//        if (gameID == -1) {
+//            res.status(401);
+//            var error = new ErrorMessage("Error: unauthorized");
+//            return new Gson().toJson(error);
+//        }
+        var response = new Gson().toJson(game);
         res.status(200);
         return response;
         }

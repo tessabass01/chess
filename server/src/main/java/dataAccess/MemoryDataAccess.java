@@ -74,11 +74,11 @@ public class MemoryDataAccess implements DataAccess {
         return this.ID;
     }
 
-    public int createGame(String gameName) {
+    public GameData createGame(String gameName) {
         var gameID = genGameID();
         var game = new GameData(gameID, null, null, gameName, new ChessGame());
         GameDict.put(Integer.toString(gameID), game);
-        return gameID;
+        return game;
     }
 //
     public ArrayList<GameData> listGames() {

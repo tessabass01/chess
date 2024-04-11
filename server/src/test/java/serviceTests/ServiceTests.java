@@ -71,10 +71,9 @@ public class ServiceTests {
     @DisplayName("positive login test")
     void loginExistingUser() throws DataAccessException {
         var user = new UserData("hello", "goodbye", "hello@goodbye.com");
-        var authToken = uservice.registerUser(user);
-        Assertions.assertEquals(authToken.getClass(), String.class);
+        var authData = uservice.registerUser(user);
 
-        uservice.logout(authToken);
+        uservice.logout(authData.authToken());
         var authData2 = uservice.login(user);
         Assertions.assertNotNull(uservice.listUsers());
         Assertions.assertEquals(1, uservice.listUsers().size());
@@ -92,8 +91,8 @@ public class ServiceTests {
     @DisplayName("positive logout test")
     void logoutUser() throws DataAccessException {
         var user = new UserData("hello", "goodbye", "hello@goodbye.com");
-        var authToken = uservice.registerUser(user);
-        uservice.logout(authToken);
+        var authData = uservice.registerUser(user);
+        uservice.logout(authData.authToken());
         Assertions.assertEquals(1, uservice.listUsers().size());
         Assertions.assertEquals(0, uservice.authSize());
     }
@@ -102,9 +101,9 @@ public class ServiceTests {
     @DisplayName("negative logout test")
     void logoutUserTwice() throws DataAccessException {
         var user = new UserData("hello", "goodbye", "hello@goodbye.com");
-        var authToken = uservice.registerUser(user);
-        var message1 = uservice.logout(authToken);
-        var message2 = uservice.logout(authToken);
+        var authData = uservice.registerUser(user);
+        var message1 = uservice.logout(authData.authToken());
+        var message2 = uservice.logout(authData.authToken());
         Assertions.assertEquals(1, uservice.listUsers().size());
         Assertions.assertEquals(0, uservice.authSize());
         Assertions.assertNotSame("unauthorized", message1);
@@ -115,9 +114,9 @@ public class ServiceTests {
     @DisplayName("positive createGame test")
     void createGame() throws DataAccessException {
         var user = new UserData("hello", "goodbye", "hello@goodbye.com");
-        var authToken = uservice.registerUser(user);
-        var gameData = gservice.createGame(authToken, "afternoon");
-        Assertions.assertEquals(1, gservice.listGames(authToken).size());
+        var authData = uservice.registerUser(user);
+        var gameData = gservice.createGame(authData.authToken(), "afternoon");
+        Assertions.assertEquals(1, gservice.listGames(authData.authToken()).size());
     }
 
     @Test
@@ -136,13 +135,13 @@ public class ServiceTests {
     @DisplayName("positive listGames test")
     void listGames() throws DataAccessException {
         var user = new UserData("hello", "goodbye", "hello@goodbye.com");
-        var authToken = uservice.registerUser(user);
-        gservice.createGame(authToken, "grover");
-        Assertions.assertNotNull(gservice.listGames(authToken).get("games"));
-        Assertions.assertEquals("grover", gservice.listGames(authToken).get("games").getFirst().gameName());
+        var authData = uservice.registerUser(user);
+        gservice.createGame(authData.authToken(), "grover");
+        Assertions.assertNotNull(gservice.listGames(authData.authToken()).get("games"));
+        Assertions.assertEquals("grover", gservice.listGames(authData.authToken()).get("games").getFirst().gameName());
 
-        gservice.createGame(authToken, "grover2");
-        Assertions.assertEquals(2, gservice.listGames(authToken).get("games").size());
+        gservice.createGame(authData.authToken(), "grover2");
+        Assertions.assertEquals(2, gservice.listGames(authData.authToken()).get("games").size());
     }
 
     @Test
@@ -158,22 +157,22 @@ public class ServiceTests {
 
         // first player
         var user = new UserData("hello", "goodbye", "hello@goodbye.com");
-        var authToken = uservice.registerUser(user);
-        var gameID = gservice.createGame(authToken, "grover");
-        gservice.joinGame(authToken, gameID, "WHITE");
-        Assertions.assertEquals(user.username(), gservice.listGames(authToken).get("games").getFirst().whiteUsername());
+        var authData = uservice.registerUser(user);
+        var game = gservice.createGame(authData.authToken(), "grover");
+        gservice.joinGame(authData.authToken(), game.gameID(), "WHITE");
+        Assertions.assertEquals(user.username(), gservice.listGames(authData.authToken()).get("games").getFirst().whiteUsername());
 
         // second player
         var user2 = new UserData("hola", "goodbye", "hello@goodbye.com");
-        var authToken2 = uservice.registerUser(user2);
-        gservice.joinGame(authToken2, gameID, "BLACK");
-        Assertions.assertEquals(user2.username(), gservice.listGames(authToken2).get("games").getFirst().blackUsername());
+        var authData2 = uservice.registerUser(user2);
+        gservice.joinGame(authData2.authToken(), game.gameID(), "BLACK");
+        Assertions.assertEquals(user2.username(), gservice.listGames(authData2.authToken()).get("games").getFirst().blackUsername());
 
         // observer
         var user3 = new UserData("hallo", "goodbye", "hello@goodbye.com");
-        var authToken3 = uservice.registerUser(user3);
-        gservice.joinGame(authToken3, gameID, null);
-        Assertions.assertNotNull(gservice.listGames(authToken3).get("games"));
+        var authData3 = uservice.registerUser(user3);
+        gservice.joinGame(authData3.authToken(), game.gameID(), null);
+        Assertions.assertNotNull(gservice.listGames(authData3.authToken()).get("games"));
     }
 
     @Test
@@ -181,15 +180,15 @@ public class ServiceTests {
     void joinGameWrongColor() throws DataAccessException, SQLException {
         // first player
         var user = new UserData("hello", "goodbye", "hello@goodbye.com");
-        var authToken = uservice.registerUser(user);
-        var gameID = gservice.createGame(authToken, "grover");
-        gservice.joinGame(authToken, gameID, "WHITE");
+        var authData = uservice.registerUser(user);
+        var game = gservice.createGame(authData.authToken(), "grover");
+        gservice.joinGame(authData.authToken(), game.gameID(), "WHITE");
 
         // second player
         var user2 = new UserData("hola", "goodbye", "hello@goodbye.com");
-        var authToken2 = uservice.registerUser(user2);
-        var message2 = gservice.joinGame(authToken2, gameID, "WHITE");
-        Assertions.assertNotSame(user2.username(), gservice.listGames(authToken2).get("games").getFirst().whiteUsername());
+        var authData2 = uservice.registerUser(user2);
+        var message2 = gservice.joinGame(authData2.authToken(), game.gameID(), "WHITE");
+        Assertions.assertNotSame(user2.username(), gservice.listGames(authData2.authToken()).get("games").getFirst().whiteUsername());
         Assertions.assertSame("already taken", message2);
     }
 

@@ -18,9 +18,9 @@ public class GameService {
         this.dataAccess = dataAccess;
     }
 
-    public int createGame(String authToken, String gameName) throws DataAccessException {
+    public GameData createGame(String authToken, String gameName) throws DataAccessException {
         if (!dataAccess.checkAuth(authToken)) {
-            return -1;
+            throw new DataAccessException("Unauthorized");
         } else {
             return dataAccess.createGame(gameName);
         }

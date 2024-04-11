@@ -28,7 +28,7 @@ public interface DataAccess {
 
     boolean checkAuth(String authToken) throws DataAccessException; //
 
-    int createGame(String gameName) throws DataAccessException; //
+    GameData createGame(String gameName) throws DataAccessException; //
 
     default ArrayList<GameData> listGames() throws DataAccessException { //
         return null;

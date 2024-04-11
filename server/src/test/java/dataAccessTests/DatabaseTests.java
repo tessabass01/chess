@@ -200,11 +200,11 @@ public class DatabaseTests {
     @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
     void listGamesSameName(Class<? extends DataAccess> dbClass) throws Exception {
         DataAccess data = getDataAccess(dbClass);
-        var gameID = data.createGame("monkeypie");
-        var gameID2 = data.createGame("monkeypie");
+        var game = data.createGame("monkeypie");
+        var game2 = data.createGame("monkeypie");
         var games = data.listGames();
         Assertions.assertEquals(2, games.size());
-        Assertions.assertNotSame(data.getGame(gameID), data.getGame(gameID2));
+        Assertions.assertNotSame(data.getGame(game.gameID()), data.getGame(game2.gameID()));
     }
 
     @ParameterizedTest
@@ -212,14 +212,14 @@ public class DatabaseTests {
     @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
     void updateGame(Class<? extends DataAccess> dbClass) throws Exception {
         DataAccess data = getDataAccess(dbClass);
-        var gameID = data.createGame("monkeypie");
-        var message = data.updateGame(gameID, "user1", "WHITE");
+        var game = data.createGame("monkeypie");
+        var message = data.updateGame(game.gameID(), "user1", "WHITE");
         Assertions.assertSame("success", message);
 
-        var message2 = data.updateGame(gameID, "user2", "BLACK");
+        var message2 = data.updateGame(game.gameID(), "user2", "BLACK");
         Assertions.assertSame("success", message2);
 
-        var message3 = data.updateGame(gameID, "user3", null);
+        var message3 = data.updateGame(game.gameID(), "user3", null);
         Assertions.assertSame("success", message3);
     }
 
@@ -228,11 +228,11 @@ public class DatabaseTests {
     @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
     void updateGameWrongColor(Class<? extends DataAccess> dbClass) throws Exception {
         DataAccess data = getDataAccess(dbClass);
-        var gameID = data.createGame("monkeypie");
-        var message = data.updateGame(gameID, "user1", "WHITE");
+        var game = data.createGame("monkeypie");
+        var message = data.updateGame(game.gameID(), "user1", "WHITE");
         Assertions.assertSame("success", message);
 
-        var message2 = data.updateGame(gameID, "user2", "WHITE");
+        var message2 = data.updateGame(game.gameID(), "user2", "WHITE");
         Assertions.assertSame("already taken", message2);
     }
 

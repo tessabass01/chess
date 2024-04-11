@@ -184,10 +184,11 @@ public class MySqlDataAccess implements DataAccess {
         return null;
     }
 
-    public int createGame(String gameName) throws DataAccessException {
+    public GameData createGame(String gameName) throws DataAccessException {
         var statement = "INSERT INTO games (gameName, game) VALUES (?, ?)";
         try {
-            return executeUpdate(statement, gameName, new Gson().toJson(new ChessGame()));
+            var gameID = executeUpdate(statement, gameName, new Gson().toJson(new ChessGame()));
+            return new GameData(gameID, null, null, gameName, new ChessGame());
         } catch (DataAccessException e) {
             throw new DataAccessException(e.getMessage());
         }
