@@ -6,8 +6,12 @@ import java.util.Objects;
 
 import static ui.EscapeSequences.*;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import ui.Client;
+import webSocketMessages.serverMessages.Error;
+import webSocketMessages.serverMessages.LoadGame;
+import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.UserGameCommand;
 
@@ -57,24 +61,27 @@ public class Repl implements NotificationHandler {
         System.out.println();
     }
 
-    public void notify(ServerMessage message) {
-        switch (message.getServerMessageType()) {
-            case LOAD_GAME -> loadGame();
-            case ERROR -> error();
-            case NOTIFICATION -> notification();
+    public void notify(String message) {
+        var serverMessage = new Gson().fromJson(message, ServerMessage.class);
+        switch (serverMessage.getServerMessageType()) {
+            case LOAD_GAME -> loadGame(message);
+            case ERROR -> error(message);
+            case NOTIFICATION -> notification(message);
         }
     }
 
-    private void loadGame() {
-        System.out.println(SET_TEXT_COLOR_WHITE + "loaded game");
+    private void loadGame(String message) {
+        var deserialized = new Gson().fromJson(message, LoadGame.class);
+        System.out.println(SET_TEXT_COLOR_WHITE + deserialized.game.toString());
     }
 
-    private void error() {
-        System.out.println(SET_TEXT_COLOR_WHITE + "error");
+    private void error(String message) {
+        System.out.println(SET_TEXT_COLOR_WHITE + message);
     }
 
-    private void notification() {
-        System.out.println(SET_TEXT_COLOR_WHITE + "notification");
+    private void notification(String message) {
+        var deserialized = new Gson().fromJson(message, Notification.class);
+        System.out.println(SET_TEXT_COLOR_WHITE + deserialized.message);
     }
 
     private void printPrompt() {
