@@ -20,25 +20,32 @@ public class ConnectionManager {
         }
     }
 
-    public void remove(String visitorName) {
-        connections.remove(visitorName);
-    }
-
-    public void broadcast(String excludeVisitorName, Notification notification) throws IOException {
-        var removeList = new ArrayList<Connection>();
-        for (var c : connections.values()) {
-            if (c.session.isOpen()) {
-                if (!c.visitorName.equals(excludeVisitorName)) {
-                    c.send(notification.toString());
-                }
-            } else {
-                removeList.add(c);
+    public void remove(String gameID, String authToken) {
+        var gameConnections = connections.get(gameID);
+        for (var conn : gameConnections) {
+            if (conn.authToken.equals(authToken)) {
+                connections.get(gameID).remove(conn);
             }
         }
+    }
 
-        // Clean up any connections that were left open.
-        for (var c : removeList) {
-            connections.remove(c.visitorName);
+    public void broadcast(String excludeAuthToken, Notification notification) throws IOException {
+        var removeMap = new ConcurrentHashMap<String, Connection>();
+        for (var gameID : connections.keySet()) {
+            for (var connection : connections.get(gameID)) {
+                if (connection.session.isOpen()) {
+                    if (!connection.authToken.equals(excludeAuthToken)) {
+                        connection.send(notification.toString());
+                    }
+                } else {
+                    removeMap.put(gameID, connection);
+                }
+            }
+
+            // Clean up any connections that were left open.
+            for (var closedConnection : removeMap.keySet()) {
+                connections.remove(closedConnection);
+            }
         }
     }
 }
