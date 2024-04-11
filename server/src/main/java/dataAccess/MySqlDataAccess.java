@@ -250,17 +250,19 @@ public class MySqlDataAccess implements DataAccess {
 
     public String leaveGame(int gameID, ChessGame.TeamColor playerColor) throws DataAccessException {
         String statement = null;
-        if (playerColor.equals(ChessGame.TeamColor.WHITE)) {
-            statement = "UPDATE games SET whiteUsername=? WHERE gameID=?;";
-        } else if (playerColor.equals(ChessGame.TeamColor.BLACK)) {
-            statement = "UPDATE games SET blackUsername=? WHERE gameID=?;";
+        if (playerColor != null) {
+            if (playerColor.equals(ChessGame.TeamColor.WHITE)) {
+                statement = "UPDATE games SET whiteUsername=? WHERE gameID=?;";
+            } else if (playerColor.equals(ChessGame.TeamColor.BLACK)) {
+                statement = "UPDATE games SET blackUsername=? WHERE gameID=?;";
+            }
+            try {
+                executeUpdate(statement, null, gameID);
+            } catch (Exception e) {
+                throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            }
         }
-        try {
-            executeUpdate(statement, null, gameID);
-            return "success";
-        } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
-        }
+        return "success";
     }
     public void clearDB() throws DataAccessException {
         var statement = "TRUNCATE users";
