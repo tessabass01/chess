@@ -32,14 +32,14 @@ public class WebSocketHandler {
             case JOIN_PLAYER -> joinp(message, session);
             case JOIN_OBSERVER -> joino(message, session);
 //            case MAKE_MOVE -> move(action.visitorName(), session);
-//            case LEAVE -> leave(action.visitorName());
+            case LEAVE -> leave(message);
 //            case RESIGN -> resign(action.visitorName(), session);
         }
     }
 
     private void joinp(String message, Session session) throws Exception {
         var player = new Gson().fromJson(message, JoinPlayer.class);
-        var connection = new Connection(player.getAuthString(), session);
+        var connection = new Connection(player.getAuthString(), session, player.playerColor);
         connections.add(Integer.toString(player.gameID), connection);
         // needs to send a LOAD_GAME msg to root client
         var board = new LoadGame(new ChessGame());
@@ -51,7 +51,7 @@ public class WebSocketHandler {
 
     private void joino(String message, Session session) throws Exception {
         var observer = new Gson().fromJson(message, JoinObserver.class);
-        var connection = new Connection(observer.getAuthString(), session);
+        var connection = new Connection(observer.getAuthString(), session, null);
         connections.add(observer.gameID, connection);
         // needs to send a LOAD_GAME msg to root client
         var board = new LoadGame(new ChessGame());
@@ -71,12 +71,16 @@ public class WebSocketHandler {
 //        }
 //    }
 
-//    private void leave(String visitorName, int gameID) throws IOException {
-//        connections.remove(visitorName);
-//        var message = String.format("%s left the game", visitorName);
-//        var notification = new Notification(Notification.Type.LEFT_GAME, message);
-//        connections.broadcast("", notification);
-//    }
+    private void leave(String message) throws IOException, DataAccessException {
+        var leaving = new Gson().fromJson(message, Leave.class);
+        var playerColor = connections.get(Integer.toString(leaving.gameID), leaving.getAuthString()).playerColor;
+        connections.remove(Integer.toString(leaving.gameID), leaving.getAuthString());
+        var reply = dataAccess.leaveGame(leaving.gameID, playerColor);
+        System.out.print(reply);
+        var notifyMsg = String.format("%s left the game", dataAccess.getAuth(leaving.getAuthString()).username());
+        var notification = new Notification(notifyMsg);
+        connections.broadcast(leaving.getAuthString(), notification);
+    }
 
 //    private void resign(String visitorName, int gameID) throws IOException {
 //        connections.remove(visitorName);

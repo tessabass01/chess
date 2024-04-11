@@ -114,6 +114,18 @@ public class MemoryDataAccess implements DataAccess {
         }
     }
 
+    public String leaveGame(int gameID, ChessGame.TeamColor playerColor) {
+        var strGameID = Integer.toString(gameID);
+        var gameData = GameDict.get(strGameID);
+        if (playerColor.equals(ChessGame.TeamColor.WHITE)) {
+            GameDict.put(strGameID, new GameData(gameData.gameID(), null, gameData.blackUsername(), gameData.gameName(), gameData.game()));
+        } else if (playerColor.equals(ChessGame.TeamColor.BLACK)) {
+            GameDict.put(strGameID, new GameData(gameData.gameID(), gameData.whiteUsername(), null, gameData.gameName(), gameData.game()));
+        }
+        return "success";
+    }
+
+
     public void clearDB() {
         UserDict.clear();
         AuthDict.clear();

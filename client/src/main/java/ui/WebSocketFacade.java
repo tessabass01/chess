@@ -1,10 +1,12 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.JoinObserver;
 import webSocketMessages.userCommands.JoinPlayer;
+import webSocketMessages.userCommands.Leave;
 
 import javax.websocket.*;
 import java.net.URI;
@@ -12,7 +14,7 @@ import java.net.URI;
 public class WebSocketFacade extends Endpoint {
     public Session session;
 
-    public WebSocketFacade(NotificationHandler notificationHandler) throws Exception {
+    public WebSocketFacade(NotificationHandler notificationHandler, String color) throws Exception {
         URI uri = new URI("ws://localhost:8080/connect");
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, uri);
@@ -41,8 +43,14 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void joinGame(String gameID, String authToken, ChessGame.TeamColor playerColor) throws Exception {
-        var observer = new JoinPlayer(authToken, Integer.parseInt(gameID), playerColor);
-        var msg = new Gson().toJson(observer);
+        var player = new JoinPlayer(authToken, Integer.parseInt(gameID), playerColor);
+        var msg = new Gson().toJson(player);
+        send(msg);
+    }
+
+    public void leave(String gameID, String authToken) throws Exception {
+        var leaving = new Leave(authToken, Integer.parseInt(gameID));
+        var msg = new Gson().toJson(leaving);
         send(msg);
     }
 }

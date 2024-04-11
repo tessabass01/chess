@@ -17,14 +17,19 @@ public class Client {
     private final ServerFacade serverFacade;
     private String currentUser;
     private String currentAuth;
+    private String currentGameID;
     private State state;
+    private boolean inGame;
+    private WebSocketFacade ws;
 
     public Client(String serverUrl, NotificationHandler notificationHandler) {
         serverFacade = new ServerFacade(serverUrl);
         currentUser = null;
         currentAuth = null;
+        currentGameID = null;
         this.notificationHandler = notificationHandler;
         state = State.SIGNEDOUT;
+        inGame = false;
     }
 
     public String eval(String input) throws Exception {
@@ -42,6 +47,7 @@ public class Client {
                 case "list" -> listGames();
                 case "logout" -> logout();
                 case "quit" -> "quit";
+                case "leave" -> leave();
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -101,11 +107,13 @@ public class Client {
 
     public String joinGame(String... params) throws Exception {
         assertSignedIn();
+        currentGameID = params[0];
         if (params.length == 1) {
             try {
-                serverFacade.joinObserver(params[0], currentAuth);
-                var ws = new WebSocketFacade(notificationHandler);
-                 ws.observe(params[0], currentAuth);
+                serverFacade.joinObserver(currentGameID, currentAuth);
+                ws = new WebSocketFacade(notificationHandler, null);
+                ws.observe(currentGameID, currentAuth);
+                inGame = true;
                 return "Enjoy the show!\n";
             } catch (NumberFormatException e) {
                 throw new ResponseException(400, "Expected: join-observer <game ID>\n" +
@@ -116,20 +124,30 @@ public class Client {
             }
         } else {
             if (params[1].equalsIgnoreCase("white")) {
-                serverFacade.joinGame(params[0], "WHITE", currentAuth);
-                var ws = new WebSocketFacade(notificationHandler);
-                ws.joinGame(params[0], currentAuth, ChessGame.TeamColor.WHITE);
+                serverFacade.joinGame(currentGameID, "WHITE", currentAuth);
+                ws = new WebSocketFacade(notificationHandler, "white");
+                ws.joinGame(currentGameID, currentAuth, ChessGame.TeamColor.WHITE);
+                inGame = true;
                 return "Go get 'em, WHITE!\n";
             } else  if (Objects.equals(params[1], "black")) {
-                serverFacade.joinGame(params[0], "BLACK", currentAuth);
-                var ws = new WebSocketFacade(notificationHandler);
-                ws.joinGame(params[0], currentAuth, ChessGame.TeamColor.BLACK);
+                serverFacade.joinGame(currentGameID, "BLACK", currentAuth);
+                ws = new WebSocketFacade(notificationHandler, "black");
+                ws.joinGame(currentGameID, currentAuth, ChessGame.TeamColor.BLACK);
+                inGame = true;
                 return "You got this, BLACK!\n";
             } else {
                 throw new ResponseException(400, "Expected: join-game <game ID> <WHITE|BLACK>");
             }
         }
     }
+
+    public String leave() throws Exception {
+        ws.leave(currentGameID, currentAuth);
+        ws = null;
+        inGame = false;
+        return "You left the game";
+    }
+
     public String help() {
         if (state == State.SIGNEDOUT) {
             return """
@@ -138,15 +156,22 @@ public class Client {
                     - quit
                     - help
                     """;
+        } else if (inGame) {
+            return """
+                    - make-move <start position><end position>
+                    - leave
+                    - resign
+                    """;
+        } else {
+            return """
+                    - list-games
+                    - create-game <game name>
+                    - join-game <game ID> <WHITE|BLACK>
+                    - join-observer <game ID>
+                    - logout
+                    - help
+                    """;
         }
-        return """
-                - list-games
-                - create-game <game name>
-                - join-game <game ID> <WHITE|BLACK>
-                - join-observer <game ID>
-                - logout
-                - help
-                """;
     }
 
     private void assertSignedIn() throws ResponseException {

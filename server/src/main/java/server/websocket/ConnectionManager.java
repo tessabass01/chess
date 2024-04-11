@@ -19,11 +19,26 @@ public class ConnectionManager {
         }
     }
 
+    public Connection get(String gameID, String authToken) {
+        for (var key : connections.keySet()) {
+            if (gameID.equals(key)) {
+                for (var conn : connections.get(key)) {
+                    if (conn.authToken.equals(authToken)) {
+                        return conn;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     public void remove(String gameID, String authToken) {
         var gameConnections = connections.get(gameID);
-        for (var conn : gameConnections) {
+        var copy = new ArrayList<>(gameConnections);
+        for (var conn : copy) {
             if (conn.authToken.equals(authToken)) {
                 connections.get(gameID).remove(conn);
+                break;
             }
         }
     }

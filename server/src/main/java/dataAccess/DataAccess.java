@@ -1,5 +1,6 @@
 package dataAccess;
 
+import chess.ChessGame;
 import model.*;
 
 import java.lang.reflect.Array;
@@ -38,4 +39,6 @@ public interface DataAccess {
     String updateGame(int gameID, String username, String color) throws DataAccessException, SQLException; //
 
     void clearDB() throws DataAccessException; //
+
+    String leaveGame(int gameID, ChessGame.TeamColor playerColor) throws DataAccessException;
 }
