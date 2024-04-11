@@ -6,8 +6,10 @@ import java.util.Objects;
 
 import static ui.EscapeSequences.*;
 
+import com.google.gson.Gson;
 import ui.Client;
 import webSocketMessages.serverMessages.ServerMessage;
+import webSocketMessages.userCommands.UserGameCommand;
 
 import java.util.Scanner;
 
@@ -16,7 +18,7 @@ public class Repl implements NotificationHandler {
     private final String url;
 
     public Repl(String url) {
-        client = new Client(url);
+        client = new Client(url, this);
         this.url = url;
     }
 
@@ -64,15 +66,15 @@ public class Repl implements NotificationHandler {
     }
 
     private void loadGame() {
-        System.out.print("loaded game");
+        System.out.print(SET_TEXT_COLOR_WHITE + "loaded game");
     }
 
     private void error() {
-        System.out.print("error");
+        System.out.print(SET_TEXT_COLOR_WHITE + "error");
     }
 
     private void notification() {
-        System.out.print("notification");
+        System.out.print(SET_TEXT_COLOR_WHITE + "notification");
     }
 
     private void printPrompt() {

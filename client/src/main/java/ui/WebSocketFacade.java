@@ -6,7 +6,6 @@ import webSocketMessages.userCommands.JoinObserver;
 
 import javax.websocket.*;
 import java.net.URI;
-import java.util.Scanner;
 
 public class WebSocketFacade extends Endpoint {
     public Session session;
@@ -16,13 +15,14 @@ public class WebSocketFacade extends Endpoint {
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, uri);
 
-        this.session.addMessageHandler(new MessageHandler.Whole<ServerMessage>() {
-            public void onMessage(ServerMessage message) {
-                notificationHandler.notify(message);
-                System.out.println(message.toString());
+        this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+            @Override
+            public void onMessage(String message) {
+                ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
+                notificationHandler.notify(notification);
             }
-        });
-    }
+        })
+    ;}
 
     // joinGame
     public void send(String msg) throws Exception {

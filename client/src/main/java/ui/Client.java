@@ -18,16 +18,11 @@ public class Client {
     private String currentAuth;
     private State state;
 
-    public Client(String serverUrl) {
+    public Client(String serverUrl, NotificationHandler notificationHandler) {
         serverFacade = new ServerFacade(serverUrl);
         currentUser = null;
         currentAuth = null;
-        notificationHandler = new NotificationHandler() {
-            @Override
-            public void notify(ServerMessage message) {
-
-            }
-        };
+        this.notificationHandler = notificationHandler;
         state = State.SIGNEDOUT;
     }
 

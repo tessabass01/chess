@@ -1,4 +1,5 @@
 package server.websocket;
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
@@ -25,7 +26,7 @@ public class WebSocketHandler {
     private final ConnectionManager connections = new ConnectionManager();
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, DataAccessException {
+    public void onMessage(Session session, String message) throws Exception {
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
         switch (action.getCommandType()) {
 //            case JOIN_PLAYER -> joinp(action.visitorName(), session);
@@ -44,12 +45,16 @@ public class WebSocketHandler {
 //        connections.broadcast("", notification);
 //    }
 
-    private void joino(String message, Session session) throws IOException, DataAccessException {
+    private void joino(String message, Session session) throws Exception {
         var observer = new Gson().fromJson(message, JoinObserver.class);
-        connections.add(observer.gameID, observer.getAuthString(), session);
+        var connection = new Connection(observer.getAuthString(), session);
+        connections.add(observer.gameID, connection);
+        // needs to send a LOAD_GAME msg to root client
+        var board = new LoadGame(new ChessGame());
+        connection.send(new Gson().toJson(board));
         var notifyMsg = String.format("%s joined as an observer", dataAccess.getAuth(observer.getAuthString()).username());
         var notification = new Notification(notifyMsg);
-        connections.broadcast("", notification);
+        connections.broadcast(observer.getAuthString(), notification);
     }
 
 //    public void move(String visitorName, int gameID, ChessMove move) throws ResponseException {

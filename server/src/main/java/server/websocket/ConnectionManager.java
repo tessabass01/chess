@@ -10,8 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConnectionManager {
     public final ConcurrentHashMap<String, ArrayList<Connection>> connections = new ConcurrentHashMap<>();
 
-    public void add(String gameID, String authToken, Session session) {
-        var connection = new Connection(authToken, session);
+    public void add(String gameID, Connection connection) {
         if (!connections.containsKey(gameID)) {
             connections.put(gameID, new ArrayList<>());
             connections.get(gameID).add(connection);
