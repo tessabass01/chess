@@ -20,6 +20,7 @@ public class Client {
     private String currentGameID;
     private State state;
     private boolean inGame;
+    private boolean isPlayer;
     private WebSocketFacade ws;
 
     public Client(String serverUrl, NotificationHandler notificationHandler) {
@@ -27,9 +28,11 @@ public class Client {
         currentUser = null;
         currentAuth = null;
         currentGameID = null;
+
         this.notificationHandler = notificationHandler;
         state = State.SIGNEDOUT;
         inGame = false;
+        isPlayer = false;
     }
 
     public String eval(String input) throws Exception {
@@ -44,7 +47,7 @@ public class Client {
                 case "create-game" -> createGame(params);
                 case "join-game" -> joinGame(params);
                 case "join-observer" -> joinGame(params);
-                case "list" -> listGames();
+                case "list-games" -> listGames();
                 case "logout" -> logout();
                 case "quit" -> "quit";
                 case "leave" -> leave();
@@ -128,12 +131,14 @@ public class Client {
                 ws = new WebSocketFacade(notificationHandler, "white");
                 ws.joinGame(currentGameID, currentAuth, ChessGame.TeamColor.WHITE);
                 inGame = true;
+                isPlayer = true;
                 return "Go get 'em, WHITE!\n";
             } else  if (Objects.equals(params[1], "black")) {
                 serverFacade.joinGame(currentGameID, "BLACK", currentAuth);
                 ws = new WebSocketFacade(notificationHandler, "black");
                 ws.joinGame(currentGameID, currentAuth, ChessGame.TeamColor.BLACK);
                 inGame = true;
+                isPlayer = true;
                 return "You got this, BLACK!\n";
             } else {
                 throw new ResponseException(400, "Expected: join-game <game ID> <WHITE|BLACK>");
@@ -145,6 +150,7 @@ public class Client {
         ws.leave(currentGameID, currentAuth);
         ws = null;
         inGame = false;
+        isPlayer = false;
         return "You left the game";
     }
 
@@ -157,11 +163,21 @@ public class Client {
                     - help
                     """;
         } else if (inGame) {
-            return """
+            if (isPlayer) {
+                return """
+                    - redraw
+                    - show-moves <start position of piece>
                     - make-move <start position><end position>
                     - leave
                     - resign
                     """;
+            } else {
+                return """
+                    - redraw
+                    - show-moves <start position of piece>
+                    - leave
+                    """;
+            }
         } else {
             return """
                     - list-games
