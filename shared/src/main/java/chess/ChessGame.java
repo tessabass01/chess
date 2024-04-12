@@ -52,9 +52,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-//        return board.getPiece(startPosition).pieceMoves(board, startPosition);
         var copyBoard = new ChessBoard(board);
-//        var previousBoard = new ChessBoard(copyBoard);
         var piece = copyBoard.getPiece(startPosition);
         var moves = piece.pieceMoves(copyBoard, startPosition);
         var iter = moves.iterator();

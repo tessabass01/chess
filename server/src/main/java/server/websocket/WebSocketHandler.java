@@ -41,15 +41,25 @@ public class WebSocketHandler {
     private void joinp(String message, Session session) throws Exception {
         var player = new Gson().fromJson(message, JoinPlayer.class);
         var connection = new Connection(player.getAuthString(), session, player.playerColor);
+        if (!dataAccess.checkAuth(player.getAuthString())) {
+            var error = new Gson().toJson(new Error("Error: game doesn't exist"));
+            connection.send(error);
+            return;
+        }
         var game = dataAccess.getGame(player.gameID);
+        if (game == null) {
+            var error = new Gson().toJson(new Error("Error: game doesn't exist"));
+            connection.send(error);
+            return;
+        }
         if (player.playerColor.equals(ChessGame.TeamColor.WHITE)) {
-            if (!game.whiteUsername().equals(dataAccess.getAuth(player.getAuthString()).username())) {
+            if (game.whiteUsername() == null || !game.whiteUsername().equals(dataAccess.getAuth(player.getAuthString()).username())) {
                 var error = new Gson().toJson(new Error("Error: already taken"));
                 connection.send(error);
                 return;
             }
         } else if (player.playerColor.equals(ChessGame.TeamColor.BLACK)) {
-            if (!game.blackUsername().equals(dataAccess.getAuth(player.getAuthString()).username())) {
+            if (game.blackUsername() == null || !game.blackUsername().equals(dataAccess.getAuth(player.getAuthString()).username())) {
                 var error = new Error("Error: already taken");
                 connection.send(new Gson().toJson(error));
                 return;
@@ -66,8 +76,18 @@ public class WebSocketHandler {
     private void joino(String message, Session session) throws Exception {
         var observer = new Gson().fromJson(message, JoinObserver.class);
         var connection = new Connection(observer.getAuthString(), session, null);
+        if (!dataAccess.checkAuth(observer.getAuthString())) {
+            var error = new Gson().toJson(new Error("Error: game doesn't exist"));
+            connection.send(error);
+            return;
+        }
+        var game = dataAccess.getGame(Integer.parseInt(observer.gameID));
+        if (game == null) {
+            var error = new Gson().toJson(new Error("Error: game doesn't exist"));
+            connection.send(error);
+            return;
+        }
         connections.add(observer.gameID, connection);
-        // needs to send a LOAD_GAME msg to root client
         var board = new LoadGame(new ChessGame());
         connection.send(new Gson().toJson(board));
         var notifyMsg = String.format("%s joined as an observer", dataAccess.getAuth(observer.getAuthString()).username());
