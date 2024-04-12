@@ -19,7 +19,7 @@ public class ConnectionManager {
         }
     }
 
-    public Connection get(String gameID, String authToken) {
+    public Connection getConnection(String gameID, String authToken) {
         for (var key : connections.keySet()) {
             if (gameID.equals(key)) {
                 for (var conn : connections.get(key)) {
@@ -32,7 +32,11 @@ public class ConnectionManager {
         return null;
     }
 
-    public void remove(String gameID, String authToken) {
+    public ArrayList<Connection> getGame(String gameID) {
+        return connections.get(gameID);
+    }
+
+    public void removeConnection(String gameID, String authToken) {
         var gameConnections = connections.get(gameID);
         var copy = new ArrayList<>(gameConnections);
         for (var conn : copy) {
@@ -41,6 +45,10 @@ public class ConnectionManager {
                 break;
             }
         }
+    }
+
+    public void removeGame(String gameID) {
+        connections.remove(gameID);
     }
 
     public void broadcast(String excludeAuthToken, Notification notification) throws IOException {

@@ -7,6 +7,7 @@ import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.JoinObserver;
 import webSocketMessages.userCommands.JoinPlayer;
 import webSocketMessages.userCommands.Leave;
+import webSocketMessages.userCommands.Resign;
 
 import javax.websocket.*;
 import java.net.URI;
@@ -51,6 +52,12 @@ public class WebSocketFacade extends Endpoint {
     public void leave(String gameID, String authToken) throws Exception {
         var leaving = new Leave(authToken, Integer.parseInt(gameID));
         var msg = new Gson().toJson(leaving);
+        send(msg);
+    }
+
+    public void resign(String gameID, String authToken) throws Exception {
+        var resigning = new Resign(authToken, Integer.parseInt(gameID));
+        var msg = new Gson().toJson(resigning);
         send(msg);
     }
 }

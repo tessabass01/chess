@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessGame;
 import exception.ResponseException;
+import model.GameData;
 import model.UserData;
 import server.ServerFacade;
 import webSocketMessages.serverMessages.Notification;
@@ -51,6 +52,7 @@ public class Client {
                 case "logout" -> logout();
                 case "quit" -> "quit";
                 case "leave" -> leave();
+                case "resign" -> resign();
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -95,8 +97,9 @@ public class Client {
         assertSignedIn();
         if (params.length >= 1) {
             var gameName = join("-", params);
-            var gameID = serverFacade.createGame(gameName, currentAuth);
-            return String.format("You have created a new game called %s. The game ID is %s, invite a friend!", gameName, gameID);
+            var game = new GameData(null, null, null, gameName, new ChessGame());
+            var gameRes = serverFacade.createGame(game, currentAuth);
+            return String.format("You have created a new game called %s. The game ID is %s, invite a friend!", gameName, gameRes.gameID());
         }
         throw new ResponseException(400, "Expected: create-game <game name>");
     }
@@ -152,6 +155,14 @@ public class Client {
         inGame = false;
         isPlayer = false;
         return "You left the game";
+    }
+
+    public String resign() throws Exception {
+        ws.resign(currentGameID, currentAuth);
+        ws = null;
+        inGame = false;
+        isPlayer = false;
+        return "You resigned";
     }
 
     public String help() {
