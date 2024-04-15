@@ -140,7 +140,8 @@ public class WebSocketHandler {
         } else {
             game.game().makeMove(makeMove.move);
             var board = new LoadGame(game.game());
-            for (Connection conn : connections.getGame(String.valueOf(makeMove.gameID))) {
+            var gameConn = connections.getGame(String.valueOf(makeMove.gameID));
+            for (Connection conn : gameConn) {
                 try {
                     conn.send(new Gson().toJson(board));
                 } catch (IOException e) {
@@ -150,9 +151,6 @@ public class WebSocketHandler {
             var notifyMsg = String.format("%s moved from %s to %s", dataAccess.getAuth(makeMove.getAuthString()).username(), startPosition, endPosition);
             var notification = new Notification(notifyMsg);
             connections.broadcast(makeMove.getAuthString(), notification);
-            if (game.game().isInStalemate(ChessGame.TeamColor.BLACK) || game.game().isInStalemate(ChessGame.TeamColor.BLACK)) {
-                connections.removeGame(String.valueOf(makeMove.gameID));
-            }
             dataAccess.updateGame(makeMove.gameID, game.game());
         }
     }

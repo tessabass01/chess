@@ -20,13 +20,9 @@ public class ConnectionManager {
     }
 
     public Connection getConnection(String gameID, String authToken) {
-        for (var key : connections.keySet()) {
-            if (gameID.equals(key)) {
-                for (var conn : connections.get(key)) {
-                    if (conn.authToken.equals(authToken)) {
-                        return conn;
-                    }
-                }
+        for (var conn : connections.get(gameID)) {
+            if (conn.authToken.equals(authToken)) {
+                return conn;
             }
         }
         return null;

@@ -179,7 +179,7 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         if (this.isInCheck(teamColor)) {
             if (this.isInStalemate(teamColor)) {
-                turn = null;
+                turn = TeamColor.GAME_OVER;
                 return true;
             }
         }
@@ -211,12 +211,7 @@ public class ChessGame {
 //        var kingEndPositions = this.getEndPositions(kingValidMoves);
 //        var otherTeamEndPositions = this.getEndPositions(otherTeamValidMoves);
 //        if (otherTeamEndPositions.containsAll(kingEndPositions)) {
-        if (kingValidMoves.isEmpty()) {
-            turn = null;
-            return true;
-        } else {
-            return false;
-        }
+        return kingValidMoves.isEmpty();
     }
 
     /**
