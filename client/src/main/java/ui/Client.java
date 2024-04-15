@@ -163,11 +163,12 @@ public class Client {
         ws = null;
         inGame = false;
         isPlayer = false;
-        return "You resigned";
+        return "You have successfully resigned";
     }
 
-    public void makeMove(String... params) throws Exception {
+    public String makeMove(String... params) throws Exception {
         ws.makeMove(currentAuth, currentGameID, params[0]);
+        return "\n";
     }
 
     public String help() {

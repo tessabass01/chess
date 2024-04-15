@@ -115,11 +115,11 @@ public class WebSocketHandler {
         var game = dataAccess.getGame(makeMove.gameID);
         var connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
         if (!game.game().getTeamTurn().equals(connection.playerColor)) {
-            var error = new Gson().toJson(new Error("Error: it's not your turn"));
+            var error = new Gson().toJson(new Error("Error: It's not your turn"));
             connection.send(error);
-            return;
-//        } else if () {
-//            // try to move piece of wrong color
+        } else if (game.game().getBoard().getPiece(makeMove.move.getStartPosition()).getTeamColor().equals(connection.playerColor)) {
+            var error = new Gson().toJson(new Error("Error: You are not authorized to move this piece"));
+            connection.send(error);
 //        } else if () {
 //            // try to make an invalid move
 //        } else if () {
@@ -127,14 +127,10 @@ public class WebSocketHandler {
         } else {
             game.game().makeMove(makeMove.move);
             var board = new LoadGame(game.game());
-//            for (var conn : connections.getGame(String.valueOf(makeMove.gameID))) {
-//                conn.send(new Gson().toJson(board));
-//            }
             for (Connection conn : connections.getGame(String.valueOf(makeMove.gameID))) {
                 try {
                     conn.send(new Gson().toJson(board));
                 } catch (IOException e) {
-                    // Handle the exception (e.g., log it) and continue with the loop or break if needed.
                     e.printStackTrace();
                 }
             }
@@ -142,12 +138,6 @@ public class WebSocketHandler {
             var notification = new Notification(notifyMsg);
             connections.broadcast(makeMove.getAuthString(), notification);
             if (game.game().isInStalemate(ChessGame.TeamColor.BLACK) || game.game().isInStalemate(ChessGame.TeamColor.BLACK)) {
-//                if (game.game().isInStalemate(connection.playerColor)) {
-//                    connection.send("You lost");
-//                    var notifyMsg2 = String.format("%s lost", dataAccess.getAuth(makeMove.getAuthString()).username());
-//                    var notification2 = new Notification(notifyMsg2);
-//                    connections.broadcast(makeMove.getAuthString(), notification2);
-//                } else if ()
                 connections.removeGame(String.valueOf(makeMove.gameID));
                 dataAccess.delGame(makeMove.gameID);
             }
