@@ -78,18 +78,21 @@ public class WebSocketHandler {
 
     private void joino(String message, Session session) throws Exception {
         var observer = new Gson().fromJson(message, JoinObserver.class);
-        var connection = new Connection(observer.getAuthString(), session, null);
+//        var connection = new Connection(observer.getAuthString(), session, null);
         if (!dataAccess.checkAuth(observer.getAuthString())) {
-            var error = new Gson().toJson(new Error("Error: game doesn't exist"));
+            var error = new Gson().toJson(new Error("Error: You are not authorized"));
+            var connection = new Connection(observer.getAuthString(), session, null);
             connection.send(error);
             return;
         }
         var game = dataAccess.getGame(Integer.parseInt(observer.gameID));
         if (game == null) {
             var error = new Gson().toJson(new Error("Error: game doesn't exist"));
+            var connection = new Connection(observer.getAuthString(), session, null);
             connection.send(error);
             return;
         }
+        var connection = new Connection(observer.getAuthString(), session, null);
         connections.add(observer.gameID, connection);
         var board = new LoadGame(game.game());
         connection.send(new Gson().toJson(board));
@@ -162,10 +165,10 @@ public class WebSocketHandler {
 
     private void resign(String message) throws IOException, DataAccessException {
         var resigning = new Gson().fromJson(message, Resign.class);
-        connections.removeGame(Integer.toString(resigning.gameID));
         var notifyMsg = String.format("%s resigned", dataAccess.getAuth(resigning.getAuthString()).username());
         var notification = new Notification(notifyMsg);
         connections.broadcast("", notification);
+        connections.removeGame(Integer.toString(resigning.gameID));
     }
 
 }
