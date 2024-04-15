@@ -126,8 +126,9 @@ public class WebSocketHandler {
         } else if (!game.game().validMoves(makeMove.move.getStartPosition()).contains(makeMove.move)) {
             var error = new Gson().toJson(new Error("Error: This is an invalid move"));
             connection.send(error);
-//        } else if () {
-//            try to move as an observer
+        } else if (!dataAccess.getAuth(makeMove.getAuthString()).username().equals(game.whiteUsername()) && !dataAccess.getAuth(makeMove.getAuthString()).username().equals(game.blackUsername())) {
+            var error = new Gson().toJson(new Error("Error: You cannot make moves as an observer"));
+            connection.send(error);
         } else {
             game.game().makeMove(makeMove.move);
             var board = new LoadGame(game.game());
