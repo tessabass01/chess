@@ -32,8 +32,14 @@ public class ConnectionManager {
         return null;
     }
 
+//    public ArrayList<Connection> getGame(String gameID) {
+//        return connections.get(gameID);
+//    }
+
     public ArrayList<Connection> getGame(String gameID) {
-        return connections.get(gameID);
+        synchronized (connections) {
+            return connections.get(gameID);
+        }
     }
 
     public void removeConnection(String gameID, String authToken) {

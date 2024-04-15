@@ -11,9 +11,10 @@ import java.util.*;
 public class ChessGame {
 
     private ChessBoard board = new ChessBoard();
-    private ChessGame.TeamColor turn = ChessGame.TeamColor.BLACK;
+    private ChessGame.TeamColor turn = ChessGame.TeamColor.WHITE;
 
     public ChessGame() {
+        board.resetBoard();
     }
 
     /**
@@ -217,7 +218,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        this.board = board;;
+        this.board = board;
     }
 
     /**

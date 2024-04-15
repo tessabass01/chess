@@ -125,6 +125,12 @@ public class MemoryDataAccess implements DataAccess {
         return "success";
     }
 
+    public String delGame(int gameID) {
+        var strGameID = Integer.toString(gameID);
+        GameDict.remove(strGameID);
+        return "success";
+    }
+
 
     public void clearDB() {
         UserDict.clear();

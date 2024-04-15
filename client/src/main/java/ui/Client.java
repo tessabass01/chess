@@ -53,6 +53,7 @@ public class Client {
                 case "quit" -> "quit";
                 case "leave" -> leave();
                 case "resign" -> resign();
+                case "make-move" -> makeMove(params);
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -163,6 +164,10 @@ public class Client {
         inGame = false;
         isPlayer = false;
         return "You resigned";
+    }
+
+    public void makeMove(String... params) throws Exception {
+        ws.makeMove(currentAuth, currentGameID, params[0]);
     }
 
     public String help() {

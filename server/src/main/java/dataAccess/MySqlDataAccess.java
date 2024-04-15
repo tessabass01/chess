@@ -264,6 +264,16 @@ public class MySqlDataAccess implements DataAccess {
         }
         return "success";
     }
+
+    public String delGame(int gameID) throws DataAccessException {
+        var statement = "DELETE FROM games WHERE gameID=?";
+        try {
+            executeUpdate(statement, String.valueOf(gameID));
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return "success";
+    }
     public void clearDB() throws DataAccessException {
         var statement = "TRUNCATE users";
         executeUpdate(statement);

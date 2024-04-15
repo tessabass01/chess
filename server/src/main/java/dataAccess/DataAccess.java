@@ -41,4 +41,6 @@ public interface DataAccess {
     void clearDB() throws DataAccessException; //
 
     String leaveGame(int gameID, ChessGame.TeamColor playerColor) throws DataAccessException;
+
+    String delGame(int gameID) throws DataAccessException;
 }

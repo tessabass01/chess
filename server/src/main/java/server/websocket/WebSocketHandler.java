@@ -11,6 +11,7 @@ import webSocketMessages.serverMessages.*;
 import webSocketMessages.serverMessages.Error;
 import webSocketMessages.userCommands.*;
 import java.io.IOException;
+import java.util.HashMap;
 
 
 @WebSocket
@@ -25,6 +26,8 @@ public class WebSocketHandler {
         }
     }
     private final ConnectionManager connections = new ConnectionManager();
+    private final HashMap<String, String> indices = new HashMap<>();
+
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
@@ -32,7 +35,7 @@ public class WebSocketHandler {
         switch (action.getCommandType()) {
             case JOIN_PLAYER -> joinp(message, session);
             case JOIN_OBSERVER -> joino(message, session);
-//            case MAKE_MOVE -> move(action.visitorName(), session);
+            case MAKE_MOVE -> move(message);
             case LEAVE -> leave(message);
             case RESIGN -> resign(message);
         }
@@ -66,7 +69,7 @@ public class WebSocketHandler {
             }
         }
         connections.add(Integer.toString(player.gameID), connection);
-        var board = new LoadGame(new ChessGame());
+        var board = new LoadGame(game.game());
         connection.send(new Gson().toJson(board));
         var notifyMsg = String.format("%s joined as %s", dataAccess.getAuth(player.getAuthString()).username(), player.playerColor);
         var notification = new Notification(notifyMsg);
@@ -88,22 +91,68 @@ public class WebSocketHandler {
             return;
         }
         connections.add(observer.gameID, connection);
-        var board = new LoadGame(new ChessGame());
+        var board = new LoadGame(game.game());
         connection.send(new Gson().toJson(board));
         var notifyMsg = String.format("%s joined as an observer", dataAccess.getAuth(observer.getAuthString()).username());
         var notification = new Notification(notifyMsg);
         connections.broadcast(observer.getAuthString(), notification);
     }
 
-//    public void move(String visitorName, int gameID, ChessMove move) throws ResponseException {
-//        try {
-//            var message = String.format("%s moved from %s to %s", visitorName, move.getStartPosition().toString(), move.getEndPosition().toString());
-//            var notification = new Notification(Notification.Type.MADE_MOVE, message);
-//            connections.broadcast("", notification);
-//        } catch (Exception ex) {
-//            throw new ResponseException(500, ex.getMessage());
-//        }
-//    }
+    public void move(String message) throws Exception {
+        indices.put("1", "a");
+        indices.put("2", "b");
+        indices.put("3", "c");
+        indices.put("4", "d");
+        indices.put("5", "e");
+        indices.put("6", "f");
+        indices.put("7", "g");
+        indices.put("8", "h");
+        var makeMove = new Gson().fromJson(message, MakeMove.class);
+        var startPosition = indices.get(Integer.toString(makeMove.move.getStartPosition().getRow())) +
+                makeMove.move.getStartPosition().getRow();
+        var endPosition = indices.get(Integer.toString(makeMove.move.getEndPosition().getRow())) +
+                makeMove.move.getEndPosition().getRow();
+        var game = dataAccess.getGame(makeMove.gameID);
+        var connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
+        if (!game.game().getTeamTurn().equals(connection.playerColor)) {
+            var error = new Gson().toJson(new Error("Error: it's not your turn"));
+            connection.send(error);
+            return;
+//        } else if () {
+//            // try to move piece of wrong color
+//        } else if () {
+//            // try to make an invalid move
+//        } else if () {
+//            // try to make move when game is over (resign or stalemate)
+        } else {
+            game.game().makeMove(makeMove.move);
+            var board = new LoadGame(game.game());
+//            for (var conn : connections.getGame(String.valueOf(makeMove.gameID))) {
+//                conn.send(new Gson().toJson(board));
+//            }
+            for (Connection conn : connections.getGame(String.valueOf(makeMove.gameID))) {
+                try {
+                    conn.send(new Gson().toJson(board));
+                } catch (IOException e) {
+                    // Handle the exception (e.g., log it) and continue with the loop or break if needed.
+                    e.printStackTrace();
+                }
+            }
+            var notifyMsg = String.format("%s moved from %s to %s", dataAccess.getAuth(makeMove.getAuthString()).username(), startPosition, endPosition);
+            var notification = new Notification(notifyMsg);
+            connections.broadcast(makeMove.getAuthString(), notification);
+            if (game.game().isInStalemate(ChessGame.TeamColor.BLACK) || game.game().isInStalemate(ChessGame.TeamColor.BLACK)) {
+//                if (game.game().isInStalemate(connection.playerColor)) {
+//                    connection.send("You lost");
+//                    var notifyMsg2 = String.format("%s lost", dataAccess.getAuth(makeMove.getAuthString()).username());
+//                    var notification2 = new Notification(notifyMsg2);
+//                    connections.broadcast(makeMove.getAuthString(), notification2);
+//                } else if ()
+                connections.removeGame(String.valueOf(makeMove.gameID));
+                dataAccess.delGame(makeMove.gameID);
+            }
+        }
+    }
 
     private void leave(String message) throws IOException, DataAccessException {
         var leaving = new Gson().fromJson(message, Leave.class);

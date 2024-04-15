@@ -77,7 +77,7 @@ public class Repl implements NotificationHandler {
 
     private void error(String message) {
         var deserialized = new Gson().fromJson(message, Error.class);
-        System.out.println(SET_TEXT_COLOR_WHITE + deserialized.message);
+        System.out.println(SET_TEXT_COLOR_WHITE + deserialized.errorMessage);
     }
 
     private void notification(String message) {
