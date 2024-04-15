@@ -53,23 +53,23 @@ public class ConnectionManager {
         connections.remove(gameID);
     }
 
-    public void broadcast(String excludeAuthToken, Notification notification) throws IOException {
+    public void broadcast(String excludeAuthToken, Notification notification, int gameID) throws IOException {
         var removeMap = new ConcurrentHashMap<String, Connection>();
-        for (var gameID : connections.keySet()) {
-            for (var connection : connections.get(gameID)) {
-                if (connection.session.isOpen()) {
-                    if (!connection.authToken.equals(excludeAuthToken)) {
-                        connection.send(notification.toString());
-                    }
-                } else {
-                    removeMap.put(gameID, connection);
+        var strGameID = Integer.toString(gameID);
+        var game = connections.get(strGameID);
+        for (var connection : game) {
+            if (connection.session.isOpen()) {
+                if (!connection.authToken.equals(excludeAuthToken)) {
+                    connection.send(notification.toString());
                 }
+            } else {
+                removeMap.put(strGameID, connection);
             }
+        }
 
-            // Clean up any connections that were left open.
-            for (var closedConnection : removeMap.keySet()) {
-                connections.remove(closedConnection);
-            }
+        // Clean up any connections that were left open.
+        for (var closedConnection : removeMap.keySet()) {
+            connections.remove(closedConnection);
         }
     }
 }

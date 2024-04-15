@@ -73,7 +73,7 @@ public class WebSocketHandler {
         connection.send(new Gson().toJson(board));
         var notifyMsg = String.format("%s joined as %s", dataAccess.getAuth(player.getAuthString()).username(), player.playerColor);
         var notification = new Notification(notifyMsg);
-        connections.broadcast(player.getAuthString(), notification);
+        connections.broadcast(player.getAuthString(), notification, player.gameID);
     }
 
     private void joino(String message, Session session) throws Exception {
@@ -98,7 +98,7 @@ public class WebSocketHandler {
         connection.send(new Gson().toJson(board));
         var notifyMsg = String.format("%s joined as an observer", dataAccess.getAuth(observer.getAuthString()).username());
         var notification = new Notification(notifyMsg);
-        connections.broadcast(observer.getAuthString(), notification);
+        connections.broadcast(observer.getAuthString(), notification, Integer.parseInt(observer.gameID));
     }
 
     public void move(String message) throws Exception {
@@ -150,7 +150,7 @@ public class WebSocketHandler {
             }
             var notifyMsg = String.format("%s moved from %s to %s", dataAccess.getAuth(makeMove.getAuthString()).username(), startPosition, endPosition);
             var notification = new Notification(notifyMsg);
-            connections.broadcast(makeMove.getAuthString(), notification);
+            connections.broadcast(makeMove.getAuthString(), notification, makeMove.gameID);
             dataAccess.updateGame(makeMove.gameID, game.game());
         }
     }
@@ -163,7 +163,7 @@ public class WebSocketHandler {
         System.out.print(reply);
         var notifyMsg = String.format("%s left the game", dataAccess.getAuth(leaving.getAuthString()).username());
         var notification = new Notification(notifyMsg);
-        connections.broadcast(leaving.getAuthString(), notification);
+        connections.broadcast(leaving.getAuthString(), notification, leaving.gameID);
     }
 
     private void resign(String message) throws IOException, DataAccessException {
@@ -181,7 +181,7 @@ public class WebSocketHandler {
             game.game().setTeamTurn();
             var notifyMsg = String.format("%s resigned", dataAccess.getAuth(resigning.getAuthString()).username());
             var notification = new Notification(notifyMsg);
-            connections.broadcast("", notification);
+            connections.broadcast("", notification, resigning.gameID);
             dataAccess.updateGame(resigning.gameID, game.game());
         }
     }
