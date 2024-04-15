@@ -120,8 +120,9 @@ public class WebSocketHandler {
         } else if (game.game().getBoard().getPiece(makeMove.move.getStartPosition()).getTeamColor().equals(connection.playerColor)) {
             var error = new Gson().toJson(new Error("Error: You are not authorized to move this piece"));
             connection.send(error);
-//        } else if () {
-//            // try to make an invalid move
+        } else if (!game.game().validMoves(makeMove.move.getStartPosition()).contains(makeMove.move)) {
+            var error = new Gson().toJson(new Error("Error: This is an invalid move"));
+            connection.send(error);
 //        } else if () {
 //            // try to make move when game is over (resign or stalemate)
         } else {
