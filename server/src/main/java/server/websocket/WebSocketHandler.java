@@ -117,13 +117,13 @@ public class WebSocketHandler {
                 makeMove.move.getEndPosition().getRow();
         var game = dataAccess.getGame(makeMove.gameID);
         var connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
-        if (game.game().isInStalemate(ChessGame.TeamColor.BLACK) || game.game().isInStalemate(ChessGame.TeamColor.WHITE)) {
+        if (game.game().isInCheckmate(ChessGame.TeamColor.BLACK) || game.game().isInCheckmate(ChessGame.TeamColor.WHITE)) {
             var error = new Gson().toJson(new Error("Error: The game is over. No more moves can be made."));
             connection.send(error);
         } else if (!game.game().getTeamTurn().equals(connection.playerColor)) {
             var error = new Gson().toJson(new Error("Error: It's not your turn"));
             connection.send(error);
-        } else if (game.game().getBoard().getPiece(makeMove.move.getStartPosition()).getTeamColor().equals(connection.playerColor)) {
+        } else if (!game.game().getBoard().getPiece(makeMove.move.getStartPosition()).getTeamColor().equals(connection.playerColor)) {
             var error = new Gson().toJson(new Error("Error: You are not authorized to move this piece"));
             connection.send(error);
         } else if (!game.game().validMoves(makeMove.move.getStartPosition()).contains(makeMove.move)) {
