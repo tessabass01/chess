@@ -117,20 +117,25 @@ public class WebSocketHandler {
                 makeMove.move.getEndPosition().getRow();
         var game = dataAccess.getGame(makeMove.gameID);
         var connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
-        if (game.game().isInCheckmate(ChessGame.TeamColor.BLACK) || game.game().isInCheckmate(ChessGame.TeamColor.WHITE)) {
+        if (game.game().isInCheckmate(ChessGame.TeamColor.BLACK) || game.game().isInCheckmate(ChessGame.TeamColor.WHITE) || game.game().getTeamTurn() == ChessGame.TeamColor.GAME_OVER) {
             var error = new Gson().toJson(new Error("Error: The game is over. No more moves can be made."));
+            connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
             connection.send(error);
         } else if (!game.game().getTeamTurn().equals(connection.playerColor)) {
             var error = new Gson().toJson(new Error("Error: It's not your turn"));
+            connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
             connection.send(error);
         } else if (!game.game().getBoard().getPiece(makeMove.move.getStartPosition()).getTeamColor().equals(connection.playerColor)) {
             var error = new Gson().toJson(new Error("Error: You are not authorized to move this piece"));
+            connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
             connection.send(error);
         } else if (!game.game().validMoves(makeMove.move.getStartPosition()).contains(makeMove.move)) {
             var error = new Gson().toJson(new Error("Error: This is an invalid move"));
+            connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
             connection.send(error);
         } else if (!dataAccess.getAuth(makeMove.getAuthString()).username().equals(game.whiteUsername()) && !dataAccess.getAuth(makeMove.getAuthString()).username().equals(game.blackUsername())) {
             var error = new Gson().toJson(new Error("Error: You cannot make moves as an observer"));
+            connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
             connection.send(error);
         } else {
             game.game().makeMove(makeMove.move);
@@ -147,8 +152,8 @@ public class WebSocketHandler {
             connections.broadcast(makeMove.getAuthString(), notification);
             if (game.game().isInStalemate(ChessGame.TeamColor.BLACK) || game.game().isInStalemate(ChessGame.TeamColor.BLACK)) {
                 connections.removeGame(String.valueOf(makeMove.gameID));
-//                dataAccess.delGame(makeMove.gameID);
             }
+            dataAccess.updateGame(makeMove.gameID, game.game());
         }
     }
 
@@ -165,11 +170,12 @@ public class WebSocketHandler {
 
     private void resign(String message) throws IOException, DataAccessException {
         var resigning = new Gson().fromJson(message, Resign.class);
+        var game = dataAccess.getGame(resigning.gameID);
+        game.game().setTeamTurn();
         var notifyMsg = String.format("%s resigned", dataAccess.getAuth(resigning.getAuthString()).username());
         var notification = new Notification(notifyMsg);
         connections.broadcast("", notification);
-        connections.removeGame(Integer.toString(resigning.gameID));
+        dataAccess.updateGame(resigning.gameID, game.game());
     }
-
 }
 

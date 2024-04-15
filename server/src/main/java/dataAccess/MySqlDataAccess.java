@@ -212,7 +212,7 @@ public class MySqlDataAccess implements DataAccess {
         }
     }
 
-    public String updateGame(int gameID, String username, String color) throws DataAccessException, SQLException {
+    public String updateUsernames(int gameID, String username, String color) throws DataAccessException, SQLException {
         var game = getGame(gameID);
         if (game != null) {
             if (color != null) {
@@ -246,6 +246,17 @@ public class MySqlDataAccess implements DataAccess {
         } else {
             return "does not exist";
         }
+    }
+
+    public String updateGame(int gameID, ChessGame game) throws DataAccessException {
+        var board = new Gson().toJson(game);
+        var statement = "UPDATE games SET game=? WHERE gameID=?;";
+        try {
+            executeUpdate(statement, board, gameID);
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return "success";
     }
 
     public String leaveGame(int gameID, ChessGame.TeamColor playerColor) throws DataAccessException {

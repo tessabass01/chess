@@ -91,7 +91,7 @@ public class MemoryDataAccess implements DataAccess {
         return GameDict.getOrDefault(strID, null);
     }
 
-     public String updateGame(int gameID, String username, String color) {
+     public String updateUsernames(int gameID, String username, String color) {
         var strGameID = Integer.toString(gameID);
         if (GameDict.containsKey(strGameID)) {
             var gameData = GameDict.get(strGameID);
@@ -112,6 +112,13 @@ public class MemoryDataAccess implements DataAccess {
         } else {
             return "does not exist";
         }
+    }
+
+    public String updateGame(int gameID, ChessGame game) {
+        var strGameID = Integer.toString(gameID);
+        var gameData = GameDict.get(strGameID);
+        GameDict.put(strGameID, new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), game));
+        return "success";
     }
 
     public String leaveGame(int gameID, ChessGame.TeamColor playerColor) {

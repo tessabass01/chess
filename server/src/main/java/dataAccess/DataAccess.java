@@ -36,11 +36,13 @@ public interface DataAccess {
 
     GameData getGame(int gameID) throws DataAccessException;
 
-    String updateGame(int gameID, String username, String color) throws DataAccessException, SQLException; //
+    String updateUsernames(int gameID, String username, String color) throws DataAccessException, SQLException; //
 
     void clearDB() throws DataAccessException; //
 
     String leaveGame(int gameID, ChessGame.TeamColor playerColor) throws DataAccessException;
 
     String delGame(int gameID) throws DataAccessException;
+
+    String updateGame(int gameID, ChessGame game) throws DataAccessException;
 }

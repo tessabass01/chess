@@ -27,13 +27,17 @@ public class ChessGame {
     /**
      * Set's which teams turn it is
      *
-     * @param team the team whose turn it is
+     * @param params the team whose turn it is
      */
-    public void setTeamTurn(TeamColor team) {
-        if (this.turn == TeamColor.BLACK) {
-            this.turn = TeamColor.WHITE;
-        } else {
-            this.turn = TeamColor.BLACK;
+    public void setTeamTurn(TeamColor... params) {
+        if (params.length == 1) {
+            if (this.turn == TeamColor.BLACK) {
+                this.turn = TeamColor.WHITE;
+            } else {
+                this.turn = TeamColor.BLACK;
+            }
+        } else if (params.length == 0){
+            this.turn = TeamColor.GAME_OVER;
         }
     }
 
@@ -42,7 +46,8 @@ public class ChessGame {
      */
     public enum TeamColor {
         WHITE,
-        BLACK
+        BLACK,
+        GAME_OVER
     }
 
     /**

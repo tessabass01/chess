@@ -213,13 +213,13 @@ public class DatabaseTests {
     void updateGame(Class<? extends DataAccess> dbClass) throws Exception {
         DataAccess data = getDataAccess(dbClass);
         var game = data.createGame("monkeypie");
-        var message = data.updateGame(game.gameID(), "user1", "WHITE");
+        var message = data.updateUsernames(game.gameID(), "user1", "WHITE");
         Assertions.assertSame("success", message);
 
-        var message2 = data.updateGame(game.gameID(), "user2", "BLACK");
+        var message2 = data.updateUsernames(game.gameID(), "user2", "BLACK");
         Assertions.assertSame("success", message2);
 
-        var message3 = data.updateGame(game.gameID(), "user3", null);
+        var message3 = data.updateUsernames(game.gameID(), "user3", null);
         Assertions.assertSame("success", message3);
     }
 
@@ -229,10 +229,10 @@ public class DatabaseTests {
     void updateGameWrongColor(Class<? extends DataAccess> dbClass) throws Exception {
         DataAccess data = getDataAccess(dbClass);
         var game = data.createGame("monkeypie");
-        var message = data.updateGame(game.gameID(), "user1", "WHITE");
+        var message = data.updateUsernames(game.gameID(), "user1", "WHITE");
         Assertions.assertSame("success", message);
 
-        var message2 = data.updateGame(game.gameID(), "user2", "WHITE");
+        var message2 = data.updateUsernames(game.gameID(), "user2", "WHITE");
         Assertions.assertSame("already taken", message2);
     }
 

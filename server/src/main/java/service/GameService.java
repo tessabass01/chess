@@ -39,7 +39,7 @@ public class GameService {
     public String joinGame(String authToken, int gameID, String color) throws DataAccessException, SQLException {
         if (dataAccess.checkAuth(authToken)) {
             var username = dataAccess.getAuth(authToken).username();
-            var response = dataAccess.updateGame(gameID, username, color);
+            var response = dataAccess.updateUsernames(gameID, username, color);
             if (Objects.equals(response, "success")) {
                 return "success";
             } else if (Objects.equals(response, "does not exist")) {
