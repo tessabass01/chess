@@ -1,5 +1,6 @@
 package clientTests;
 
+import chess.ChessGame;
 import exception.ResponseException;
 import model.GameData;
 import model.JoinData;
@@ -40,8 +41,8 @@ public class ServerFacadeTests {
     @Test
     @DisplayName("positive addUser test")
     public void addUser() throws ResponseException {
-        var token = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
-        serverFacade.logout(token);
+        var authData = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
+        serverFacade.logout(authData.authToken());
         Assertions.assertFalse(serverFacade.users.isEmpty());
     }
     @Test
@@ -67,8 +68,8 @@ public class ServerFacadeTests {
     @Test
     @DisplayName("positive logout test")
     public void logout() throws ResponseException {
-        var token = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
-        serverFacade.logout(token);
+        var authData = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
+        serverFacade.logout(authData.authToken());
         Assertions.assertFalse(serverFacade.users.isEmpty());
     }
 
@@ -82,60 +83,68 @@ public class ServerFacadeTests {
     @Test
     @DisplayName("positive createGame test")
     public void createGame() throws ResponseException {
-        var token = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
-        var ID = serverFacade.createGame("monkey", token);
-        Assertions.assertEquals(1, serverFacade.listGames(token).length);
+        var authData = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
+        var game = new GameData(null, null, null, "monkey", new ChessGame());
+        var ID = serverFacade.createGame(game, authData.authToken());
+        Assertions.assertEquals(1, serverFacade.listGames(authData.authToken()).length);
     }
 
     @Test
     @DisplayName("negative createGame test")
     public void createGameFaultyToken() throws ResponseException {
         var token = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
-        Assertions.assertThrows(ResponseException.class, () -> serverFacade.createGame("monkey", "fake token"));
+        var game = new GameData(null, null, null, "monkey", new ChessGame());
+        Assertions.assertThrows(ResponseException.class, () -> serverFacade.createGame(game, "fake token"));
     }
 
     @Test
     @DisplayName("positive joinObserver test")
     public void joinObserver() throws ResponseException {
-        var token = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
-        var ID = serverFacade.createGame("monkey", token);
-        Assertions.assertDoesNotThrow(() -> serverFacade.joinObserver(ID, token));
+        var authData = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
+        var game = new GameData(null, null, null, "monkey", new ChessGame());
+        var ID = serverFacade.createGame(game, authData.authToken());
+        Assertions.assertDoesNotThrow(() -> serverFacade.joinObserver(String.valueOf(ID.gameID()), authData.authToken()));
     }
 
     @Test
     @DisplayName("negative joinObserver test")
     public void joinObserverFaultyID() throws ResponseException {
-        var token = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
-        var ID = serverFacade.createGame("monkey", token);
-        Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinObserver(ID, "fake token"));
+        var authData = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
+        var game = new GameData(null, null, null, "monkey", new ChessGame());
+        var ID = serverFacade.createGame(game, authData.authToken());
+        Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinObserver(String.valueOf(ID.gameID()), "fake token"));
     }
 
     @Test
     @DisplayName("positive joinGame test")
     public void joinGame() throws ResponseException {
-        var token = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
-        var ID = serverFacade.createGame("monkey", token);
-        Assertions.assertDoesNotThrow(() -> serverFacade.joinGame(ID, "white", token));
+        var authData = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
+        var game = new GameData(null, null, null, "monkey", new ChessGame());
+        var ID = serverFacade.createGame(game, authData.authToken());
+        Assertions.assertDoesNotThrow(() -> serverFacade.joinGame(String.valueOf(ID.gameID()), "white", authData.authToken()));
     }
 
     @Test
     @DisplayName("negative joinGame test")
     public void joinGameWrongColor() throws ResponseException {
-        var token = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
-        var ID = serverFacade.createGame("monkey", token);
-        serverFacade.joinGame(ID, "white", token);
+        var authData = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
+        var game = new GameData(null, null, null, "monkey", new ChessGame());
+        var ID = serverFacade.createGame(game, authData.authToken());
+        serverFacade.joinGame(String.valueOf(ID.gameID()), "white", authData.authToken());
 
-        var token2 = serverFacade.addUser(new UserData("jane", "monkeypie", "donkey@pie.com"));
-        Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame(ID, "white", token2));
+        var authData2 = serverFacade.addUser(new UserData("jane", "monkeypie", "donkey@pie.com"));
+        Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame(String.valueOf(ID.gameID()), "white", authData2.authToken()));
     }
 
     @Test
     @DisplayName("positive listGame test")
     public void listGame() throws ResponseException {
-        var token = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
-        var ID = serverFacade.createGame("monkey", token);
-        var ID2 = serverFacade.createGame("donkey", token);
-        Assertions.assertEquals(2, serverFacade.listGames(token).length);
+        var authData = serverFacade.addUser(new UserData("john", "monkeypie", "donkey@pie.com"));
+        var game1 = new GameData(null, null, null, "monkey", new ChessGame());
+        var ID = serverFacade.createGame(game1, authData.authToken());
+        var game2 = new GameData(null, null, null, "donkey", new ChessGame());
+        var ID2 = serverFacade.createGame(game2, authData.authToken());
+        Assertions.assertEquals(2, serverFacade.listGames(authData.authToken()).length);
     }
 
     @Test
