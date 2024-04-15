@@ -174,6 +174,7 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         if (this.isInCheck(teamColor)) {
             if (this.isInStalemate(teamColor)) {
+                turn = null;
                 return true;
             }
         }
@@ -206,6 +207,7 @@ public class ChessGame {
 //        var otherTeamEndPositions = this.getEndPositions(otherTeamValidMoves);
 //        if (otherTeamEndPositions.containsAll(kingEndPositions)) {
         if (kingValidMoves.isEmpty()) {
+            turn = null;
             return true;
         } else {
             return false;

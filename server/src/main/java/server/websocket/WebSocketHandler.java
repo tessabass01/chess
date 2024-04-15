@@ -114,7 +114,10 @@ public class WebSocketHandler {
                 makeMove.move.getEndPosition().getRow();
         var game = dataAccess.getGame(makeMove.gameID);
         var connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
-        if (!game.game().getTeamTurn().equals(connection.playerColor)) {
+        if (game.game().isInStalemate(ChessGame.TeamColor.BLACK) || game.game().isInStalemate(ChessGame.TeamColor.WHITE)) {
+            var error = new Gson().toJson(new Error("Error: The game is over. No more moves can be made."));
+            connection.send(error);
+        } else if (!game.game().getTeamTurn().equals(connection.playerColor)) {
             var error = new Gson().toJson(new Error("Error: It's not your turn"));
             connection.send(error);
         } else if (game.game().getBoard().getPiece(makeMove.move.getStartPosition()).getTeamColor().equals(connection.playerColor)) {
@@ -124,7 +127,7 @@ public class WebSocketHandler {
             var error = new Gson().toJson(new Error("Error: This is an invalid move"));
             connection.send(error);
 //        } else if () {
-//            // try to make move when game is over (resign or stalemate)
+//            try to move as an observer
         } else {
             game.game().makeMove(makeMove.move);
             var board = new LoadGame(game.game());
@@ -140,7 +143,7 @@ public class WebSocketHandler {
             connections.broadcast(makeMove.getAuthString(), notification);
             if (game.game().isInStalemate(ChessGame.TeamColor.BLACK) || game.game().isInStalemate(ChessGame.TeamColor.BLACK)) {
                 connections.removeGame(String.valueOf(makeMove.gameID));
-                dataAccess.delGame(makeMove.gameID);
+//                dataAccess.delGame(makeMove.gameID);
             }
         }
     }
