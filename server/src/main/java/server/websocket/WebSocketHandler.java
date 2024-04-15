@@ -169,11 +169,21 @@ public class WebSocketHandler {
     private void resign(String message) throws IOException, DataAccessException {
         var resigning = new Gson().fromJson(message, Resign.class);
         var game = dataAccess.getGame(resigning.gameID);
-        game.game().setTeamTurn();
-        var notifyMsg = String.format("%s resigned", dataAccess.getAuth(resigning.getAuthString()).username());
-        var notification = new Notification(notifyMsg);
-        connections.broadcast("", notification);
-        dataAccess.updateGame(resigning.gameID, game.game());
+        if (!dataAccess.getAuth(resigning.getAuthString()).username().equals(game.whiteUsername()) && !dataAccess.getAuth(resigning.getAuthString()).username().equals(game.blackUsername())) {
+            var error = new Gson().toJson(new Error("Error: Observers cannot resign"));
+            var connection = connections.getConnection(String.valueOf(resigning.gameID), resigning.getAuthString());
+            connection.send(error);
+        } else if (game.game().getTeamTurn().equals(ChessGame.TeamColor.GAME_OVER)) {
+            var error = new Gson().toJson(new Error("Error: This game is already over"));
+            var connection = connections.getConnection(String.valueOf(resigning.gameID), resigning.getAuthString());
+            connection.send(error);
+        } else {
+            game.game().setTeamTurn();
+            var notifyMsg = String.format("%s resigned", dataAccess.getAuth(resigning.getAuthString()).username());
+            var notification = new Notification(notifyMsg);
+            connections.broadcast("", notification);
+            dataAccess.updateGame(resigning.gameID, game.game());
+        }
     }
 }
 
