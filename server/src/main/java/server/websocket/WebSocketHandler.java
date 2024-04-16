@@ -108,7 +108,7 @@ public class WebSocketHandler {
         }
         var connection = new Connection(observer.getAuthString(), session, null);
         connections.add(observer.gameID, connection);
-        var board = new LoadGame(game.game(), connection.playerColor);
+        var board = new LoadGame(game.game(), ChessGame.TeamColor.WHITE);
         connection.send(new Gson().toJson(board));
         var notifyMsg = String.format("%s joined as an observer", dataAccess.getAuth(observer.getAuthString()).username());
         var notification = new Notification(notifyMsg);
@@ -129,19 +129,12 @@ public class WebSocketHandler {
                 makeMove.move.getStartPosition().getRow();
         var endPosition = indices.get(Integer.toString(makeMove.move.getEndPosition().getColumn())) +
                 makeMove.move.getEndPosition().getRow();
-//        var startPosition = indices.get(Integer.toString(makeMove.move.getStartPosition().getColumn())) +
-//                makeMove.move.getStartPosition().getColumn();
-//        var startPosition = makeMove.move.getStartPosition().getRow() +
-//                indices.get(Integer.toString(makeMove.move.getStartPosition().getColumn()));
-//        var endPosition = makeMove.move.getEndPosition().getRow() +
-//                indices.get(Integer.toString(makeMove.move.getEndPosition().getColumn()));
         var game = dataAccess.getGame(makeMove.gameID);
         var connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
         if (game.game().isInCheckmate(ChessGame.TeamColor.BLACK) || game.game().isInCheckmate(ChessGame.TeamColor.WHITE) || game.game().getTeamTurn() == ChessGame.TeamColor.GAME_OVER) {
             var error = new Gson().toJson(new Error("Error: The game is over. No more moves can be made."));
             connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
             connection.send(error);
-//            connections.removeGame(String.valueOf(makeMove.gameID));
         } else if (!game.game().getTeamTurn().equals(connection.playerColor)) {
             var error = new Gson().toJson(new Error("Error: It's not your turn"));
             connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
@@ -160,10 +153,16 @@ public class WebSocketHandler {
             connection.send(error);
         } else {
             game.game().makeMove(makeMove.move);
-            var board = new LoadGame(game.game(), connection.playerColor);
+//            var board = new LoadGame(game.game(), connection.playerColor);
             var gameConn = connections.getGame(String.valueOf(makeMove.gameID));
             for (Connection conn : gameConn) {
                 try {
+                    LoadGame board;
+                    if (conn.playerColor == null) {
+                        board = new LoadGame(game.game(), ChessGame.TeamColor.WHITE);
+                    } else {
+                        board = new LoadGame(game.game(), conn.playerColor);
+                    }
                     conn.send(new Gson().toJson(board));
                 } catch (IOException e) {
                     e.printStackTrace();

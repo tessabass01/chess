@@ -160,10 +160,10 @@ public class Client {
 
     public String resign() throws Exception {
         ws.resign(currentGameID, currentAuth);
-        ws = null;
+//        ws = null;
         inGame = false;
         isPlayer = false;
-        return "You have successfully resigned";
+        return "";
     }
 
     public String makeMove(String... params) throws Exception {
