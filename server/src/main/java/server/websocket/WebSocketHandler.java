@@ -5,6 +5,8 @@ import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import dataAccess.MySqlDataAccess;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import webSocketMessages.serverMessages.*;
@@ -41,6 +43,18 @@ public class WebSocketHandler {
         }
     }
 
+//    @OnWebSocketConnect
+//    public void onConnect(Session session) {
+//        // Store the session's connection in the map
+//        connections.add(session.getRemote().toString(), session);
+//    }
+//
+//    @OnWebSocketClose
+//    public void onClose(Session session, int statusCode, String reason) {
+//        // Remove the session's connection from the map when the session is closed
+//        connections.removeConnection(session.getRemote().toString());
+//    }
+
     private void joinp(String message, Session session) throws Exception {
         var player = new Gson().fromJson(message, JoinPlayer.class);
         var connection = new Connection(player.getAuthString(), session, player.playerColor);
@@ -73,7 +87,7 @@ public class WebSocketHandler {
         connection.send(new Gson().toJson(board));
         var notifyMsg = String.format("%s joined as %s", dataAccess.getAuth(player.getAuthString()).username(), player.playerColor);
         var notification = new Notification(notifyMsg);
-        connections.broadcast(player.getAuthString(), notification, player.gameID);
+        connections.broadcast(player.getAuthString(), notification, String.valueOf(player.gameID));
     }
 
     private void joino(String message, Session session) throws Exception {
@@ -98,7 +112,7 @@ public class WebSocketHandler {
         connection.send(new Gson().toJson(board));
         var notifyMsg = String.format("%s joined as an observer", dataAccess.getAuth(observer.getAuthString()).username());
         var notification = new Notification(notifyMsg);
-        connections.broadcast(observer.getAuthString(), notification, Integer.parseInt(observer.gameID));
+        connections.broadcast(observer.getAuthString(), notification, observer.gameID);
     }
 
     public void move(String message) throws Exception {
@@ -121,6 +135,7 @@ public class WebSocketHandler {
             var error = new Gson().toJson(new Error("Error: The game is over. No more moves can be made."));
             connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
             connection.send(error);
+//            connections.removeGame(String.valueOf(makeMove.gameID));
         } else if (!game.game().getTeamTurn().equals(connection.playerColor)) {
             var error = new Gson().toJson(new Error("Error: It's not your turn"));
             connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
@@ -150,7 +165,7 @@ public class WebSocketHandler {
             }
             var notifyMsg = String.format("%s moved from %s to %s", dataAccess.getAuth(makeMove.getAuthString()).username(), startPosition, endPosition);
             var notification = new Notification(notifyMsg);
-            connections.broadcast(makeMove.getAuthString(), notification, makeMove.gameID);
+            connections.broadcast(makeMove.getAuthString(), notification, String.valueOf(makeMove.gameID));
             dataAccess.updateGame(makeMove.gameID, game.game());
         }
     }
@@ -163,7 +178,7 @@ public class WebSocketHandler {
         System.out.print(reply);
         var notifyMsg = String.format("%s left the game", dataAccess.getAuth(leaving.getAuthString()).username());
         var notification = new Notification(notifyMsg);
-        connections.broadcast(leaving.getAuthString(), notification, leaving.gameID);
+        connections.broadcast(leaving.getAuthString(), notification, String.valueOf(leaving.gameID));
     }
 
     private void resign(String message) throws IOException, DataAccessException {
@@ -177,11 +192,12 @@ public class WebSocketHandler {
             var error = new Gson().toJson(new Error("Error: This game is already over"));
             var connection = connections.getConnection(String.valueOf(resigning.gameID), resigning.getAuthString());
             connection.send(error);
+//            connections.removeGame(String.valueOf(resigning.gameID));
         } else {
             game.game().setTeamTurn();
             var notifyMsg = String.format("%s resigned", dataAccess.getAuth(resigning.getAuthString()).username());
             var notification = new Notification(notifyMsg);
-            connections.broadcast("", notification, resigning.gameID);
+            connections.broadcast("", notification, String.valueOf(resigning.gameID));
             dataAccess.updateGame(resigning.gameID, game.game());
         }
     }
