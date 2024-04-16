@@ -166,8 +166,18 @@ public class WebSocketHandler {
                 var checkNotification = new Notification(checkMsg);
                 connections.broadcast("", checkNotification, String.valueOf(makeMove.gameID));
             }
-            if (game.game().isInCheckmate(ChessGame.TeamColor.WHITE)) {
+            if (game.game().isInCheck(ChessGame.TeamColor.WHITE)) {
                 var checkMsg = "white is in check";
+                var checkNotification = new Notification(checkMsg);
+                connections.broadcast("", checkNotification, String.valueOf(makeMove.gameID));
+            }
+            if (game.game().isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                var checkMsg = "black is in checkmate--white wins!";
+                var checkNotification = new Notification(checkMsg);
+                connections.broadcast("", checkNotification, String.valueOf(makeMove.gameID));
+            }
+            if (game.game().isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                var checkMsg = "white is in checkmate--black wins!";
                 var checkNotification = new Notification(checkMsg);
                 connections.broadcast("", checkNotification, String.valueOf(makeMove.gameID));
             }

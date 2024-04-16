@@ -36,7 +36,7 @@ public class ChessGame {
             } else {
                 this.turn = TeamColor.BLACK;
             }
-        } else if (params.length == 0){
+        } else if (params.length == 0) {
             this.turn = TeamColor.GAME_OVER;
         }
     }
@@ -133,7 +133,7 @@ public class ChessGame {
             }
         }
         for (var move : otherTeamValidMoves) {
-            if (Objects.equals(move.getEndPosition(), kingPosition)) {
+            if (move.getEndPosition().equals(kingPosition)) {
                 return true;
             }
         }
@@ -155,12 +155,14 @@ public class ChessGame {
             }
         }
         for (var move : otherTeamValidMoves) {
-            if (Objects.equals(move.getEndPosition(), kingPosition)) {
+            if (move.getEndPosition().equals(kingPosition)) {
                 return true;
             }
         }
         return false;
     }
+
+
 
     private Collection<ChessPosition> getEndPositions(Collection<ChessMove> movesArray) {
         var endPositions = new ArrayList<ChessPosition>();
@@ -178,12 +180,34 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         if (this.isInCheck(teamColor)) {
-            if (this.isInStalemate(teamColor)) {
-                turn = TeamColor.GAME_OVER;
-                return true;
+            for (int i = 1; i <= 8; i++) {
+                for (int j = 1; j <= 8; j++) {
+                    var iterPosition = new ChessPosition(i, j);
+                    var piece = board.getPiece(iterPosition);
+                    if (piece != null && piece.getTeamColor() == teamColor) {
+                        Collection<ChessMove> pieceMoves = piece.pieceMoves(board, iterPosition);
+                        for (ChessMove move : pieceMoves) {
+                            ChessPiece originalPiece = board.getPiece(move.getEndPosition());
+                            board.addPiece(move.getEndPosition(), piece); // Simulate the move
+                            board.addPiece(iterPosition, null); // Remove the piece from its original position
+                            if (!isInCheck(teamColor)) {
+                                // Revert the simulated move
+                                board.addPiece(iterPosition, piece);
+                                board.addPiece(move.getEndPosition(), originalPiece);
+                                return false; // There's a valid move to defend the king
+                            }
+                            // Revert the simulated move
+                            board.addPiece(iterPosition, piece);
+                            board.addPiece(move.getEndPosition(), originalPiece);
+                        }
+                    }
+                }
             }
+            // No valid move found to defend the king
+            turn = TeamColor.GAME_OVER;
+            return true;
         }
-        return false;
+        return false; // Not in checkmate if not in check
     }
 
     /**
@@ -194,7 +218,6 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        var otherTeamValidMoves = new ArrayList<ChessMove>();
         Collection<ChessMove> kingValidMoves = new ArrayList<ChessMove>();
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
@@ -202,15 +225,9 @@ public class ChessGame {
                 if (Objects.equals(board.getPiece(iterPosition), new ChessPiece(teamColor, ChessPiece.PieceType.KING))) {
                     kingValidMoves = this.validMoves(iterPosition);
                 }
-//                else if (board.getPiece(iterPosition) != null && board.getPiece(iterPosition).getTeamColor() != teamColor) {
-//                    var someValidMoves = this.validMoves(iterPosition);
-//                    otherTeamValidMoves.addAll(someValidMoves);
-//                }
+
             }
         }
-//        var kingEndPositions = this.getEndPositions(kingValidMoves);
-//        var otherTeamEndPositions = this.getEndPositions(otherTeamValidMoves);
-//        if (otherTeamEndPositions.containsAll(kingEndPositions)) {
         return kingValidMoves.isEmpty();
     }
 
