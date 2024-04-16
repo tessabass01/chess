@@ -54,6 +54,7 @@ public class Client {
                 case "leave" -> leave();
                 case "resign" -> resign();
                 case "make-move" -> makeMove(params);
+                case "redraw" -> redraw();
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -168,7 +169,12 @@ public class Client {
 
     public String makeMove(String... params) throws Exception {
         ws.makeMove(currentAuth, currentGameID, params[0]);
-        return "\n";
+        return "";
+    }
+
+    public String redraw() throws Exception {
+        ws.redraw(currentGameID, currentAuth);
+        return "";
     }
 
     public String help() {

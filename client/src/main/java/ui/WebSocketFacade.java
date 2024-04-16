@@ -78,4 +78,10 @@ public class WebSocketFacade extends Endpoint {
         var msg = new Gson().toJson(resigning);
         send(msg);
     }
+
+    public void redraw(String gameID, String authToken) throws Exception {
+        var redraw = new Redraw(Integer.parseInt(gameID), authToken);
+        var msg = new Gson().toJson(redraw);
+        send(msg);
+    }
 }
