@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import static ui.EscapeSequences.*;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import ui.Client;
@@ -72,7 +73,10 @@ public class Repl implements NotificationHandler {
 
     private void loadGame(String message) {
         var deserialized = new Gson().fromJson(message, LoadGame.class);
-        System.out.println(SET_TEXT_COLOR_WHITE + deserialized.game.toString());
+        var board = deserialized.game.getBoard();
+        var color = deserialized.playerColor;
+        printBoard(color, board);
+//        System.out.println(SET_TEXT_COLOR_WHITE + deserialized.game.toString());
     }
 
     private void error(String message) {
@@ -86,19 +90,19 @@ public class Repl implements NotificationHandler {
     }
 
     private void printPrompt() {
-        System.out.print("\n" + SET_TEXT_COLOR_WHITE + ">>> " + RESET_TEXT_COLOR);
+        System.out.print("\n" + SET_TEXT_COLOR_WHITE);
     }
 
-    private void printBoard(String color) {
+    private void printBoard(ChessGame.TeamColor playerColor, ChessBoard board) {
             var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
             out.print(ERASE_SCREEN);
 
-            JoinBoard.printHeader(out, color);
+            JoinBoard.printHeader(out, playerColor);
 
-            JoinBoard.drawChessBoard(out, color);
+            JoinBoard.drawChessBoard(out, playerColor, board);
 
-            JoinBoard.printHeader(out, color);
+            JoinBoard.printHeader(out, playerColor);
 
             out.print(SET_BG_COLOR_BLACK);
             out.print(SET_TEXT_COLOR_WHITE);

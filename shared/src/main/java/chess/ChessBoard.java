@@ -10,7 +10,7 @@ import java.util.HashSet;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    ChessPiece[][] board;
+    public ChessPiece[][] board;
     public ChessBoard() {
         board = new ChessPiece[8][8];
     }

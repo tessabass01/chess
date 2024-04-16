@@ -5,8 +5,6 @@ import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import dataAccess.MySqlDataAccess;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import webSocketMessages.serverMessages.*;
@@ -85,7 +83,7 @@ public class WebSocketHandler {
             }
         }
         connections.add(Integer.toString(player.gameID), connection);
-        var board = new LoadGame(game.game());
+        var board = new LoadGame(game.game(), connection.playerColor);
         connection.send(new Gson().toJson(board));
         var notifyMsg = String.format("%s joined as %s", dataAccess.getAuth(player.getAuthString()).username(), player.playerColor);
         var notification = new Notification(notifyMsg);
@@ -110,7 +108,7 @@ public class WebSocketHandler {
         }
         var connection = new Connection(observer.getAuthString(), session, null);
         connections.add(observer.gameID, connection);
-        var board = new LoadGame(game.game());
+        var board = new LoadGame(game.game(), connection.playerColor);
         connection.send(new Gson().toJson(board));
         var notifyMsg = String.format("%s joined as an observer", dataAccess.getAuth(observer.getAuthString()).username());
         var notification = new Notification(notifyMsg);
@@ -118,19 +116,25 @@ public class WebSocketHandler {
     }
 
     public void move(String message) throws Exception {
-        indices.put("1", "a");
-        indices.put("2", "b");
-        indices.put("3", "c");
-        indices.put("4", "d");
-        indices.put("5", "e");
-        indices.put("6", "f");
-        indices.put("7", "g");
-        indices.put("8", "h");
+        indices.put("1", "h");
+        indices.put("2", "g");
+        indices.put("3", "f");
+        indices.put("4", "e");
+        indices.put("5", "d");
+        indices.put("6", "c");
+        indices.put("7", "b");
+        indices.put("8", "a");
         var makeMove = new Gson().fromJson(message, MakeMove.class);
-        var startPosition = indices.get(Integer.toString(makeMove.move.getStartPosition().getRow())) +
+        var startPosition = indices.get(Integer.toString(makeMove.move.getStartPosition().getColumn())) +
                 makeMove.move.getStartPosition().getRow();
-        var endPosition = indices.get(Integer.toString(makeMove.move.getEndPosition().getRow())) +
+        var endPosition = indices.get(Integer.toString(makeMove.move.getEndPosition().getColumn())) +
                 makeMove.move.getEndPosition().getRow();
+//        var startPosition = indices.get(Integer.toString(makeMove.move.getStartPosition().getColumn())) +
+//                makeMove.move.getStartPosition().getColumn();
+//        var startPosition = makeMove.move.getStartPosition().getRow() +
+//                indices.get(Integer.toString(makeMove.move.getStartPosition().getColumn()));
+//        var endPosition = makeMove.move.getEndPosition().getRow() +
+//                indices.get(Integer.toString(makeMove.move.getEndPosition().getColumn()));
         var game = dataAccess.getGame(makeMove.gameID);
         var connection = connections.getConnection(String.valueOf(makeMove.gameID), makeMove.getAuthString());
         if (game.game().isInCheckmate(ChessGame.TeamColor.BLACK) || game.game().isInCheckmate(ChessGame.TeamColor.WHITE) || game.game().getTeamTurn() == ChessGame.TeamColor.GAME_OVER) {
@@ -156,7 +160,7 @@ public class WebSocketHandler {
             connection.send(error);
         } else {
             game.game().makeMove(makeMove.move);
-            var board = new LoadGame(game.game());
+            var board = new LoadGame(game.game(), connection.playerColor);
             var gameConn = connections.getGame(String.valueOf(makeMove.gameID));
             for (Connection conn : gameConn) {
                 try {

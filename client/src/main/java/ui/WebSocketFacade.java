@@ -17,14 +17,14 @@ public class WebSocketFacade extends Endpoint {
 
     public WebSocketFacade(NotificationHandler notificationHandler, String color) throws Exception {
         indices = new HashMap<>();
-        indices.put("a", 1);
-        indices.put("b", 2);
-        indices.put("c", 3);
-        indices.put("d", 4);
-        indices.put("e", 5);
-        indices.put("f", 6);
-        indices.put("g", 7);
-        indices.put("h", 8);
+        indices.put("a", 8);
+        indices.put("b", 7);
+        indices.put("c", 6);
+        indices.put("d", 5);
+        indices.put("e", 4);
+        indices.put("f", 3);
+        indices.put("g", 2);
+        indices.put("h", 1);
 
         URI uri = new URI("ws://localhost:8080/connect");
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
@@ -60,8 +60,8 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void makeMove(String authToken, String gameID, String move) throws Exception {
-        var startPosition = new ChessPosition(indices.get(move.substring(0,1)), Integer.parseInt(move.substring(1, 2)));
-        var endPosition = new ChessPosition(indices.get(move.substring(2,3)), Integer.parseInt(move.substring(3)));
+        var startPosition = new ChessPosition(Integer.parseInt(move.substring(1, 2)), indices.get(move.substring(0,1)));
+        var endPosition = new ChessPosition(Integer.parseInt(move.substring(3)), indices.get(move.substring(2,3)));
         var makeMove = new MakeMove(authToken, Integer.parseInt(gameID), new ChessMove(startPosition, endPosition, null));
         var msg = new Gson().toJson(makeMove);
         send(msg);
