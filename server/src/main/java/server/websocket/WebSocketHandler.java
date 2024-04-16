@@ -13,6 +13,8 @@ import webSocketMessages.serverMessages.*;
 import webSocketMessages.serverMessages.Error;
 import webSocketMessages.userCommands.*;
 import java.io.IOException;
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -199,6 +201,14 @@ public class WebSocketHandler {
             var notification = new Notification(notifyMsg);
             connections.broadcast("", notification, String.valueOf(resigning.gameID));
             dataAccess.updateGame(resigning.gameID, game.game());
+        }
+    }
+
+    public void clear() {
+        var keyList = new ArrayList<String>();
+        keyList.addAll(connections.getKeys());
+        for (var key : keyList) {
+            connections.removeGame(key);
         }
     }
 }

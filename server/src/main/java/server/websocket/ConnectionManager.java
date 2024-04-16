@@ -73,7 +73,6 @@ package server.websocket;
 //    }
 //}
 
-import org.eclipse.jetty.websocket.api.Session;
 import webSocketMessages.serverMessages.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -98,6 +97,10 @@ public class ConnectionManager {
 
     public void removeConnection(String gameID, String authToken) {
         connections.getOrDefault(gameID, new ConcurrentHashMap<>()).remove(authToken);
+    }
+
+    public ConcurrentHashMap.KeySetView<String, Map<String, Connection>> getKeys() {
+        return connections.keySet();
     }
 
     public void removeGame(String gameID) {

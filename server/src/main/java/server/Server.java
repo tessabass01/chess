@@ -150,6 +150,7 @@ public class Server {
 
     private Object clear(Request req, Response res) throws DataAccessException {
         dservice.clearDB();
+        webSocketHandler.clear();
         res.status(200);
         return "";
     }
