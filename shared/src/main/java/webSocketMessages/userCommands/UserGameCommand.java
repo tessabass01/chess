@@ -20,7 +20,8 @@ public class UserGameCommand {
         MAKE_MOVE,
         LEAVE,
         RESIGN,
-        REDRAW
+        REDRAW,
+        LEGAL_MOVES
     }
 
     protected CommandType commandType;

@@ -41,6 +41,7 @@ public class WebSocketHandler {
             case LEAVE -> leave(message);
             case RESIGN -> resign(message);
             case REDRAW -> redraw(message);
+            case LEGAL_MOVES -> legalMoves(message);
         }
     }
 
@@ -225,6 +226,20 @@ public class WebSocketHandler {
             board = new LoadGame(game.game(), ChessGame.TeamColor.WHITE);
         } else {
             board = new LoadGame(game.game(), connection.playerColor);
+        }
+        connection.send(new Gson().toJson(board));
+    }
+
+    public void legalMoves(String message) throws DataAccessException, IOException {
+        var legalMoves = new Gson().fromJson(message, LegalMoves.class);
+        var connection = connections.getConnection(String.valueOf(legalMoves.gameID), legalMoves.getAuthString());
+        var game = dataAccess.getGame(legalMoves.gameID);
+        var moves = game.game().validMoves(legalMoves.startPosition);
+        Highlight board;
+        if  (connection.playerColor == null) {
+            board = new Highlight(game.game(), ChessGame.TeamColor.WHITE, legalMoves.startPosition, moves);
+        } else {
+            board = new Highlight(game.game(), connection.playerColor, legalMoves.startPosition, moves);
         }
         connection.send(new Gson().toJson(board));
     }

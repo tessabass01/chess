@@ -55,6 +55,7 @@ public class Client {
                 case "resign" -> resign();
                 case "make-move" -> makeMove(params);
                 case "redraw" -> redraw();
+                case "show-moves" -> showMoves(params);
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -174,6 +175,11 @@ public class Client {
 
     public String redraw() throws Exception {
         ws.redraw(currentGameID, currentAuth);
+        return "";
+    }
+
+    public String showMoves(String... params) throws Exception {
+        ws.legalMoves(currentGameID, currentAuth, params[0]);
         return "";
     }
 

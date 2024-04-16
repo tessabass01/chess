@@ -84,4 +84,11 @@ public class WebSocketFacade extends Endpoint {
         var msg = new Gson().toJson(redraw);
         send(msg);
     }
+
+    public void legalMoves(String gameID, String authToken, String startPosition) throws Exception {
+        var newStartPosition = new ChessPosition(Integer.parseInt(startPosition.substring(1, 2)), indices.get(startPosition.substring(0,1)));
+        var legalMoves = new LegalMoves(Integer.parseInt(gameID), authToken, newStartPosition);
+        var msg = new Gson().toJson(legalMoves);
+        send(msg);
+    }
 }
