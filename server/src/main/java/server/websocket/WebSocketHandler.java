@@ -45,18 +45,6 @@ public class WebSocketHandler {
         }
     }
 
-//    @OnWebSocketConnect
-//    public void onConnect(Session session) {
-//        // Store the session's connection in the map
-//        connections.add(session.getRemote().toString(), session);
-//    }
-//
-//    @OnWebSocketClose
-//    public void onClose(Session session, int statusCode, String reason) {
-//        // Remove the session's connection from the map when the session is closed
-//        connections.removeConnection(session.getRemote().toString());
-//    }
-
     private void joinp(String message, Session session) throws Exception {
         var player = new Gson().fromJson(message, JoinPlayer.class);
         var connection = new Connection(player.getAuthString(), session, player.playerColor);
@@ -173,7 +161,17 @@ public class WebSocketHandler {
             var notifyMsg = String.format("%s moved from %s to %s", dataAccess.getAuth(makeMove.getAuthString()).username(), startPosition, endPosition);
             var notification = new Notification(notifyMsg);
             connections.broadcast(makeMove.getAuthString(), notification, String.valueOf(makeMove.gameID));
-            dataAccess.updateGame(makeMove.gameID, game.game());
+            if (game.game().isInCheck(ChessGame.TeamColor.BLACK)) {
+                var checkMsg = "black is in check";
+                var checkNotification = new Notification(checkMsg);
+                connections.broadcast("", checkNotification, String.valueOf(makeMove.gameID));
+            }
+            if (game.game().isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                var checkMsg = "white is in check";
+                var checkNotification = new Notification(checkMsg);
+                connections.broadcast("", checkNotification, String.valueOf(makeMove.gameID));
+            }
+                dataAccess.updateGame(makeMove.gameID, game.game());
         }
     }
 
